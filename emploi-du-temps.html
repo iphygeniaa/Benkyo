@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0b0f19] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Emploi du Temps</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0idXJsKCNnKSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI2OCIgZm9udC1zaXplPSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+OkzwvdGV4dD4KPC9zdmc+Cg==">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0b0f19', card: 'rgba(19, 25, 39, 0.85)', border: 'rgba(255, 255, 255, 0.08)', sidebar: '#070a12' },
+            brand: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', cyan: '#06b6d4', green: '#10b981' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(19, 25, 39, 0.92); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+    }
+    .card-glow { 
+      transition: all 0.2s ease; 
+      will-change: transform;
+    }
+    .card-glow:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.5);
+    }
+
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+  </style>
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0b0f19]">
+
+  <aside class="w-full md:w-64 bg-[#070a12] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <img id="sidebar-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md">
+        <div class="bg-gradient-to-tr from-brand-purple to-brand-blue text-white p-2 rounded-xl shadow-lg shadow-brand-purple/30">
+          <i class="fa-solid fa-graduation-cap text-base"></i>
+        </div>
+        <span class="font-black text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-purple bg-clip-text text-transparent">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Flashcards</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <section id="tab-timetable" class="tab-content space-y-6 max-w-6xl mx-auto">
+      
+      <!-- En-tête avec profil dynamique -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-dark-card/60 p-5 rounded-3xl border border-dark-border">
+        <div class="flex items-center space-x-4">
+          <img id="user-header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-14 h-14 rounded-full object-cover border-2 border-brand-purple shadow-lg shadow-brand-purple/20">
+          <div>
+            <span class="text-xs font-semibold text-brand-purple tracking-wider uppercase">Mon Emploi du Temps</span>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-white" id="user-header-name">Bonjour ! 📅</h1>
+            <p class="text-slate-400 text-xs md:text-sm">Consultez et organisez votre programme de la semaine.</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+          <button onclick="openTimetableModal()" class="bg-gradient-to-r from-brand-purple to-brand-blue hover:opacity-90 text-white px-5 py-2.5 rounded-2xl text-sm font-bold flex items-center space-x-2 transition shadow-lg shadow-brand-purple/20">
+            <i class="fa-solid fa-plus text-xs"></i><span>Créneau</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sélecteur de jours (Lundi à Dimanche) inspiré du design d'exemple -->
+      <div class="grid grid-cols-7 gap-2 bg-dark-card/40 p-2 rounded-2xl border border-dark-border" id="days-selector">
+        <!-- Généré dynamiquement en JS -->
+      </div>
+
+      <!-- Planning du jour sélectionné -->
+      <div class="glass-panel border border-dark-border rounded-3xl p-6 relative min-h-[400px]">
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-dark-border">
+          <div class="flex items-center space-x-3">
+            <h2 class="text-xl font-bold text-white" id="current-day-title">Lundi</h2>
+            <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-dark-border" id="current-day-count">0 créneau(x)</span>
+          </div>
+          <button id="paste-btn" onclick="pasteTimetableItem()" class="hidden text-xs bg-brand-purple/20 text-brand-purple hover:bg-brand-purple/30 border border-brand-purple/40 px-3 py-1.5 rounded-xl font-semibold transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-paste"></i><span>Coller le créneau copié</span>
+          </button>
+        </div>
+
+        <!-- Liste des créneaux -->
+        <div id="timetable-day-schedule" class="space-y-4">
+          <!-- Injecté par JS -->
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Modal Créneau -->
+  <div id="timetable-modal" class="hidden fixed inset-0 bg-[#0b0f19]/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-dark-border pb-3">
+        <h3 class="text-lg font-bold text-white" id="tt-modal-title">Nouveau créneau</h3>
+        <button onclick="closeTimetableModal()" class="text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="saveTimetableItem(event)" class="space-y-3">
+        <input type="hidden" id="tt-edit-id">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Titre du cours / Activité</label>
+          <input type="text" id="tt-title" placeholder="ex: Mathématiques, Sport..." class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm focus:border-brand-purple outline-none" required>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Jour</label>
+            <select id="tt-day" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm focus:border-brand-purple outline-none">
+              <option value="0">Lundi</option>
+              <option value="1">Mardi</option>
+              <option value="2">Mercredi</option>
+              <option value="3">Jeudi</option>
+              <option value="4">Vendredi</option>
+              <option value="5">Samedi</option>
+              <option value="6">Dimanche</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Couleur du thème</label>
+            <input type="color" id="tt-color" value="#8b5cf6" class="w-full h-10 bg-[#0b0f19] border border-dark-border rounded-xl cursor-pointer p-1">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Heure Début</label>
+            <input type="time" id="tt-start" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm focus:border-brand-purple outline-none" required>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Heure Fin</label>
+            <input type="time" id="tt-end" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm focus:border-brand-purple outline-none" required>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Description / Notes personnelles</label>
+          <textarea id="tt-desc" placeholder="Salle de cours, devoirs à préparer, professeur..." class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-xs h-20 focus:border-brand-purple outline-none resize-none"></textarea>
+        </div>
+        <div class="flex justify-between items-center pt-3 border-t border-dark-border">
+          <button type="button" onclick="deleteCurrentTimetableItem()" id="tt-delete-btn" class="hidden text-xs text-red-400 hover:text-red-300 font-semibold flex items-center space-x-1"><i class="fa-solid fa-trash"></i><span>Supprimer</span></button>
+          <div class="flex space-x-2 ml-auto">
+            <button type="button" onclick="closeTimetableModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">Annuler</button>
+            <button type="submit" class="px-4 py-2 bg-brand-purple hover:bg-brand-purple/80 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-brand-purple/20">Enregistrer</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de confirmation de suppression (remplace confirm()) -->
+  <div id="confirm-delete-modal" class="hidden fixed inset-0 bg-[#0b0f19]/90 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
+      </div>
+      <h3 class="text-xl font-extrabold text-white">Supprimer ce créneau ?</h3>
+      <p class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeConfirmDeleteModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button onclick="confirmDeleteTimetableItem()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let state = (typeof BenkyoStorage !== 'undefined') ? BenkyoStorage.load() : { timetable: [], user: {}, streak: { count: 0 } };
+    if (typeof BenkyoStorage !== 'undefined') BenkyoStorage.autoFlushOn(state);
+
+    const daysList = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+    const shortDaysList = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+    let activeDayIndex = 0;
+    let copiedTimetableItem = null;
+
+    function saveState() {
+      if (typeof BenkyoStorage !== 'undefined') {
+        BenkyoStorage.save(state);
+      } else {
+        localStorage.setItem('benkyo_state', JSON.stringify(state));
+      }
+    }
+
+    // 1) Chargement de la photo de profil utilisateur
+    function loadUserProfile() {
+      const profile = state.profile || {};
+      const avatarUrl = profile.img || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80";
+      const userName = profile.firstname ? `Bonjour ${profile.firstname} ! 📅` : "Mon Emploi du Temps 📅";
+
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      const headerImg = document.getElementById('user-header-avatar');
+      const headerName = document.getElementById('user-header-name');
+
+      if (sidebarImg) sidebarImg.src = avatarUrl;
+      if (headerImg) headerImg.src = avatarUrl;
+      if (headerName) headerName.innerText = userName;
+    }
+
+    // Rendu du sélecteur de jours du Lundi au Dimanche
+    function renderDaysSelector() {
+      const container = document.getElementById('days-selector');
+      if (!container) return;
+
+      container.innerHTML = daysList.map((day, idx) => {
+        const isActive = idx === activeDayIndex;
+        const activeClasses = isActive 
+          ? 'bg-gradient-to-b from-brand-purple to-indigo-600 text-white shadow-lg shadow-brand-purple/30 font-bold scale-[1.02]' 
+          : 'bg-dark-card/80 text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium';
+
+        return `
+          <button onclick="selectDay(${idx})" class="flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-200 cursor-pointer ${activeClasses}">
+            <span class="text-[10px] uppercase tracking-wider ${isActive ? 'text-purple-200' : 'text-slate-500'}">${shortDaysList[idx]}</span>
+            <span class="text-sm mt-0.5">${day}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectDay(index) {
+      activeDayIndex = index;
+      renderDaysSelector();
+      renderTimetable();
+    }
+
+    // Rendu du planning du jour sous forme de cartes élégantes
+    function renderTimetable() {
+      const container = document.getElementById('timetable-day-schedule');
+      const dayTitle = document.getElementById('current-day-title');
+      const dayCount = document.getElementById('current-day-count');
+      const pasteBtn = document.getElementById('paste-btn');
+
+      if (!container) return;
+
+      if (dayTitle) dayTitle.innerText = daysList[activeDayIndex];
+      
+      if (!state.timetable) state.timetable = [];
+      const dayItems = state.timetable.filter(item => parseInt(item.day) === activeDayIndex);
+
+      // Trier par heure de début
+      dayItems.sort((a, b) => (a.start > b.start) ? 1 : -1);
+
+      if (dayCount) dayCount.innerText = `${dayItems.length} créneau(x)`;
+      if (pasteBtn) {
+        if (copiedTimetableItem) pasteBtn.classList.remove('hidden');
+        else pasteBtn.classList.add('hidden');
+      }
+
+      if (dayItems.length === 0) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-12 text-center text-slate-500 space-y-3">
+            <i class="fa-regular fa-calendar-xmark text-4xl text-slate-600"></i>
+            <p class="text-sm">Aucun créneau prévu pour ${daysList[activeDayIndex]}.</p>
+            <button onclick="openTimetableModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-brand-purple font-semibold px-4 py-2 rounded-xl border border-dark-border transition">Ajouter un cours</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = dayItems.map(item => {
+        const color = item.color || '#8b5cf6';
+        return `
+          <div class="card-glow rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-white/10 relative overflow-hidden" style="background: linear-gradient(135deg, ${color}25 0%, rgba(19, 25, 39, 0.95) 100%); border-left: 6px solid ${color};">
+            
+            <div class="flex items-center space-x-4">
+              <div class="p-3 rounded-2xl text-white shadow-md flex flex-col items-center justify-center shrink-0 min-w-[90px]" style="background-color: ${color}40; border: 1px solid ${color}60;">
+                <span class="text-xs font-bold text-white">${item.start}</span>
+                <span class="text-[10px] text-slate-300">à ${item.end}</span>
+              </div>
+              
+              <div>
+                <h4 class="text-base font-bold text-white tracking-wide">${item.title}</h4>
+                ${item.desc ? `<p class="text-xs text-slate-300 mt-1 bg-black/20 px-2.5 py-1 rounded-lg inline-block border border-white/5"><i class="fa-regular fa-note-sticky mr-1.5 opacity-70"></i>${item.desc}</p>` : ''}
+              </div>
+            </div>
+
+            <!-- Actions sur le créneau -->
+            <div class="flex items-center space-x-1.5 self-end md:self-center bg-slate-900/60 p-1.5 rounded-xl border border-white/5">
+              <!-- Déplacement rapide -->
+              <button onclick="shiftDay(${item.id}, -1)" class="p-2 text-xs text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition" title="Déplacer au jour précédent"><i class="fa-solid fa-chevron-left"></i></button>
+              <button onclick="shiftDay(${item.id}, 1)" class="p-2 text-xs text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition" title="Déplacer au jour suivant"><i class="fa-solid fa-chevron-right"></i></button>
+              
+              <div class="w-px h-4 bg-white/10 mx-1"></div>
+              
+              <button onclick="editTimetableItem(${item.id})" class="p-2 text-xs text-slate-300 hover:text-brand-purple hover:bg-slate-800 rounded-lg transition" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="copyTimetableItem(${item.id})" class="p-2 text-xs text-slate-300 hover:text-brand-blue hover:bg-slate-800 rounded-lg transition" title="Dupliquer / Copier"><i class="fa-solid fa-copy"></i></button>
+              <button onclick="deleteTimetableItemDirect(${item.id})" class="p-2 text-xs text-red-400 hover:text-red-300 hover:bg-slate-800 rounded-lg transition" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Modal & Handlers
+    function openTimetableModal() {
+      document.getElementById('tt-edit-id').value = '';
+      document.getElementById('tt-title').value = '';
+      document.getElementById('tt-desc').value = '';
+      document.getElementById('tt-start').value = '08:00';
+      document.getElementById('tt-end').value = '09:00';
+      document.getElementById('tt-day').value = activeDayIndex.toString();
+      document.getElementById('tt-color').value = '#8b5cf6';
+      document.getElementById('tt-modal-title').innerText = "Nouveau créneau";
+      document.getElementById('tt-delete-btn').classList.add('hidden');
+      document.getElementById('timetable-modal').classList.remove('hidden');
+    }
+
+    function closeTimetableModal() { 
+      document.getElementById('timetable-modal').classList.add('hidden'); 
+    }
+
+    function editTimetableItem(id) {
+      const item = state.timetable.find(i => i.id === id);
+      if(!item) return;
+      document.getElementById('tt-edit-id').value = item.id;
+      document.getElementById('tt-title').value = item.title;
+      document.getElementById('tt-day').value = item.day;
+      document.getElementById('tt-start').value = item.start;
+      document.getElementById('tt-end').value = item.end;
+      document.getElementById('tt-desc').value = item.desc || '';
+      document.getElementById('tt-color').value = item.color || '#8b5cf6';
+      document.getElementById('tt-modal-title').innerText = "Modifier le créneau";
+      document.getElementById('tt-delete-btn').classList.remove('hidden');
+      document.getElementById('timetable-modal').classList.remove('hidden');
+    }
+
+    function saveTimetableItem(e) {
+      e.preventDefault();
+      const editId = document.getElementById('tt-edit-id').value;
+      const dayVal = document.getElementById('tt-day').value;
+
+      if (editId) {
+        const item = state.timetable.find(i => i.id === parseInt(editId));
+        if (item) {
+          item.title = document.getElementById('tt-title').value;
+          item.day = dayVal;
+          item.start = document.getElementById('tt-start').value;
+          item.end = document.getElementById('tt-end').value;
+          item.desc = document.getElementById('tt-desc').value;
+          item.color = document.getElementById('tt-color').value;
+        }
+      } else {
+        state.timetable.push({
+          id: Date.now(),
+          title: document.getElementById('tt-title').value,
+          day: dayVal,
+          start: document.getElementById('tt-start').value,
+          end: document.getElementById('tt-end').value,
+          desc: document.getElementById('tt-desc').value,
+          color: document.getElementById('tt-color').value
+        });
+      }
+
+      saveState();
+      activeDayIndex = parseInt(dayVal);
+      renderDaysSelector();
+      renderTimetable();
+      closeTimetableModal();
+    }
+
+    function deleteCurrentTimetableItem() {
+      const editId = document.getElementById('tt-edit-id').value;
+      if (editId) {
+        pendingDeleteId = parseInt(editId);
+        pendingDeleteFromModal = true;
+        document.getElementById('confirm-delete-modal').classList.remove('hidden');
+      }
+    }
+
+    let pendingDeleteId = null;
+    let pendingDeleteFromModal = false;
+    function deleteTimetableItemDirect(id) {
+      pendingDeleteId = id;
+      pendingDeleteFromModal = false;
+      document.getElementById('confirm-delete-modal').classList.remove('hidden');
+    }
+    function closeConfirmDeleteModal() {
+      document.getElementById('confirm-delete-modal').classList.add('hidden');
+      pendingDeleteId = null;
+    }
+    function confirmDeleteTimetableItem() {
+      if (pendingDeleteId !== null) {
+        state.timetable = state.timetable.filter(i => i.id !== pendingDeleteId);
+        saveState();
+        renderTimetable();
+        if (pendingDeleteFromModal) closeTimetableModal();
+      }
+      closeConfirmDeleteModal();
+    }
+
+    // Dupliquer / Copier un créneau
+    function copyTimetableItem(id) {
+      const item = state.timetable.find(i => i.id === id);
+      if(item) {
+        copiedTimetableItem = { ...item };
+        renderTimetable();
+      }
+    }
+
+    function pasteTimetableItem() {
+      if(copiedTimetableItem) {
+        const newItem = { ...copiedTimetableItem, id: Date.now(), day: activeDayIndex.toString() };
+        state.timetable.push(newItem);
+        saveState();
+        renderTimetable();
+      }
+    }
+
+    // Déplacer un créneau vers un autre jour via flèches
+    function shiftDay(id, delta) {
+      const item = state.timetable.find(i => i.id === id);
+      if(item) {
+        let currentDay = parseInt(item.day);
+        let newDay = (currentDay + delta + 7) % 7;
+        item.day = newDay.toString();
+        saveState();
+        renderTimetable();
+      }
+    }
+
+    function checkStreak() {
+      if(!state.streak) state.streak = { count: 0, lastLogin: '' };
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakEl = document.getElementById('streak-count');
+      if (streakEl) streakEl.innerText = state.streak.count;
+    }
+
+    window.onload = function() {
+      try { checkStreak(); } catch(e) {}
+      try { loadUserProfile(); } catch(e) {}
+      try { renderDaysSelector(); } catch(e) {}
+      try { renderTimetable(); } catch(e) {}
+    };
+  </script>
+</body>
+</html>

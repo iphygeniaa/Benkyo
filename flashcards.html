@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0b0f19] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0idXJsKCNnKSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI2OCIgZm9udC1zaXplPSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+OkzwvdGV4dD4KPC9zdmc+Cg==">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0b0f19', card: 'rgba(19, 25, 39, 0.95)', border: 'rgba(255, 255, 255, 0.08)', sidebar: '#070a12' },
+            brand: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', cyan: '#06b6d4', green: '#10b981' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(19, 25, 39, 0.95); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .card-glow { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card-glow:hover { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.25); transform: translateY(-2px); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content { transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; will-change: opacity, transform; }
+    .tab-content.hidden { display: none; opacity: 0; transform: translateY(10px); }
+    .tab-content:not(.hidden) { opacity: 1; transform: translateY(0); }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 3s forwards ease-in-out; }
+  </style>
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0b0f19]">
+
+  <aside class="w-full md:w-64 bg-[#070a12] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <!-- Photo de profil en haut à gauche -->
+        <img id="sidebar-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md">
+        <div class="bg-gradient-to-tr from-brand-purple to-brand-blue text-white p-2 rounded-xl shadow-lg shadow-brand-purple/30">
+          <i class="fa-solid fa-graduation-cap text-base"></i>
+        </div>
+        <span class="font-black text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-purple bg-clip-text text-transparent">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Flashcards</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <!-- Onglet Grandes vacances coloré en vert autour -->
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <section id="tab-flashcards" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white">Flashcards 🎴</h1>
+          <p class="text-slate-400 text-sm">Mode apprentissage intelligent, mini-jeux QCM & graphiques de progrès par paquet.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="openDeckModal()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-lg shadow-brand-purple/20"><i class="fa-solid fa-plus mr-1"></i> Créer un paquet</button>
+        </div>
+      </div>
+
+      <div id="decks-container" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
+
+      <div class="glass-panel border border-dark-border p-6 rounded-3xl card-glow space-y-4">
+        <h3 class="font-bold text-white text-lg flex items-center gap-2"><i class="fa-solid fa-chart-line text-brand-purple"></i> Graphique de progression & Notes Flashcards (Par Paquet / Par Mois)</h3>
+        <div class="h-64">
+          <canvas id="flashcardsProgressChart"></canvas>
+        </div>
+      </div>
+
+      <div id="flashcard-study-view" class="hidden fixed inset-0 bg-dark-bg/95 z-50 flex items-center justify-center p-4">
+        <div class="max-w-2xl w-full glass-panel border border-dark-border rounded-3xl p-6 flex flex-col space-y-5 relative">
+          <button onclick="closeStudyView()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+          
+          <div class="flex justify-between items-center border-b border-dark-border pb-3">
+            <h3 class="text-lg font-bold text-brand-purple" id="study-deck-title">Mode Flashcards</h3>
+            <span id="study-mode-badge" class="px-3 py-1 bg-brand-purple/20 text-brand-purple rounded-full text-xs font-bold uppercase"></span>
+          </div>
+
+          <div id="mode-learning-container" class="space-y-4">
+            <div id="card-flip-box" class="card-flip w-full h-64 cursor-pointer" onclick="flipCard()">
+              <div id="card-inner" class="card-inner w-full h-full relative rounded-2xl border border-dark-border bg-[#0b0f19] p-6 flex items-center justify-center text-center shadow-inner">
+                <div class="card-front text-lg font-medium flex items-center justify-center p-4 text-white" id="card-question">Question</div>
+                <div class="card-back text-lg font-medium text-emerald-400 flex items-center justify-center p-4" id="card-answer">Réponse</div>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span id="study-progress" class="text-xs text-slate-400">Carte 1/10</span>
+              <div class="flex space-x-2">
+                <button onclick="rateCardMemory(false)" class="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 px-4 py-2 rounded-xl text-xs font-bold">Pas su ❌ <span class="opacity-60 hidden sm:inline">(←)</span></button>
+                <button onclick="rateCardMemory(true)" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 px-4 py-2 rounded-xl text-xs font-bold">Connu ✅ <span class="opacity-60 hidden sm:inline">(→)</span></button>
+              </div>
+            </div>
+            <p class="text-center text-[11px] text-slate-500">Astuce : utilisez les flèches ← (pas su) / → (connu) du clavier, ou espace pour retourner la carte.</p>
+          </div>
+
+          <div id="mode-quiz-container" class="hidden space-y-4">
+            <div class="bg-[#0b0f19] p-5 rounded-2xl border border-dark-border text-center">
+              <span class="text-xs text-slate-400 uppercase font-bold">Question QCM :</span>
+              <h4 id="quiz-question-text" class="text-lg font-bold text-white mt-1"></h4>
+            </div>
+            <div id="quiz-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+          </div>
+
+          <div id="mode-eval-container" class="hidden space-y-4">
+            <div class="bg-[#0b0f19] p-5 rounded-2xl border border-dark-border text-center">
+              <span class="text-xs text-slate-400 uppercase font-bold">Évaluation finale :</span>
+              <h4 id="eval-question-text" class="text-lg font-bold text-white mt-1"></h4>
+            </div>
+            <textarea id="eval-user-answer" placeholder="Écrivez votre réponse ici..." class="w-full bg-[#0b0f19] border border-dark-border rounded-xl p-3 text-white text-sm focus:outline-none focus:border-brand-purple h-24"></textarea>
+            <button onclick="submitEvalAnswer()" class="w-full bg-brand-purple text-white py-2.5 rounded-xl font-bold text-sm">Valider la réponse</button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="card-modal" class="hidden fixed inset-0 bg-dark-bg/90 z-[55] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-lg space-y-4">
+      <div class="flex justify-between items-center border-b border-dark-border pb-3">
+        <h3 id="card-modal-title" class="text-lg font-bold text-white"><i class="fa-solid fa-layer-group text-brand-purple mr-2"></i>Ajouter une carte</h3>
+        <button onclick="closeCardModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="saveCardModal(event)" class="space-y-4">
+        <div>
+          <label class="text-xs font-semibold text-brand-purple block mb-1 uppercase tracking-wider">Recto (Question / Intitulé)</label>
+          <textarea id="card-modal-q" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-3 text-sm focus:border-brand-purple focus:outline-none h-24" placeholder="Entrez la question..." required></textarea>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-emerald-400 block mb-1 uppercase tracking-wider">Verso (Réponse / Définition)</label>
+          <textarea id="card-modal-a" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-3 text-sm focus:border-emerald-400 focus:outline-none h-24" placeholder="Entrez la réponse..." required></textarea>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeCardModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-5 py-2 bg-brand-purple text-sm font-semibold rounded-xl hover:bg-brand-purple/80 transition"><span id="card-modal-submit-label">Enregistrer la carte</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale de gestion des cartes (édition / suppression) -->
+  <div id="manage-cards-modal" class="hidden fixed inset-0 bg-dark-bg/90 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-lg space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-dark-border pb-3 shrink-0">
+        <div>
+          <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-sliders text-brand-purple mr-2"></i>Gérer les cartes</h3>
+          <p id="manage-cards-deck-title" class="text-xs text-slate-400"></p>
+        </div>
+        <button onclick="closeManageCardsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="manage-cards-list" class="space-y-2 overflow-y-auto custom-scrollbar flex-1 min-h-[100px]"></div>
+      <button onclick="openCardModal(currentManagingDeckIdx)" class="shrink-0 w-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs py-2.5 rounded-xl border border-dark-border"><i class="fa-solid fa-plus mr-1"></i> Ajouter une carte</button>
+    </div>
+  </div>
+
+  <!-- Modale de fin de session (remplace les alert()) -->
+  <div id="session-complete-modal" class="hidden fixed inset-0 bg-dark-bg/90 z-[60] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4">
+      <div id="session-complete-icon" class="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-brand-purple to-brand-blue flex items-center justify-center shadow-lg shadow-brand-purple/30">
+        <i class="fa-solid fa-circle-check text-3xl text-white"></i>
+      </div>
+      <h3 id="session-complete-title" class="text-xl font-extrabold text-white">Session terminée !</h3>
+      <p id="session-complete-message" class="text-sm text-slate-400"></p>
+      <button onclick="closeSessionCompleteModal()" class="w-full bg-brand-purple hover:bg-brand-purple/80 text-white py-2.5 rounded-xl font-bold text-sm transition">Continuer</button>
+    </div>
+  </div>
+
+
+  <!-- Modale de confirmation générique (remplace confirm()) -->
+  <div id="generic-confirm-modal" class="hidden fixed inset-0 bg-[#0b0f19]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
+      </div>
+      <h3 id="generic-confirm-title" class="text-xl font-extrabold text-white">Confirmer la suppression</h3>
+      <p id="generic-confirm-message" class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeGenericConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de saisie générique (remplace prompt()) -->
+  <div id="generic-input-modal" class="hidden fixed inset-0 bg-[#0b0f19]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-sm space-y-4">
+      <div class="flex items-center gap-3 border-b border-dark-border pb-3">
+        <div class="w-11 h-11 rounded-full bg-brand-purple/20 flex items-center justify-center shrink-0">
+          <i id="generic-input-icon" class="fa-solid fa-layer-group text-brand-purple"></i>
+        </div>
+        <div>
+          <h3 id="generic-input-title" class="text-base font-bold text-white">Nouvel élément</h3>
+          <p id="generic-input-subtitle" class="text-xs text-slate-400"></p>
+        </div>
+      </div>
+      <form onsubmit="submitGenericInput(event)" class="space-y-4">
+        <input id="generic-input-field" type="text" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-3 text-sm focus:border-brand-purple outline-none" placeholder="">
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="closeGenericInputModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+          <button type="submit" class="px-5 py-2 bg-brand-purple hover:bg-brand-purple/80 text-white text-sm font-semibold rounded-xl transition">Valider</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let statsChartInstance = null;
+
+    function saveState() {
+      BenkyoStorage.save(state);
+    }
+
+    // -------- Modale de confirmation générique (remplace confirm()) --------
+    let _genericConfirmCallback = null;
+    function showConfirmModal(title, message, onConfirm, confirmLabel) {
+      document.getElementById('generic-confirm-title').innerText = title || 'Confirmer la suppression';
+      document.getElementById('generic-confirm-message').innerText = message || 'Cette action est définitive et ne peut pas être annulée.';
+      document.getElementById('generic-confirm-btn').innerText = confirmLabel || 'Supprimer';
+      _genericConfirmCallback = onConfirm;
+      document.getElementById('generic-confirm-modal').classList.remove('hidden');
+    }
+    function closeGenericConfirmModal() {
+      document.getElementById('generic-confirm-modal').classList.add('hidden');
+      _genericConfirmCallback = null;
+    }
+    function executeGenericConfirm() {
+      const cb = _genericConfirmCallback;
+      closeGenericConfirmModal();
+      if (cb) cb();
+    }
+
+    // -------- Modale de saisie générique (remplace prompt()) --------
+    let _genericInputCallback = null;
+    function showInputModal(opts) {
+      document.getElementById('generic-input-title').innerText = opts.title || 'Nouvel élément';
+      document.getElementById('generic-input-subtitle').innerText = opts.subtitle || '';
+      document.getElementById('generic-input-field').placeholder = opts.placeholder || '';
+      document.getElementById('generic-input-field').value = '';
+      document.getElementById('generic-input-icon').className = 'fa-solid ' + (opts.icon || 'fa-layer-group') + ' text-brand-purple';
+      _genericInputCallback = opts.onSubmit;
+      document.getElementById('generic-input-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('generic-input-field').focus(), 50);
+    }
+    function closeGenericInputModal() {
+      document.getElementById('generic-input-modal').classList.add('hidden');
+      _genericInputCallback = null;
+    }
+    function submitGenericInput(e) {
+      e.preventDefault();
+      const val = document.getElementById('generic-input-field').value.trim();
+      const cb = _genericInputCallback;
+      if (!val) return;
+      closeGenericInputModal();
+      if (cb) cb(val);
+    }
+
+    function updateProfileUI() {
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if(sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakElem = document.getElementById('streak-count');
+      if(streakElem) streakElem.innerText = state.streak.count;
+    }
+
+    function renderDecks() {
+      const container = document.getElementById('decks-container');
+      if(!container) return;
+      container.innerHTML = '';
+
+      state.decks.forEach((deck, deckIdx) => {
+        container.innerHTML += `
+          <div class="glass-panel border border-dark-border p-5 rounded-3xl space-y-4 card-glow relative">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-bold text-lg text-white">${deck.title}</h3>
+                <span class="text-xs bg-brand-purple/20 text-brand-purple px-2 py-0.5 rounded-full font-medium">${deck.cards.length} cartes</span>
+              </div>
+              <button onclick="deleteDeck(${deckIdx})" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1.5 text-[11px] font-bold">
+              <button onclick="startStudyMode(${deckIdx}, 'learning')" class="bg-brand-purple/20 text-brand-purple hover:bg-brand-purple/30 p-2 rounded-xl border border-brand-purple/30 text-center">Apprentissage 🧠</button>
+              <button onclick="startStudyMode(${deckIdx}, 'quiz')" class="bg-brand-cyan/20 text-brand-cyan hover:bg-brand-cyan/30 p-2 rounded-xl border border-brand-cyan/30 text-center">Se Tester (QCM) 🎮</button>
+              <button onclick="startStudyMode(${deckIdx}, 'eval')" class="bg-brand-pink/20 text-brand-pink hover:bg-brand-pink/30 p-2 rounded-xl border border-brand-pink/30 text-center">S'Évaluer 📝</button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="openCardModal(${deckIdx})" class="w-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs py-2 rounded-xl border border-dark-border"><i class="fa-solid fa-plus mr-1"></i> Ajouter</button>
+              <button onclick="openManageCardsModal(${deckIdx})" class="w-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs py-2 rounded-xl border border-dark-border"><i class="fa-solid fa-pen-to-square mr-1"></i> Gérer les cartes</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function flipCard() {
+      const inner = document.getElementById('card-inner');
+      if (inner) inner.classList.toggle('card-flipped');
+    }
+
+    function openDeckModal() {
+      showInputModal({
+        title: 'Nouveau paquet',
+        subtitle: 'Donnez un nom à votre paquet de flashcards',
+        placeholder: 'Ex : Vocabulaire Anglais',
+        icon: 'fa-layer-group',
+        onSubmit: (title) => {
+          state.decks.push({ id: Date.now(), title, cards: [] });
+          saveState();
+          renderDecks();
+        }
+      });
+    }
+    function deleteDeck(idx) {
+      const deck = state.decks[idx];
+      showConfirmModal(
+        'Supprimer ce paquet ?',
+        deck ? `Le paquet "${deck.title}" et ses ${deck.cards.length} carte(s) seront définitivement supprimés.` : 'Cette action est définitive et ne peut pas être annulée.',
+        () => { state.decks.splice(idx, 1); saveState(); renderDecks(); }
+      );
+    }
+
+    let currentEditingDeckIdx = null;
+    let editingCardIdx = null;
+    function openCardModal(deckIdx) {
+      currentEditingDeckIdx = deckIdx;
+      editingCardIdx = null;
+      document.getElementById('card-modal-q').value = '';
+      document.getElementById('card-modal-a').value = '';
+      document.getElementById('card-modal-title').innerHTML = '<i class="fa-solid fa-layer-group text-brand-purple mr-2"></i>Ajouter une carte';
+      document.getElementById('card-modal-submit-label').innerText = 'Enregistrer la carte';
+      document.getElementById('card-modal').classList.remove('hidden');
+    }
+    function closeCardModal() { document.getElementById('card-modal').classList.add('hidden'); editingCardIdx = null; }
+    function saveCardModal(e) {
+      e.preventDefault();
+      const q = document.getElementById('card-modal-q').value.trim();
+      const a = document.getElementById('card-modal-a').value.trim();
+      if(q && a && currentEditingDeckIdx !== null) {
+        if (editingCardIdx !== null) {
+          const card = state.decks[currentEditingDeckIdx].cards[editingCardIdx];
+          card.q = q; card.a = a;
+        } else {
+          state.decks[currentEditingDeckIdx].cards.push({ q, a, level: 0 });
+        }
+        saveState();
+        renderDecks();
+        if (currentManagingDeckIdx !== null && !document.getElementById('manage-cards-modal').classList.contains('hidden')) {
+          renderManageCardsList();
+        }
+        closeCardModal();
+      }
+    }
+
+    // -------- Gestion des cartes (modifier / supprimer) --------
+    let currentManagingDeckIdx = null;
+    function openManageCardsModal(deckIdx) {
+      currentManagingDeckIdx = deckIdx;
+      document.getElementById('manage-cards-deck-title').innerText = state.decks[deckIdx].title;
+      renderManageCardsList();
+      document.getElementById('manage-cards-modal').classList.remove('hidden');
+    }
+    function closeManageCardsModal() { document.getElementById('manage-cards-modal').classList.add('hidden'); currentManagingDeckIdx = null; }
+    function renderManageCardsList() {
+      const container = document.getElementById('manage-cards-list');
+      if (!container || currentManagingDeckIdx === null) return;
+      const deck = state.decks[currentManagingDeckIdx];
+      if (!deck || !deck.cards.length) {
+        container.innerHTML = '<p class="text-slate-500 text-sm text-center py-8">Aucune carte pour l\'instant. Ajoutez-en une !</p>';
+        return;
+      }
+      container.innerHTML = deck.cards.map((c, i) => `
+        <div class="bg-[#0b0f19] border border-dark-border rounded-xl p-3 flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-white font-medium break-words">${c.q}</p>
+            <p class="text-xs text-emerald-400 break-words mt-0.5">${c.a}</p>
+          </div>
+          <div class="flex items-center gap-3 shrink-0 pt-0.5">
+            <button onclick="editCardFromManage(${i})" class="text-slate-400 hover:text-brand-blue text-sm" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteCardFromDeck(${i})" class="text-slate-400 hover:text-red-400 text-sm" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+    function editCardFromManage(cardIdx) {
+      const card = state.decks[currentManagingDeckIdx].cards[cardIdx];
+      currentEditingDeckIdx = currentManagingDeckIdx;
+      editingCardIdx = cardIdx;
+      document.getElementById('card-modal-q').value = card.q;
+      document.getElementById('card-modal-a').value = card.a;
+      document.getElementById('card-modal-title').innerHTML = '<i class="fa-solid fa-pen text-brand-purple mr-2"></i>Modifier la carte';
+      document.getElementById('card-modal-submit-label').innerText = 'Enregistrer les modifications';
+      document.getElementById('card-modal').classList.remove('hidden');
+    }
+    function deleteCardFromDeck(cardIdx) {
+      showConfirmModal(
+        'Supprimer cette carte ?',
+        'Cette carte sera définitivement retirée du paquet.',
+        () => {
+          state.decks[currentManagingDeckIdx].cards.splice(cardIdx, 1);
+          saveState();
+          renderManageCardsList();
+          renderDecks();
+        }
+      );
+    }
+
+    // -------- Modale de fin de session (remplace les alert()) --------
+    function showSessionComplete(title, message, celebrate) {
+      document.getElementById('session-complete-title').innerText = title;
+      document.getElementById('session-complete-message').innerText = message;
+      const icon = document.getElementById('session-complete-icon');
+      icon.className = 'w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg ' + (celebrate ? 'bg-gradient-to-tr from-amber-400 to-brand-pink shadow-brand-pink/30' : 'bg-gradient-to-tr from-brand-purple to-brand-blue shadow-brand-purple/30');
+      document.getElementById('session-complete-modal').classList.remove('hidden');
+      if (celebrate && window.confetti) {
+        confetti({ particleCount: 130, spread: 85, origin: { y: 0.6 } });
+      }
+    }
+    function closeSessionCompleteModal() { document.getElementById('session-complete-modal').classList.add('hidden'); }
+
+    let activeDeckObj = null, studyMode = 'learning', activeCardIndex = 0, evalScore = 0;
+    function startStudyMode(deckIdx, mode) {
+      activeDeckObj = state.decks[deckIdx];
+      if (!activeDeckObj.cards.length) return alert("Ajoutez des cartes à ce paquet avant de commencer.");
+      studyMode = mode;
+      activeCardIndex = 0;
+      evalScore = 0;
+
+      document.getElementById('study-deck-title').innerText = activeDeckObj.title;
+      document.getElementById('study-mode-badge').innerText = mode === 'learning' ? 'Apprentissage' : (mode === 'quiz' ? 'Se Tester (QCM)' : 'Évaluation');
+      
+      document.getElementById('mode-learning-container').classList.toggle('hidden', mode !== 'learning');
+      document.getElementById('mode-quiz-container').classList.toggle('hidden', mode !== 'quiz');
+      document.getElementById('mode-eval-container').classList.toggle('hidden', mode !== 'eval');
+
+      document.getElementById('flashcard-study-view').classList.remove('hidden');
+      loadCurrentStudyStep();
+    }
+
+    function loadCurrentStudyStep() {
+      if (activeCardIndex >= activeDeckObj.cards.length) {
+        closeStudyView();
+        if(studyMode === 'eval') {
+          const finalGrade = ((evalScore / activeDeckObj.cards.length) * 20).toFixed(1);
+          state.flashcardHistory.push({ deckTitle: activeDeckObj.title, score: parseFloat(finalGrade), date: new Date().toLocaleDateString('fr-FR', {month: 'short', year:'numeric'}) });
+          saveState();
+          renderFlashcardCharts();
+          showSessionComplete('Évaluation terminée !', `Votre note est de ${finalGrade} / 20.`, parseFloat(finalGrade) >= 15);
+        } else {
+          showSessionComplete('Session terminée !', 'Bravo, vous avez parcouru toutes les cartes du paquet 🎉', true);
+        }
+        return;
+      }
+
+      const card = activeDeckObj.cards[activeCardIndex];
+
+      if(studyMode === 'learning') {
+        document.getElementById('card-question').innerText = card.q;
+        document.getElementById('card-answer').innerText = card.a;
+        document.getElementById('study-progress').innerText = `Carte ${activeCardIndex + 1} / ${activeDeckObj.cards.length}`;
+        document.getElementById('card-inner').classList.remove('card-flipped');
+      } else if(studyMode === 'quiz') {
+        document.getElementById('quiz-question-text').innerText = card.q;
+        const optionsContainer = document.getElementById('quiz-options-container');
+        optionsContainer.innerHTML = '';
+        
+        let answers = [card.a];
+        state.decks.flatMap(d => d.cards).forEach(c => {
+          if(c.a !== card.a && answers.length < 4) answers.push(c.a);
+        });
+        answers.sort(() => Math.random() - 0.5);
+
+        answers.forEach(ans => {
+          optionsContainer.innerHTML += `<button onclick="answerQuiz('${ans.replace(/'/g, "\\'")}', '${card.a.replace(/'/g, "\\'")}')" class="bg-[#0b0f19] hover:bg-brand-purple/20 border border-dark-border p-3 rounded-xl text-xs text-white text-center font-medium">${ans}</button>`;
+        });
+      } else if(studyMode === 'eval') {
+        document.getElementById('eval-question-text').innerText = card.q;
+        document.getElementById('eval-user-answer').value = '';
+      }
+    }
+
+    function rateCardMemory(known) {
+      const card = activeDeckObj.cards[activeCardIndex];
+      if(known) card.level = (card.level || 0) + 1;
+      else card.level = Math.max(0, (card.level || 0) - 1);
+      
+      saveState();
+      activeCardIndex++;
+      loadCurrentStudyStep();
+    }
+
+    // Raccourcis clavier en mode Apprentissage :
+    // - Flèche gauche = "Pas su", Flèche droite = "Connu"
+    // - Barre espace / Flèche haut ou bas = retourner la carte
+    document.addEventListener('keydown', function(e) {
+      const studyView = document.getElementById('flashcard-study-view');
+      if (!studyView || studyView.classList.contains('hidden')) return;
+      if (studyMode !== 'learning') return;
+      if (activeCardIndex >= (activeDeckObj ? activeDeckObj.cards.length : 0)) return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        rateCardMemory(false);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        rateCardMemory(true);
+      } else if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        flipCard();
+      }
+    });
+
+    function answerQuiz(selected, correct) {
+      if(selected === correct) alert("Bonne réponse ! 🎉");
+      else alert(`Dommage ! La bonne réponse était : ${correct}`);
+      activeCardIndex++;
+      loadCurrentStudyStep();
+    }
+
+    function submitEvalAnswer() {
+      const userAns = document.getElementById('eval-user-answer').value.trim().toLowerCase();
+      const correctAns = activeDeckObj.cards[activeCardIndex].a.trim().toLowerCase();
+      if(userAns.includes(correctAns) || correctAns.includes(userAns)) evalScore++;
+      activeCardIndex++;
+      loadCurrentStudyStep();
+    }
+
+    function closeStudyView() { document.getElementById('flashcard-study-view').classList.add('hidden'); }
+
+    let fcChart = null;
+    function renderFlashcardCharts() {
+      const canvas = document.getElementById('flashcardsProgressChart');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (fcChart) fcChart.destroy();
+      
+      const labels = state.flashcardHistory.map(h => `${h.deckTitle} (${h.date})`);
+      const data = state.flashcardHistory.map(h => h.score);
+
+      fcChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.length ? labels : ['Aucune évaluation'],
+          datasets: [{
+            label: 'Notes d\'évaluation (/20)',
+            data: data.length ? data : [0],
+            borderColor: '#ec4899',
+            backgroundColor: 'rgba(236, 72, 153, 0.15)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { min: 0, max: 20, grid: { color: '#1f293d' } } }
+        }
+      });
+    }
+
+    window.onload = function() {
+      try { updateProfileUI(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderDecks(); } catch(e) {}
+      try { renderFlashcardCharts(); } catch(e) {}
+    };
+  </script>
+</body>
+</html>

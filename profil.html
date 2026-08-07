@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0b0f19] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0idXJsKCNnKSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI2OCIgZm9udC1zaXplPSI1NiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+OkzwvdGV4dD4KPC9zdmc+Cg==">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0b0f19', card: 'rgba(19, 25, 39, 0.85)', border: 'rgba(255, 255, 255, 0.08)', sidebar: '#070a12' },
+            brand: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', cyan: '#06b6d4', green: '#10b981' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    /* Optimisation des performances graphiques */
+    .glass-panel { 
+      background: rgba(19, 25, 39, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      will-change: transform, opacity;
+    }
+    .card-glow { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card-glow:hover { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 20px -5px rgba(139, 92, 246, 0.25); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content.hidden { display: none; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 2s forwards ease-in-out; }
+  </style>
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0b0f19]">
+
+  <aside class="w-full md:w-64 bg-[#070a12] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <img id="sidebar-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md">
+        <div class="bg-gradient-to-tr from-brand-purple to-brand-blue text-white p-2 rounded-xl shadow-lg shadow-brand-purple/30">
+          <i class="fa-solid fa-graduation-cap text-base"></i>
+        </div>
+        <span class="font-black text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-purple bg-clip-text text-transparent">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Flashcards</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <section id="tab-profile" class="tab-content space-y-6 max-w-2xl mx-auto">
+      <div class="text-center">
+        <h1 class="text-3xl font-extrabold text-white">Mon Profil 👤</h1>
+        <p class="text-slate-400 text-sm mt-1">Personnalisez vos informations d'étudiant.</p>
+      </div>
+
+      <div class="glass-panel p-8 rounded-3xl border border-dark-border space-y-6 card-glow">
+        <div class="flex flex-col items-center space-y-4">
+          <img id="profile-img-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" class="w-28 h-28 rounded-full object-cover border-4 border-brand-purple shadow-xl">
+          <div class="flex gap-2">
+            <input type="text" id="profile-img-url" placeholder="Lien image Google / Web..." onchange="updateProfileImgFromUrl(this.value)" class="bg-[#0b0f19]/80 border border-dark-border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-purple w-60">
+            <label class="bg-brand-purple hover:bg-brand-purple/80 text-white px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-1">
+              <i class="fa-solid fa-upload"></i> Appareil
+              <input type="file" accept="image/*" onchange="uploadProfileImg(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="text-slate-300 font-semibold block mb-1">Prénom ✏️</label>
+            <input type="text" id="profile-firstname" placeholder="Entrez votre prénom..." oninput="updateProfileName(this.value)" class="w-full bg-[#0b0f19]/80 border border-dark-border text-white rounded-xl p-3 focus:outline-none focus:border-brand-purple text-sm">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-slate-300 font-semibold block mb-1">Genre 🚻</label>
+              <select id="profile-gender" onchange="saveProfileData()" class="w-full bg-[#0b0f19]/80 border border-dark-border text-white rounded-xl p-3 focus:outline-none">
+                <option value="Garçon">Garçon 👦</option>
+                <option value="Fille">Fille 👧</option>
+                <option value="Autre">Autre ✨</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-slate-300 font-semibold block mb-1">Niveau d'étude 📚</label>
+              <input type="text" id="profile-level" placeholder="Ex: Khâgne, L2, Terminale..." onchange="saveProfileData()" class="w-full bg-[#0b0f19]/80 border border-dark-border text-white rounded-xl p-3 focus:outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel p-8 rounded-3xl border border-dark-border space-y-4 card-glow">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down text-brand-purple"></i> Sauvegarde de mes données</h2>
+          <p class="text-slate-400 text-xs mt-1">Vos données sont enregistrées automatiquement dans ce navigateur. Téléchargez un fichier de sauvegarde de temps en temps pour ne rien perdre si vous changez d'appareil ou effacez votre navigateur.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button type="button" onclick="exportBenkyoBackup()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-2">
+            <i class="fa-solid fa-download"></i> Télécharger une sauvegarde
+          </button>
+          <label class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-2">
+            <i class="fa-solid fa-upload"></i> Restaurer une sauvegarde
+            <input type="file" accept="application/json" onchange="importBenkyoBackup(event)" class="hidden">
+          </label>
+        </div>
+        <p id="backup-status" class="text-xs text-emerald-400 hidden"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let statsChartInstance = null;
+    let debounceTimer = null;
+
+    function saveState() {
+      BenkyoStorage.save(state);
+    }
+
+    function updateProfileUI() {
+      const nameEl = document.getElementById('welcome-name');
+      if (nameEl) nameEl.innerText = state.profile.firstname;
+      const mainTitleEl = document.getElementById('dash-main-title');
+      if (mainTitleEl) mainTitleEl.innerText = `Tableau de bord de ${state.profile.firstname} 🚀`;
+      
+      const fnInput = document.getElementById('profile-firstname');
+      if (fnInput) fnInput.value = state.profile.firstname;
+      
+      const genderSel = document.getElementById('profile-gender');
+      if (genderSel) genderSel.value = state.profile.gender;
+
+      const levelInput = document.getElementById('profile-level');
+      if (levelInput) levelInput.value = state.profile.level;
+
+      const imgPrev = document.getElementById('profile-img-preview');
+      if (imgPrev) imgPrev.src = state.profile.img;
+
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function updateProfileName(val) {
+      state.profile.firstname = val || "Étudiant";
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        saveState();
+        updateProfileUI();
+      }, 300);
+    }
+
+    function exportBenkyoBackup() {
+      BenkyoStorage.flush(state);
+      BenkyoStorage.exportBackup(state);
+      const statusEl = document.getElementById('backup-status');
+      statusEl.textContent = 'Sauvegarde téléchargée ✅';
+      statusEl.classList.remove('hidden');
+      setTimeout(() => statusEl.classList.add('hidden'), 4000);
+    }
+
+    function importBenkyoBackup(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('backup-status');
+      if (!confirm("Restaurer cette sauvegarde va remplacer toutes les données actuelles (notes, todos, decks, etc.). Continuer ?")) {
+        e.target.value = '';
+        return;
+      }
+      BenkyoStorage.importBackup(file).then(() => {
+        statusEl.textContent = 'Sauvegarde restaurée, rechargement...';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => location.reload(), 1000);
+      }).catch(() => {
+        statusEl.classList.remove('text-emerald-400');
+        statusEl.classList.add('text-red-400');
+        statusEl.textContent = "Fichier de sauvegarde invalide.";
+        statusEl.classList.remove('hidden');
+      });
+      e.target.value = '';
+    }
+
+    function saveProfileData() {
+      state.profile.gender = document.getElementById('profile-gender').value;
+      state.profile.level = document.getElementById('profile-level').value;
+      saveState();
+    }
+
+    function updateProfileImgFromUrl(url) {
+      if(url) {
+        state.profile.img = url;
+        saveState();
+        updateProfileUI();
+      }
+    }
+
+    function uploadProfileImg(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          state.profile.img = evt.target.result;
+          saveState();
+          updateProfileUI();
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        if(!el.getAttribute('onclick')?.includes('vacation')) {
+          el.classList.remove('bg-brand-purple/20', 'text-brand-purple', 'border', 'border-brand-purple/30');
+          el.classList.add('text-slate-400');
+        } else {
+          el.classList.remove('bg-emerald-500/20', 'border-emerald-500');
+        }
+      });
+      
+      const selectedTab = document.getElementById(`tab-${tabId}`);
+      if(selectedTab) selectedTab.classList.remove('hidden');
+      
+      if(event && event.currentTarget) {
+        if(tabId === 'vacation') {
+          event.currentTarget.classList.add('bg-emerald-500/20', 'border-emerald-500');
+          event.currentTarget.classList.remove('text-slate-400');
+        } else {
+          event.currentTarget.classList.add('bg-brand-purple/20', 'text-brand-purple', 'border', 'border-brand-purple/30');
+          event.currentTarget.classList.remove('text-slate-400');
+        }
+      }
+
+      // Dynamic deferred loading based on targeted tab
+      switch(tabId) {
+        case 'dashboard': renderDashboard(); break;
+        case 'revisions': if(typeof renderRevisions === 'function') renderRevisions(); break;
+        case 'flashcards': renderDecks(); renderFlashcardCharts(); break;
+        case 'notes': renderNotes(); break;
+        case 'todo': renderTodos(); break;
+        case 'timetable': renderTimetable(); break;
+        case 'vacation': renderVacation(); break;
+        case 'pomodoro': renderPomodoroStats(); break;
+        case 'profile': updateProfileUI(); break;
+      }
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const sc = document.getElementById('streak-count');
+      if (sc) sc.innerText = state.streak.count;
+      const dsc = document.getElementById('dash-streak-count');
+      if (dsc) dsc.innerText = state.streak.count;
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      if (!container) return;
+      container.innerHTML = state.notes.map((n, idx) => `
+        <div class="glass-panel border border-dark-border p-4 rounded-3xl space-y-3 card-glow relative">
+          <div class="flex justify-between items-center border-b border-dark-border pb-2">
+            <input type="text" value="${n.title || ''}" onchange="state.notes[${idx}].title=this.value; saveState();" placeholder="Titre..." class="bg-transparent font-bold text-white focus:outline-none w-full text-sm">
+            <button onclick="deleteNote(${idx})" class="text-slate-500 hover:text-red-400 text-xs ml-2" title="Supprimer la note"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 bg-[#0b0f19] p-1.5 rounded-xl border border-dark-border text-xs">
+            <button onclick="formatNoteText(${idx}, 'bold')" class="px-2 py-0.5 bg-slate-800 rounded font-bold">B</button>
+            <button onclick="formatNoteText(${idx}, 'italic')" class="px-2 py-0.5 bg-slate-800 rounded italic">I</button>
+            <button onclick="formatNoteText(${idx}, 'underline')" class="px-2 py-0.5 bg-slate-800 rounded underline">U</button>
+
+            <span class="text-[10px] text-slate-400 ml-1">Surligner:</span>
+            <button onclick="highlightNoteText(${idx}, '#fef08a')" class="w-4 h-4 rounded-full bg-yellow-200 border" title="Jaune Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#bbf7d0')" class="w-4 h-4 rounded-full bg-green-200 border" title="Vert Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#bfdbfe')" class="w-4 h-4 rounded-full bg-blue-200 border" title="Bleu Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#fbcfe8')" class="w-4 h-4 rounded-full bg-pink-200 border" title="Rose Pastel"></button>
+
+            <input type="color" onchange="changeNoteTextColor(${idx}, this.value)" title="Couleur de écriture" class="w-5 h-5 bg-transparent cursor-pointer ml-1">
+            <select onchange="changeNoteFont(${idx}, this.value)" class="bg-slate-800 text-[10px] text-slate-200 rounded p-0.5">
+              <option value="sans-serif">Sans-Serif</option>
+              <option value="serif">Serif</option>
+              <option value="monospace">Monospace</option>
+              <option value="cursive">Cursive</option>
+            </select>
+          </div>
+
+          <div id="note-body-${idx}" contenteditable="true" oninput="debouncedSaveNoteContent(${idx})" class="w-full h-28 bg-[#0b0f19] p-3 rounded-xl text-xs text-slate-200 focus:outline-none overflow-y-auto custom-scrollbar leading-relaxed" style="font-family: ${n.font || 'sans-serif'}; color: ${n.color || '#e2e8f0'}">
+            ${n.content || ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNote() { state.notes.push({ title: '', content: '', font: 'sans-serif', color: '#e2e8f0' }); saveState(); renderNotes(); }
+    function deleteNote(idx) { state.notes.splice(idx, 1); saveState(); renderNotes(); }
+    
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) { state.notes[idx].content = el.innerHTML; saveState(); }
+    }
+
+    function debouncedSaveNoteContent(idx) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => saveNoteContent(idx), 300);
+    }
+
+    function formatNoteText(idx, cmd) {
+      document.execCommand(cmd, false, null);
+      saveNoteContent(idx);
+    }
+    function highlightNoteText(idx, color) {
+      document.execCommand('hiliteColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteTextColor(idx, color) {
+      document.execCommand('foreColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteFont(idx, font) {
+      state.notes[idx].font = font;
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) el.style.fontFamily = font;
+      saveState();
+    }
+
+    window.onload = function() {
+      updateProfileUI();
+      checkStreak();
+    };
+  </script>
+</body>
+</html>
