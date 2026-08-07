@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0b0f19] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0b0f19', card: '#131927', border: 'rgba(255, 255, 255, 0.08)', sidebar: '#070a12' },
+            brand: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', cyan: '#06b6d4', green: '#10b981' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: #131927; 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      will-change: transform;
+    }
+    .card-glow { transition: border-color 0.2s ease, transform 0.2s ease; }
+    .card-glow:hover { border-color: rgba(139, 92, 246, 0.4); transform: translateY(-2px); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 3s forwards ease-in-out; }
+  </style>
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0b0f19]">
+
+  <aside class="w-full md:w-64 bg-[#070a12] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <!-- Photo de profil en haut à gauche -->
+        <img id="sidebar-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple">
+        <div class="bg-gradient-to-tr from-brand-purple to-brand-blue text-white p-2 rounded-xl">
+          <i class="fa-solid fa-graduation-cap text-base"></i>
+        </div>
+        <span class="font-black text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-purple bg-clip-text text-transparent">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Flashcards</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <!-- Onglet Grandes vacances coloré en vert autour -->
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <section id="tab-pomodoro" class="tab-content space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <div class="glass-panel border border-dark-border rounded-3xl p-6 flex flex-col items-center justify-center space-y-6 relative overflow-hidden card-glow">
+          <div id="pomo-bg" class="absolute inset-0 opacity-15 bg-cover bg-center transition-all duration-500" style="background-image: url('https://images.unsplash.com/photo-1518655048521-f130df041f66?auto=format&fit=crop&w=1000&q=80');"></div>
+          
+          <!-- Modification de la photo de fond du Pomodoro -->
+          <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+            <input type="text" id="pomo-bg-url" placeholder="URL image de fond..." class="bg-[#0b0f19]/80 border border-dark-border rounded-xl px-2.5 py-1 text-[10px] text-white focus:outline-none focus:border-brand-purple w-40">
+            <button onclick="changePomodoroBg(document.getElementById('pomo-bg-url').value)" class="bg-brand-purple text-white px-2.5 py-1 rounded-xl text-[10px] font-bold">Changer fond</button>
+          </div>
+
+          <div class="relative z-10 text-center space-y-4 pt-6">
+            <span id="pomo-status" class="px-3.5 py-1 rounded-full text-xs font-bold bg-brand-purple/20 text-brand-purple uppercase tracking-wider">Session Lofi Focus 🎧</span>
+            <div id="pomo-timer" class="text-6xl font-black font-mono tracking-tight text-white">25:00</div>
+            
+            <div class="flex items-center justify-center space-x-3">
+              <button id="pomo-btn" onclick="togglePomodoro()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition"><i class="fa-solid fa-play mr-2"></i>Démarrer</button>
+              <button onclick="stopAndLogPomodoro()" class="bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 px-4 py-2.5 rounded-xl font-medium text-sm transition" title="Arrêter et enregistrer"><i class="fa-solid fa-stop mr-1"></i> Arrêter & Saisir</button>
+              <button onclick="resetPomodoro()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl font-medium text-sm transition"><i class="fa-solid fa-rotate-right"></i></button>
+            </div>
+          </div>
+
+          <div class="relative z-10 w-full pt-4 border-t border-dark-border grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="text-slate-400 block mb-1 font-semibold">Travail (min)</label>
+              <input type="number" id="pomo-work-input" value="25" min="1" onchange="if(!isRunning) resetPomodoro()" class="w-full bg-[#0b0f19] border border-dark-border rounded-xl p-2.5 text-center text-white font-bold">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1 font-semibold">Pause (min)</label>
+              <input type="number" id="pomo-break-input" value="5" min="1" class="w-full bg-[#0b0f19] border border-dark-border rounded-xl p-2.5 text-center text-white font-bold">
+            </div>
+            
+            <!-- Section Média Modifiée : Support Lofi / MP3 / MP4 -->
+            <div class="col-span-2 space-y-2">
+              <label class="text-slate-300 font-semibold block">Musique & Vidéo de Fond 🎶/🎬</label>
+              
+              <div class="grid grid-cols-2 gap-2">
+                <button id="lofi-toggle-btn" onclick="toggleLofiMusic()" class="bg-brand-purple/20 border border-brand-purple/40 text-brand-purple hover:bg-brand-purple/30 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition text-xs">
+                  <i class="fa-solid fa-music"></i> Lofi Flux
+                </button>
+                <label class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-dark-border py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition text-xs cursor-pointer">
+                  <i class="fa-solid fa-upload"></i> Ajouter MP3/MP4
+                  <input type="file" id="media-file-input" accept="audio/*,video/*" onchange="handleCustomMediaUpload(event)" class="hidden">
+                </label>
+              </div>
+
+              <!-- Mini lecteur vidéo MP4 (Masqué par défaut) -->
+              <div id="pomo-video-container" class="hidden relative w-full rounded-xl overflow-hidden mt-2 bg-black">
+                <video id="pomo-video-player" class="w-full h-36 object-cover rounded-xl" loop></video>
+                <button onclick="toggleCustomVideo()" id="pomo-video-btn" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg border border-white/20">
+                  <i class="fa-solid fa-pause"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-panel border border-dark-border rounded-3xl p-6 flex flex-col justify-between card-glow">
+          <div>
+            <h2 class="text-lg font-bold text-white mb-1">Statistiques d'Étude 📊</h2>
+            <p class="text-xs text-slate-400 mb-4">Temps accumulé grâce aux sessions Pomodoro</p>
+            <div class="h-56">
+              <canvas id="statsChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-dark-border flex justify-around text-center">
+            <div>
+              <div class="text-xs text-slate-400">Total Aujourd'hui</div>
+              <div id="stats-today" class="text-xl font-bold text-brand-purple">0 min</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400">Total Semaine</div>
+              <div id="stats-week" class="text-xl font-bold text-emerald-400">0 h</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialisation du LocalStorage avec fallback
+    if (typeof BenkyoStorage === 'undefined') {
+      window.BenkyoStorage = {
+        load: function() {
+          try {
+            return JSON.parse(localStorage.getItem('benkyo_state')) || this.getDefaults();
+          } catch(e) {
+            return this.getDefaults();
+          }
+        },
+        save: function(data) {
+          try {
+            localStorage.setItem('benkyo_state', JSON.stringify(data));
+          } catch(e) { console.error("Erreur de sauvegarde", e); }
+        },
+        autoFlushOn: function() {},
+        getDefaults: function() {
+          return {
+            profile: { firstname: "Étudiant", gender: "m", level: "Lycee", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" },
+            streak: { count: 0, lastLogin: "" },
+            timetable: [],
+            todos: {},
+            events: [],
+            revisions: [],
+            notes: [],
+            grades: [],
+            periods: ["Semestre 1"],
+            evalTypes: ["DS", "Quiz"],
+            categories: ["Général"],
+            decks: [],
+            flashcardHistory: [],
+            stats: { todayMinutes: 0, weeklyMinutes: [0,0,0,0,0,0,0] },
+            vacation: { supplies: [], books: [], latin: [] }
+          };
+        }
+      };
+    }
+
+    let state = BenkyoStorage.load();
+    // Sécurisation de la structure stats au cas où elle manquerait
+    if (!state.stats) state.stats = { todayMinutes: 0, weeklyMinutes: [0,0,0,0,0,0,0] };
+    if (!state.stats.weeklyMinutes || state.stats.weeklyMinutes.length !== 7) state.stats.weeklyMinutes = [0,0,0,0,0,0,0];
+    
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let customAudio = null;
+    let statsChartInstance = null;
+    let noteSaveTimeout = null;
+
+    function saveState() {
+      BenkyoStorage.save(state);
+    }
+
+    function updateProfileUI() {
+      const welcomeName = document.getElementById('welcome-name');
+      if (welcomeName) welcomeName.innerText = state.profile.firstname;
+      const mainTitle = document.getElementById('dash-main-title');
+      if (mainTitle) mainTitle.innerText = `Tableau de bord de ${state.profile.firstname} 🚀`;
+      
+      const firstnameInput = document.getElementById('profile-firstname');
+      if (firstnameInput) firstnameInput.value = state.profile.firstname;
+      const genderInput = document.getElementById('profile-gender');
+      if (genderInput) genderInput.value = state.profile.gender;
+      const levelInput = document.getElementById('profile-level');
+      if (levelInput) levelInput.value = state.profile.level;
+      
+      const imgPreview = document.getElementById('profile-img-preview');
+      if (imgPreview) imgPreview.src = state.profile.img;
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if(sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function updateProfileName(val) {
+      state.profile.firstname = val || "Étudiant";
+      saveState();
+      updateProfileUI();
+    }
+
+    function saveProfileData() {
+      state.profile.gender = document.getElementById('profile-gender').value;
+      state.profile.level = document.getElementById('profile-level').value;
+      saveState();
+    }
+
+    function updateProfileImgFromUrl(url) {
+      if(url) {
+        state.profile.img = url;
+        saveState();
+        updateProfileUI();
+      }
+    }
+
+    function uploadProfileImg(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          state.profile.img = evt.target.result;
+          saveState();
+          updateProfileUI();
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        if(!el.getAttribute('onclick') || !el.getAttribute('onclick').includes('vacation')) {
+          el.classList.remove('bg-brand-purple/20', 'text-brand-purple', 'border', 'border-brand-purple/30');
+          el.classList.add('text-slate-400');
+        } else {
+          el.classList.remove('bg-emerald-500/20', 'border-emerald-500');
+        }
+      });
+      
+      const selectedTab = document.getElementById(`tab-${tabId}`);
+      if(selectedTab) selectedTab.classList.remove('hidden');
+      
+      if(window.event && window.event.currentTarget) {
+        if(tabId === 'vacation') {
+          window.event.currentTarget.classList.add('bg-emerald-500/20', 'border-emerald-500');
+          window.event.currentTarget.classList.remove('text-slate-400');
+        } else {
+          window.event.currentTarget.classList.add('bg-brand-purple/20', 'text-brand-purple', 'border', 'border-brand-purple/30');
+          window.event.currentTarget.classList.remove('text-slate-400');
+        }
+      }
+
+      if(tabId === 'dashboard') renderDashboard();
+      if(tabId === 'revisions' && typeof renderRevisions === 'function') renderRevisions();
+      if(tabId === 'flashcards') { renderDecks(); renderFlashcardCharts(); }
+      if(tabId === 'notes') renderNotes();
+      if(tabId === 'todo') renderTodos();
+      if(tabId === 'timetable') renderTimetable();
+      if(tabId === 'vacation') renderVacation();
+      if(tabId === 'pomodoro') renderPomodoroStats();
+      if(tabId === 'profile') updateProfileUI();
+    }
+
+    function switchVacationSubTab(subId) {
+      document.querySelectorAll('.vacation-sub-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(`sub-tab-${subId}`);
+      if(target) target.classList.remove('hidden');
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakCount = document.getElementById('streak-count');
+      if (streakCount) streakCount.innerText = state.streak.count;
+      const dashStreakCount = document.getElementById('dash-streak-count');
+      if (dashStreakCount) dashStreakCount.innerText = state.streak.count;
+    }
+
+    function renderDashboard() {
+      const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+      const now = new Date();
+      const todayName = document.getElementById('dash-today-name');
+      if (todayName) todayName.innerText = days[now.getDay()];
+
+      const todayIdx = (now.getDay() + 6) % 7;
+      const todayTT = state.timetable.filter(item => parseInt(item.day) === todayIdx);
+      const ttContainer = document.getElementById('dash-timetable');
+      if (ttContainer) {
+        if(!todayTT.length) {
+          ttContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Aucun créneau prévu aujourd\'hui.</p>';
+        } else {
+          ttContainer.innerHTML = todayTT.map(i => `
+            <div class="p-2.5 rounded-xl text-xs bg-[#0b0f19] border-l-4" style="border-color:${i.color}">
+              <div class="font-bold text-white">${i.title}</div>
+              <div class="text-[11px] text-slate-400">${i.start} - ${i.end}</div>
+            </div>
+          `).join('');
+        }
+      }
+
+      const dateKey = now.toISOString().split('T')[0];
+      const todayTodos = state.todos[dateKey] || [];
+      const todoContainer = document.getElementById('dash-todos');
+      if (todoContainer) {
+        if(!todayTodos.length) {
+          todoContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Aucune tâche ajoutée.</p>';
+        } else {
+          todoContainer.innerHTML = todayTodos.map((t, index) => `
+            <div class="flex items-center space-x-2 text-xs bg-[#0b0f19] p-2 rounded-xl">
+              <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo('${dateKey}', ${index})" class="rounded border-slate-700 text-brand-purple cursor-pointer">
+              <span class="${t.done ? 'line-through text-slate-500' : 'text-slate-200'}">${t.text}</span>
+            </div>
+          `).join('');
+        }
+      }
+
+      const deadlineContainer = document.getElementById('dash-deadlines');
+      if (deadlineContainer) {
+        if(!state.events.length) {
+          deadlineContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Aucun événement à venir.</p>';
+        } else {
+          deadlineContainer.innerHTML = state.events.slice(0, 3).map(e => `
+            <div class="p-2.5 bg-[#0b0f19] rounded-xl text-xs flex justify-between items-center border border-dark-border">
+              <div>
+                <div class="font-semibold text-white">${e.title}</div>
+                <div class="text-[10px] text-slate-400">${e.date}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      const unrevised = state.revisions.filter(r => r.status === 'to_revise' || r.status === 'difficulties');
+      const reminderContainer = document.getElementById('dash-forgetting-reminder');
+      if (reminderContainer) {
+        if (!unrevised.length) {
+          reminderContainer.innerHTML = '<p class="text-xs text-emerald-400 col-span-2">Tous vos cours ont été révisés ! Bravo 🎉</p>';
+        } else {
+          reminderContainer.innerHTML = unrevised.slice(0, 4).map(r => `
+            <div class="bg-[#0b0f19]/80 p-3 rounded-2xl border border-dark-border flex justify-between items-center">
+              <div>
+                <span class="text-[10px] font-bold text-brand-cyan">${r.subject}</span>
+                <div class="font-bold text-white text-xs">${r.title}</div>
+                <div class="text-[10px] text-red-400 mt-0.5">⚠️ Rétention mémoire faible</div>
+              </div>
+              <button onclick="window.location.href='revisions.html'" class="bg-brand-purple/20 text-brand-purple hover:bg-brand-purple/30 px-2.5 py-1 rounded-lg text-xs font-bold">Réviser</button>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function renderTimetable() {
+      const container = document.getElementById('timetable-grid');
+      if (!container) return;
+      container.innerHTML = '';
+      const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+      days.forEach((day, index) => {
+        const dayItems = state.timetable.filter(item => parseInt(item.day) === index);
+        let itemsHtml = dayItems.map(i => `
+          <div class="p-2.5 rounded-xl text-xs mb-2 border border-white/5 relative card-glow group" style="background-color: ${i.color}20; border-left: 4px solid ${i.color}">
+            <div class="font-bold text-white flex justify-between items-center">
+              <span onclick="editTimetableItem(${i.id})" class="cursor-pointer flex-1">${i.title}</span>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                <button onclick="editTimetableItem(${i.id})" class="text-[10px] text-slate-300 hover:text-white bg-slate-800 px-1.5 py-0.5 rounded" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="copyTimetableItem(${i.id}, event)" class="text-[10px] text-slate-300 hover:text-white bg-slate-800 px-1.5 py-0.5 rounded" title="Copier"><i class="fa-solid fa-copy"></i></button>
+                <button onclick="deleteTimetableItemDirect(${i.id}, event)" class="text-[10px] text-red-400 hover:text-red-300 bg-slate-800 px-1.5 py-0.5 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${i.start} - ${i.end}</div>
+            ${i.desc ? `<div class="text-[10px] text-slate-300 italic mt-1 bg-black/30 p-1 rounded">${i.desc}</div>` : ''}
+          </div>
+        `).join('');
+
+        container.innerHTML += `
+          <div class="glass-panel border border-dark-border rounded-3xl p-3 flex flex-col min-h-[220px]">
+            <div class="flex justify-between items-center border-b border-dark-border pb-2 mb-2">
+              <h3 class="font-bold text-slate-300 text-xs uppercase text-center flex-1">${day}</h3>
+              ${copiedTimetableItem ? `<button onclick="pasteTimetableItem(${index})" class="text-[10px] bg-brand-purple/20 text-brand-purple px-1.5 py-0.5 rounded font-bold" title="Coller créneau"><i class="fa-solid fa-paste"></i></button>` : ''}
+            </div>
+            <div class="flex-1">${itemsHtml}</div>
+          </div>
+        `;
+      });
+      const ttTag = document.getElementById('tt-tag');
+      if (ttTag) ttTag.innerHTML = state.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function openTimetableModal() {
+      document.getElementById('tt-edit-id').value = '';
+      document.getElementById('tt-title').value = '';
+      document.getElementById('tt-desc').value = '';
+      document.getElementById('tt-modal-title').innerText = "Nouveau créneau";
+      document.getElementById('tt-delete-btn').classList.add('hidden');
+      document.getElementById('timetable-modal').classList.remove('hidden');
+    }
+
+    function editTimetableItem(id) {
+      const item = state.timetable.find(i => i.id === id);
+      if(!item) return;
+      document.getElementById('tt-edit-id').value = item.id;
+      document.getElementById('tt-title').value = item.title;
+      document.getElementById('tt-day').value = item.day;
+      document.getElementById('tt-start').value = item.start;
+      document.getElementById('tt-end').value = item.end;
+      document.getElementById('tt-desc').value = item.desc || '';
+      document.getElementById('tt-color').value = item.color;
+      document.getElementById('tt-modal-title').innerText = "Modifier le créneau";
+      document.getElementById('tt-delete-btn').classList.remove('hidden');
+      document.getElementById('timetable-modal').classList.remove('hidden');
+    }
+
+    function closeTimetableModal() { document.getElementById('timetable-modal').classList.add('hidden'); }
+
+    function saveTimetableItem(e) {
+      e.preventDefault();
+      const editId = document.getElementById('tt-edit-id').value;
+      if (editId) {
+        const item = state.timetable.find(i => i.id === parseInt(editId));
+        if (item) {
+          item.title = document.getElementById('tt-title').value;
+          item.day = document.getElementById('tt-day').value;
+          item.tag = document.getElementById('tt-tag').value;
+          item.start = document.getElementById('tt-start').value;
+          item.end = document.getElementById('tt-end').value;
+          item.desc = document.getElementById('tt-desc').value;
+          item.color = document.getElementById('tt-color').value;
+        }
+      } else {
+        state.timetable.push({
+          id: Date.now(),
+          title: document.getElementById('tt-title').value,
+          day: document.getElementById('tt-day').value,
+          tag: document.getElementById('tt-tag').value,
+          start: document.getElementById('tt-start').value,
+          end: document.getElementById('tt-end').value,
+          desc: document.getElementById('tt-desc').value,
+          color: document.getElementById('tt-color').value
+        });
+      }
+      saveState();
+      renderTimetable();
+      closeTimetableModal();
+    }
+
+    function deleteCurrentTimetableItem() {
+      const editId = document.getElementById('tt-edit-id').value;
+      if (editId) {
+        state.timetable = state.timetable.filter(i => i.id !== parseInt(editId));
+        saveState();
+        renderTimetable();
+        closeTimetableModal();
+      }
+    }
+
+    function deleteTimetableItemDirect(id, event) {
+      event.stopPropagation();
+      if(confirm("Supprimer ce créneau ?")) {
+        state.timetable = state.timetable.filter(i => i.id !== id);
+        saveState();
+        renderTimetable();
+      }
+    }
+
+    function copyTimetableItem(id, event) {
+      event.stopPropagation();
+      const item = state.timetable.find(i => i.id === id);
+      if(item) {
+        copiedTimetableItem = { ...item };
+        alert(`Créneau "${item.title}" copié ! Vous pouvez le coller sur un autre jour.`);
+        renderTimetable();
+      }
+    }
+
+    function pasteTimetableItem(targetDay) {
+      if(copiedTimetableItem) {
+        const newItem = { ...copiedTimetableItem, id: Date.now(), day: targetDay.toString() };
+        state.timetable.push(newItem);
+        saveState();
+        renderTimetable();
+      }
+    }
+
+    function openEventModal() { document.getElementById('event-modal').classList.remove('hidden'); }
+    function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
+    function saveCalendarEvent(e) {
+      e.preventDefault();
+      state.events.push({
+        id: Date.now(),
+        title: document.getElementById('cal-title').value,
+        date: document.getElementById('cal-date').value,
+        repeat: document.getElementById('cal-repeat').value
+      });
+      saveState();
+      renderCalendar();
+      closeEventModal();
+    }
+
+    function renderCalendar() {
+      const monthTitle = document.getElementById('calendar-month-title');
+      const daysContainer = document.getElementById('calendar-days');
+      if (!daysContainer) return;
+      daysContainer.innerHTML = '';
+      const now = new Date();
+      if (monthTitle) monthTitle.innerText = now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+      for (let day = 1; day <= 31; day++) {
+        daysContainer.innerHTML += `
+          <div class="h-16 bg-[#0b0f19] border border-dark-border rounded-xl p-1.5 flex flex-col justify-between">
+            <span class="text-xs text-slate-400 font-bold">${day}</span>
+          </div>
+        `;
+      }
+    }
+    function changeMonth(delta) {}
+
+    let currentTodoDate = new Date();
+    function renderTodos() {
+      const list = document.getElementById('todo-list');
+      if (!list) return;
+
+      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const todoTitle = document.getElementById('todo-date-title');
+      if (todoTitle) todoTitle.innerText = currentTodoDate.toDateString() === new Date().toDateString() ? "Aujourd'hui ✅" : currentTodoDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      
+      const todoSub = document.getElementById('todo-date-sub');
+      if (todoSub) todoSub.innerText = dateKey;
+
+      list.innerHTML = '';
+      const items = state.todos[dateKey] || [];
+
+      const allDoneBanner = document.getElementById('todo-all-done-banner');
+      if (allDoneBanner) {
+        if (items.length > 0 && items.every(i => i.done)) {
+          allDoneBanner.classList.remove('hidden');
+        } else {
+          allDoneBanner.classList.add('hidden');
+        }
+      }
+
+      items.forEach((item, index) => {
+        list.innerHTML += `
+          <li class="flex flex-col sm:flex-row sm:items-center justify-between glass-panel border border-dark-border p-3.5 rounded-2xl text-sm gap-3 card-glow">
+            <div class="flex items-center space-x-3">
+              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleTodo('${dateKey}', ${index})" class="rounded border-slate-700 text-brand-purple cursor-pointer w-4 h-4">
+              <div>
+                <span class="${item.done ? 'line-through text-slate-500' : 'text-slate-200'} font-medium">${item.text}</span>
+                <div class="flex items-center gap-2 mt-1 text-[10px]">
+                  <span class="text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/30 px-2 py-0.5 rounded"><i class="fa-regular fa-clock mr-1"></i>${item.time || 'Sans heure'}</span>
+                  ${item.duration ? `<span class="text-slate-400 bg-slate-800 px-2 py-0.5 rounded">${item.duration} min</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 self-end sm:self-center">
+              <button onclick="openTodoEditModal('${dateKey}', ${index})" class="text-slate-400 hover:text-white text-xs bg-slate-800 px-2 py-1 rounded" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteTodo('${dateKey}', ${index})" class="text-slate-500 hover:text-red-400 text-xs bg-slate-800 px-2 py-1 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </li>
+        `;
+      });
+
+      renderGeneratedChronologicalSchedule();
+    }
+
+    function addTodo(e) {
+      e.preventDefault();
+      const input = document.getElementById('todo-input');
+      const desc = document.getElementById('todo-desc').value;
+      const duration = parseInt(document.getElementById('todo-duration').value) || 30;
+      const time = document.getElementById('todo-time').value;
+      const urgency = parseInt(document.getElementById('todo-urgency').value) || 2;
+      const dateKey = currentTodoDate.toISOString().split('T')[0];
+
+      if (!state.todos[dateKey]) state.todos[dateKey] = [];
+      state.todos[dateKey].push({ text: input.value, desc, duration, time, urgency, done: false });
+
+      input.value = '';
+      document.getElementById('todo-desc').value = '';
+      document.getElementById('todo-duration').value = '';
+      document.getElementById('todo-time').value = '';
+      saveState();
+      renderTodos();
+    }
+
+    function toggleTodo(dateKey, index) {
+      state.todos[dateKey][index].done = !state.todos[dateKey][index].done;
+      saveState();
+      
+      if(state.todos[dateKey][index].done && typeof confetti === 'function') {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      }
+
+      const items = state.todos[dateKey];
+      if (items.length > 0 && items.every(i => i.done) && typeof confetti === 'function') {
+        confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+      }
+
+      renderTodos();
+    }
+
+    function deleteTodo(dateKey, index) {
+      if(confirm("Supprimer cette tâche ?")) {
+        state.todos[dateKey].splice(index, 1);
+        saveState();
+        renderTodos();
+      }
+    }
+
+    function openTodoEditModal(dateKey, index) {
+      const item = state.todos[dateKey][index];
+      document.getElementById('todo-edit-date').value = dateKey;
+      document.getElementById('todo-edit-index').value = index;
+      document.getElementById('todo-edit-text').value = item.text;
+      document.getElementById('todo-edit-desc').value = item.desc || '';
+      document.getElementById('todo-edit-time').value = item.time || '';
+      document.getElementById('todo-edit-duration').value = item.duration || '';
+      document.getElementById('todo-edit-modal').classList.remove('hidden');
+    }
+
+    function closeTodoEditModal() {
+      document.getElementById('todo-edit-modal').classList.add('hidden');
+    }
+
+    function saveEditedTodo(e) {
+      e.preventDefault();
+      const dateKey = document.getElementById('todo-edit-date').value;
+      const index = parseInt(document.getElementById('todo-edit-index').value);
+      if(state.todos[dateKey] && state.todos[dateKey][index]) {
+        state.todos[dateKey][index].text = document.getElementById('todo-edit-text').value;
+        state.todos[dateKey][index].desc = document.getElementById('todo-edit-desc').value;
+        state.todos[dateKey][index].time = document.getElementById('todo-edit-time').value;
+        state.todos[dateKey][index].duration = parseInt(document.getElementById('todo-edit-duration').value) || 30;
+        saveState();
+        renderTodos();
+        closeTodoEditModal();
+      }
+    }
+
+    function changeTodoDate(delta) {
+      currentTodoDate.setDate(currentTodoDate.getDate() + delta);
+      renderTodos();
+    }
+
+    function sortTodos(criterion) {
+      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      let items = state.todos[dateKey] || [];
+      if (!items.length) return;
+      if (criterion === 'alpha') items.sort((a, b) => a.text.localeCompare(b.text));
+      else if (criterion === 'time') items.sort((a, b) => (a.time || '23:59').localeCompare(b.time || '23:59'));
+      else if (criterion === 'urgency') items.sort((a, b) => (b.urgency || 2) - (a.urgency || 2));
+      else if (criterion === 'optimized') {
+        const optimizedScore = (item) => {
+          const urgency = item.urgency || 2;
+          const duration = item.duration || 30;
+          return urgency / Math.sqrt(duration);
+        };
+        items.sort((a, b) => optimizedScore(b) - optimizedScore(a));
+      }
+      saveState();
+      renderTodos();
+    }
+
+    function renderGeneratedChronologicalSchedule() {
+      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const items = [...(state.todos[dateKey] || [])];
+      const container = document.getElementById('todo-schedule-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!items.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic pl-6">Aucune tâche planifiée pour aujourd\'hui.</p>';
+        return;
+      }
+
+      items.sort((a, b) => (a.time || '23:59').localeCompare(b.time || '23:59'));
+
+      items.forEach((item) => {
+        let startTime = item.time || "09:00";
+        let dur = item.duration || 30;
+        let [h, m] = startTime.split(':').map(Number);
+        let endMinutes = h * 60 + m + dur;
+        let endTime = `${String(Math.floor(endMinutes / 60) % 24).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
+
+        container.innerHTML += `
+          <div class="relative pl-7 flex items-center justify-between bg-[#0b0f19]/90 border border-dark-border p-3 rounded-xl text-xs card-glow">
+            <div class="absolute left-2.5 w-2.5 h-2.5 rounded-full bg-brand-purple border-2 border-[#0b0f19]"></div>
+            <div class="flex items-center space-x-3">
+              <span class="font-mono text-brand-cyan font-bold bg-brand-cyan/10 px-2 py-1 rounded border border-brand-cyan/20">${startTime} - ${endTime}</span>
+              <span class="text-white font-semibold ${item.done ? 'line-through text-slate-500' : ''}">${item.text}</span>
+            </div>
+            <span class="text-slate-400 text-[11px] font-mono"><i class="fa-regular fa-clock mr-1"></i>${dur} min</span>
+          </div>
+        `;
+      });
+    }
+
+    function addGeneratedScheduleToTimetable() {
+      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const items = state.todos[dateKey] || [];
+      if(!items.length) return alert("Aucune tâche à importer.");
+
+      const todayIdx = (currentTodoDate.getDay() + 6) % 7;
+      let added = 0;
+
+      items.forEach(t => {
+        let startTime = t.time || "09:00";
+        let dur = t.duration || 30;
+        let [h, m] = startTime.split(':').map(Number);
+        let endMinutes = h * 60 + m + dur;
+        let endTime = `${String(Math.floor(endMinutes / 60) % 24).padStart(2, '0')}:${String(endMinutes % 60).padStart(2, '0')}`;
+
+        state.timetable.push({
+          id: Date.now() + Math.random(),
+          title: t.text,
+          day: todayIdx.toString(),
+          tag: "Tâche Todo",
+          start: startTime,
+          end: endTime,
+          desc: t.desc || "",
+          color: "#06b6d4"
+        });
+        added++;
+      });
+
+      saveState();
+      alert(`${added} tâche(s) ajoutée(s) avec succès dans votre Emploi du Temps !`);
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      if (!container) return;
+      container.innerHTML = state.notes.map((n, idx) => `
+        <div class="glass-panel border border-dark-border p-4 rounded-3xl space-y-3 card-glow relative">
+          <div class="flex justify-between items-center border-b border-dark-border pb-2">
+            <input type="text" value="${n.title || ''}" onchange="state.notes[${idx}].title=this.value; saveState();" placeholder="Titre..." class="bg-transparent font-bold text-white focus:outline-none w-full text-sm">
+            <button onclick="deleteNote(${idx})" class="text-slate-500 hover:text-red-400 text-xs ml-2" title="Supprimer la note"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 bg-[#0b0f19] p-1.5 rounded-xl border border-dark-border text-xs">
+            <button onclick="formatNoteText(${idx}, 'bold')" class="px-2 py-0.5 bg-slate-800 rounded font-bold">B</button>
+            <button onclick="formatNoteText(${idx}, 'italic')" class="px-2 py-0.5 bg-slate-800 rounded italic">I</button>
+            <button onclick="formatNoteText(${idx}, 'underline')" class="px-2 py-0.5 bg-slate-800 rounded underline">U</button>
+
+            <span class="text-[10px] text-slate-400 ml-1">Surligner:</span>
+            <button onclick="highlightNoteText(${idx}, '#fef08a')" class="w-4 h-4 rounded-full bg-yellow-200 border" title="Jaune Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#bbf7d0')" class="w-4 h-4 rounded-full bg-green-200 border" title="Vert Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#bfdbfe')" class="w-4 h-4 rounded-full bg-blue-200 border" title="Bleu Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#fbcfe8')" class="w-4 h-4 rounded-full bg-pink-200 border" title="Rose Pastel"></button>
+
+            <input type="color" onchange="changeNoteTextColor(${idx}, this.value)" title="Couleur de écriture" class="w-5 h-5 bg-transparent cursor-pointer ml-1">
+            <select onchange="changeNoteFont(${idx}, this.value)" class="bg-slate-800 text-[10px] text-slate-200 rounded p-0.5">
+              <option value="sans-serif">Sans-Serif</option>
+              <option value="serif">Serif</option>
+              <option value="monospace">Monospace</option>
+              <option value="cursive">Cursive</option>
+            </select>
+          </div>
+
+          <div id="note-body-${idx}" contenteditable="true" oninput="debouncedSaveNote(${idx})" class="w-full h-28 bg-[#0b0f19] p-3 rounded-xl text-xs text-slate-200 focus:outline-none overflow-y-auto custom-scrollbar leading-relaxed" style="font-family: ${n.font || 'sans-serif'}; color: ${n.color || '#e2e8f0'}">
+            ${n.content || ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNote() { state.notes.push({ title: '', content: '', font: 'sans-serif', color: '#e2e8f0' }); saveState(); renderNotes(); }
+    function deleteNote(idx) { state.notes.splice(idx, 1); saveState(); renderNotes(); }
+    
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) { state.notes[idx].content = el.innerHTML; saveState(); }
+    }
+
+    function debouncedSaveNote(idx) {
+      clearTimeout(noteSaveTimeout);
+      noteSaveTimeout = setTimeout(() => {
+        saveNoteContent(idx);
+      }, 500);
+    }
+
+    function formatNoteText(idx, cmd) {
+      document.execCommand(cmd, false, null);
+      saveNoteContent(idx);
+    }
+    function highlightNoteText(idx, color) {
+      document.execCommand('hiliteColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteTextColor(idx, color) {
+      document.execCommand('foreColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteFont(idx, font) {
+      state.notes[idx].font = font;
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) el.style.fontFamily = font;
+      saveState();
+    }
+
+    function openGradeModal() { renderGradeSelects(); document.getElementById('grade-modal').classList.remove('hidden'); }
+    function closeGradeModal() { document.getElementById('grade-modal').classList.add('hidden'); }
+    function openPeriodModal() { const p = prompt("Nouvelle Période (ex: Semestre 3) :"); if(p) { state.periods.push(p); saveState(); renderGradeSelects(); } }
+    function openEvalTypeModal() { const t = prompt("Nouveau Type d'évaluation (ex: TP, Oral, Quiz) :"); if(t) { state.evalTypes.push(t); saveState(); renderGradeSelects(); } }
+
+    function renderGradeSelects() {
+      const filter = document.getElementById('grade-period-filter');
+      if (filter) filter.innerHTML = state.periods.map(p => `<option value="${p}">${p}</option>`).join('');
+      const period = document.getElementById('grade-period');
+      if (period) period.innerHTML = state.periods.map(p => `<option value="${p}">${p}</option>`).join('');
+      const type = document.getElementById('grade-type');
+      if (type) type.innerHTML = state.evalTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    function saveGrade(e) {
+      e.preventDefault();
+      state.grades.push({
+        id: Date.now(),
+        subject: document.getElementById('grade-subject').value,
+        title: document.getElementById('grade-title').value,
+        type: document.getElementById('grade-type').value,
+        period: document.getElementById('grade-period').value,
+        value: parseFloat(document.getElementById('grade-value').value),
+        coeff: parseFloat(document.getElementById('grade-coeff').value)
+      });
+      saveState();
+      renderGrades();
+      closeGradeModal();
+    }
+
+    function renderGrades() {
+      const tbody = document.getElementById('grades-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = state.grades.map(g => `
+        <tr>
+          <td class="p-3 font-semibold text-white">${g.subject}</td>
+          <td class="p-3 text-slate-300">${g.title}</td>
+          <td class="p-3"><span class="bg-brand-purple/20 text-brand-purple text-xs px-2 py-0.5 rounded font-bold">${g.type}</span></td>
+          <td class="p-3 font-bold text-emerald-400">${g.value}/20</td>
+          <td class="p-3">x${g.coeff}</td>
+          <td class="p-3">${g.period}</td>
+          <td class="p-3 text-right"><button onclick="deleteGrade(${g.id})" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button></td>
+        </tr>
+      `).join('');
+
+      if(state.grades.length) {
+        let totalVal = 0, totalCoeff = 0;
+        state.grades.forEach(g => { totalVal += g.value * g.coeff; totalCoeff += g.coeff; });
+        const avg = (totalVal / totalCoeff).toFixed(2);
+        const overallAvg = document.getElementById('overall-average');
+        if (overallAvg) overallAvg.innerText = `${avg} / 20`;
+        const totalEvals = document.getElementById('total-evals');
+        if (totalEvals) totalEvals.innerText = state.grades.length;
+      }
+    }
+    function deleteGrade(id) { state.grades = state.grades.filter(g => g.id !== id); saveState(); renderGrades(); }
+
+    function renderDecks() {
+      const container = document.getElementById('decks-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      state.decks.forEach((deck, deckIdx) => {
+        container.innerHTML += `
+          <div class="glass-panel border border-dark-border p-5 rounded-3xl space-y-4 card-glow relative">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-bold text-lg text-white">${deck.title}</h3>
+                <span class="text-xs bg-brand-purple/20 text-brand-purple px-2 py-0.5 rounded-full font-medium">${deck.cards.length} cartes</span>
+              </div>
+              <button onclick="deleteDeck(${deckIdx})" class="text-slate-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1.5 text-[11px] font-bold">
+              <button onclick="startStudyMode(${deckIdx}, 'learning')" class="bg-brand-purple/20 text-brand-purple hover:bg-brand-purple/30 p-2 rounded-xl border border-brand-purple/30 text-center">Apprentissage 🧠</button>
+              <button onclick="startStudyMode(${deckIdx}, 'quiz')" class="bg-brand-cyan/20 text-brand-cyan hover:bg-brand-cyan/30 p-2 rounded-xl border border-brand-cyan/30 text-center">Se Tester (QCM) 🎮</button>
+              <button onclick="startStudyMode(${deckIdx}, 'eval')" class="bg-brand-pink/20 text-brand-pink hover:bg-brand-pink/30 p-2 rounded-xl border border-brand-pink/30 text-center">S'Évaluer 📝</button>
+            </div>
+            
+            <button onclick="openCardModal(${deckIdx})" class="w-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs py-2 rounded-xl border border-dark-border"><i class="fa-solid fa-plus mr-1"></i> Ajouter une carte</button>
+          </div>
+        `;
+      });
+    }
+
+    function openDeckModal() {
+      const title = prompt("Nom du nouveau paquet de flashcards :");
+      if (title) { state.decks.push({ id: Date.now(), title, cards: [] }); saveState(); renderDecks(); }
+    }
+    function deleteDeck(idx) { if(confirm("Supprimer ce paquet ?")) { state.decks.splice(idx, 1); saveState(); renderDecks(); } }
+
+    let currentEditingDeckIdx = null;
+    function openCardModal(deckIdx) {
+      currentEditingDeckIdx = deckIdx;
+      document.getElementById('card-modal-q').value = '';
+      document.getElementById('card-modal-a').value = '';
+      document.getElementById('card-modal').classList.remove('hidden');
+    }
+    function closeCardModal() { document.getElementById('card-modal').classList.add('hidden'); }
+    function saveCardModal(e) {
+      e.preventDefault();
+      const q = document.getElementById('card-modal-q').value.trim();
+      const a = document.getElementById('card-modal-a').value.trim();
+      if(q && a && currentEditingDeckIdx !== null) {
+        state.decks[currentEditingDeckIdx].cards.push({ q, a, level: 0 });
+        saveState();
+        renderDecks();
+        closeCardModal();
+      }
+    }
+
+    let activeDeckObj = null, studyMode = 'learning', activeCardIndex = 0, evalScore = 0;
+    function startStudyMode(deckIdx, mode) {
+      activeDeckObj = state.decks[deckIdx];
+      if (!activeDeckObj.cards.length) return alert("Ajoutez des cartes à ce paquet avant de commencer.");
+      studyMode = mode;
+      activeCardIndex = 0;
+      evalScore = 0;
+
+      document.getElementById('study-deck-title').innerText = activeDeckObj.title;
+      document.getElementById('study-mode-badge').innerText = mode === 'learning' ? 'Apprentissage' : (mode === 'quiz' ? 'Se Tester (QCM)' : 'Évaluation');
+      
+      document.getElementById('mode-learning-container').classList.toggle('hidden', mode !== 'learning');
+      document.getElementById('mode-quiz-container').classList.toggle('hidden', mode !== 'quiz');
+      document.getElementById('mode-eval-container').classList.toggle('hidden', mode !== 'eval');
+
+      document.getElementById('flashcard-study-view').classList.remove('hidden');
+      loadCurrentStudyStep();
+    }
+
+    function loadCurrentStudyStep() {
+      if (activeCardIndex >= activeDeckObj.cards.length) {
+        if(studyMode === 'eval') {
+          const finalGrade = ((evalScore / activeDeckObj.cards.length) * 20).toFixed(1);
+          alert(`Évaluation terminée ! Votre note est de ${finalGrade} / 20.`);
+          state.flashcardHistory.push({ deckTitle: activeDeckObj.title, score: parseFloat(finalGrade), date: new Date().toLocaleDateString('fr-FR', {month: 'short', year:'numeric'}) });
+          saveState();
+          renderFlashcardCharts();
+        } else {
+          alert("Session terminée avec succès !");
+        }
+        closeStudyView();
+        return;
+      }
+
+      const card = activeDeckObj.cards[activeCardIndex];
+
+      if(studyMode === 'learning') {
+        document.getElementById('card-question').innerText = card.q;
+        document.getElementById('card-answer').innerText = card.a;
+        document.getElementById('study-progress').innerText = `Carte ${activeCardIndex + 1} / ${activeDeckObj.cards.length}`;
+        document.getElementById('card-inner').classList.remove('card-flipped');
+      } else if(studyMode === 'quiz') {
+        document.getElementById('quiz-question-text').innerText = card.q;
+        const optionsContainer = document.getElementById('quiz-options-container');
+        optionsContainer.innerHTML = '';
+        
+        let answers = [card.a];
+        state.decks.flatMap(d => d.cards).forEach(c => {
+          if(c.a !== card.a && answers.length < 4) answers.push(c.a);
+        });
+        answers.sort(() => Math.random() - 0.5);
+
+        answers.forEach(ans => {
+          optionsContainer.innerHTML += `<button onclick="answerQuiz('${ans.replace(/'/g, "\\'")}', '${card.a.replace(/'/g, "\\'")}')" class="bg-[#0b0f19] hover:bg-brand-purple/20 border border-dark-border p-3 rounded-xl text-xs text-white text-center font-medium">${ans}</button>`;
+        });
+      } else if(studyMode === 'eval') {
+        document.getElementById('eval-question-text').innerText = card.q;
+        document.getElementById('eval-user-answer').value = '';
+      }
+    }
+
+    function rateCardMemory(known) {
+      const card = activeDeckObj.cards[activeCardIndex];
+      if(known) card.level = (card.level || 0) + 1;
+      else card.level = Math.max(0, (card.level || 0) - 1);
+      
+      saveState();
+      activeCardIndex++;
+      loadCurrentStudyStep();
+    }
+
+    function answerQuiz(selected, correct) {
+      if(selected === correct) alert("Bonne réponse ! 🎉");
+      else alert(`Dommage ! La bonne réponse était : ${correct}`);
+      activeCardIndex++;
+      loadCurrentStudyStep();
+    }
+
+    function submitEvalAnswer() {
+      const userAns = document.getElementById('eval-user-answer').value.trim().toLowerCase();
+      const correctAns = activeDeckObj.cards[activeCardIndex].a.trim().toLowerCase();
+      if(userAns.includes(correctAns) || correctAns.includes(userAns)) evalScore++;
+      activeCardIndex++;
+      loadCurrentStudyStep();
+    }
+
+    function closeStudyView() { document.getElementById('flashcard-study-view').classList.add('hidden'); }
+
+    let fcChart = null;
+    function renderFlashcardCharts() {
+      const canvas = document.getElementById('flashcardsProgressChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const ctx = canvas.getContext('2d');
+      if (fcChart) fcChart.destroy();
+      
+      const labels = state.flashcardHistory.map(h => `${h.deckTitle} (${h.date})`);
+      const data = state.flashcardHistory.map(h => h.score);
+
+      fcChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.length ? labels : ['Aucune évaluation'],
+          datasets: [{
+            label: 'Notes d\'évaluation (/20)',
+            data: data.length ? data : [0],
+            borderColor: '#ec4899',
+            backgroundColor: 'rgba(236, 72, 153, 0.15)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { min: 0, max: 20, grid: { color: '#1f293d' } } }
+        }
+      });
+    }
+
+    // =======================================
+    // POMODORO ET GESTION DES MÉDIAS CORRIGÉS
+    // =======================================
+    let timerInterval = null;
+    let timerSeconds = 25 * 60;
+    let isRunning = false;
+    let accumulatedSecondsCurrentSession = 0;
+
+    function togglePomodoro() {
+      const btn = document.getElementById('pomo-btn');
+      const workInput = document.getElementById('pomo-work-input');
+      const workMin = parseInt(workInput ? workInput.value : 25) || 25;
+
+      if (!isRunning) {
+        if (timerSeconds <= 0) {
+          timerSeconds = workMin * 60;
+        }
+        timerInterval = setInterval(updateTimer, 1000);
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-pause mr-2"></i>Pause`;
+        isRunning = true;
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-play mr-2"></i>Démarrer`;
+        isRunning = false;
+      }
+    }
+
+    function updateTimer() {
+      if (timerSeconds > 0) {
+        timerSeconds--;
+        accumulatedSecondsCurrentSession++;
+        renderTimerDisplay();
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        isRunning = false;
+        const btn = document.getElementById('pomo-btn');
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-play mr-2"></i>Démarrer`;
+        
+        logPomodoroTime(accumulatedSecondsCurrentSession);
+        accumulatedSecondsCurrentSession = 0;
+        alert("Session Pomodoro terminée ! Le temps a été ajouté aux statistiques d'étude. 🎉");
+        resetPomodoro();
+      }
+    }
+
+    function stopAndLogPomodoro() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      isRunning = false;
+      
+      const btn = document.getElementById('pomo-btn');
+      if (btn) btn.innerHTML = `<i class="fa-solid fa-play mr-2"></i>Démarrer`;
+      
+      if (accumulatedSecondsCurrentSession > 0) {
+        logPomodoroTime(accumulatedSecondsCurrentSession);
+        alert(`Session arrêtée. ${Math.round(accumulatedSecondsCurrentSession / 60)} min ajoutées aux statistiques d'étude !`);
+        accumulatedSecondsCurrentSession = 0;
+      }
+      resetPomodoro();
+    }
+
+    function resetPomodoro() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      isRunning = false;
+      
+      const btn = document.getElementById('pomo-btn');
+      if (btn) btn.innerHTML = `<i class="fa-solid fa-play mr-2"></i>Démarrer`;
+      
+      const workInput = document.getElementById('pomo-work-input');
+      const workMin = parseInt(workInput ? workInput.value : 25) || 25;
+      timerSeconds = workMin * 60;
+      renderTimerDisplay();
+    }
+
+    function renderTimerDisplay() {
+      const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+      const s = String(timerSeconds % 60).padStart(2, '0');
+      const timerEl = document.getElementById('pomo-timer');
+      if (timerEl) timerEl.innerText = `${m}:${s}`;
+    }
+
+    function logPomodoroTime(seconds) {
+      const mins = Math.round(seconds / 60);
+      if(mins <= 0) return;
+      state.stats.todayMinutes += mins;
+      const todayDayIdx = (new Date().getDay() + 6) % 7;
+      state.stats.weeklyMinutes[todayDayIdx] += mins;
+      saveState();
+      renderPomodoroStats();
+    }
+
+    function renderPomodoroStats() {
+      const statsToday = document.getElementById('stats-today');
+      if (statsToday) statsToday.innerText = `${state.stats.todayMinutes} min`;
+      const totalWeekMins = state.stats.weeklyMinutes.reduce((a, b) => a + b, 0);
+      const statsWeek = document.getElementById('stats-week');
+      if (statsWeek) statsWeek.innerText = `${(totalWeekMins / 60).toFixed(1)} h`;
+
+      const canvas = document.getElementById('statsChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const ctx = canvas.getContext('2d');
+      if(statsChartInstance) statsChartInstance.destroy();
+
+      statsChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+          datasets: [{
+            label: 'Minutes étudiées',
+            data: state.stats.weeklyMinutes,
+            backgroundColor: '#8b5cf6',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true, grid: { color: '#1f293d' } } }
+        }
+      });
+    }
+
+    function changePomodoroBg(url) {
+      if(url) {
+        document.getElementById('pomo-bg').style.backgroundImage = `url('${url}')`;
+      }
+    }
+
+    // FONCTIONS MÉDIAS FIXÉES (LOFI, MP3 ET MP4)
+    function stopAllMedia() {
+      if (lofiAudio) {
+        lofiAudio.pause();
+        lofiAudio.src = "";
+        lofiAudio = null;
+        const btn = document.getElementById('lofi-toggle-btn');
+        if (btn) {
+          btn.classList.remove('bg-brand-purple', 'text-white');
+          btn.innerHTML = `<i class="fa-solid fa-music"></i> Lofi Flux`;
+        }
+      }
+      if (customAudio) {
+        customAudio.pause();
+        customAudio.src = "";
+        customAudio = null;
+      }
+      const videoPlayer = document.getElementById('pomo-video-player');
+      const videoContainer = document.getElementById('pomo-video-container');
+      if (videoPlayer) {
+        videoPlayer.pause();
+        videoPlayer.src = "";
+      }
+      if (videoContainer) videoContainer.classList.add('hidden');
+    }
+
+    function toggleLofiMusic() {
+      const btn = document.getElementById('lofi-toggle-btn');
+      if (!lofiAudio) {
+        stopAllMedia();
+        // Flux Audio HTTPS vérifié & fonctionnel
+        lofiAudio = new Audio('https://stream.zeno.fm/f3wvbbqmdg8uv');
+        lofiAudio.crossOrigin = "anonymous";
+        lofiAudio.play().then(() => {
+          if (btn) {
+            btn.classList.add('bg-brand-purple', 'text-white');
+            btn.innerHTML = `<i class="fa-solid fa-volume-high"></i> Couper Lofi`;
+          }
+        }).catch(err => {
+          console.error("Erreur de lecture audio:", err);
+          alert("La lecture audio du flux a été bloquée par le navigateur. Cliquez à nouveau sur le bouton.");
+        });
+      } else {
+        stopAllMedia();
+      }
+    }
+
+    function handleCustomMediaUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      stopAllMedia();
+
+      const fileURL = URL.createObjectURL(file);
+
+      if (file.type.startsWith('video/')) {
+        const videoContainer = document.getElementById('pomo-video-container');
+        const videoPlayer = document.getElementById('pomo-video-player');
+        const videoBtn = document.getElementById('pomo-video-btn');
+
+        if (videoPlayer && videoContainer) {
+          videoPlayer.src = fileURL;
+          videoContainer.classList.remove('hidden');
+          videoPlayer.play().catch(e => console.error("Erreur lecture vidéo:", e));
+          if (videoBtn) videoBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        }
+      } else {
+        customAudio = new Audio(fileURL);
+        customAudio.loop = true;
+        customAudio.play().then(() => {
+          alert(`Lecture lancée : ${file.name}`);
+        }).catch(err => {
+          console.error("Erreur de lecture du fichier MP3:", err);
+          alert("Impossible de lire ce fichier audio local.");
+        });
+      }
+    }
+
+    function toggleCustomVideo() {
+      const videoPlayer = document.getElementById('pomo-video-player');
+      const videoBtn = document.getElementById('pomo-video-btn');
+      if (videoPlayer) {
+        if (videoPlayer.paused) {
+          videoPlayer.play();
+          if (videoBtn) videoBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        } else {
+          videoPlayer.pause();
+          if (videoBtn) videoBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+        }
+      }
+    }
+
+    function renderVacation() {
+      const supList = document.getElementById('supplies-list');
+      if (supList) {
+        supList.innerHTML = state.vacation.supplies.map((item, idx) => `
+          <li class="flex justify-between items-center bg-[#0b0f19] p-3 rounded-xl text-xs border border-dark-border">
+            <div class="flex items-center space-x-2">
+              <input type="checkbox" ${item.done ? 'checked' : ''} onchange="state.vacation.supplies[${idx}].done=!state.vacation.supplies[${idx}].done; saveState(); renderVacation();" class="rounded text-brand-cyan">
+              <span class="${item.done ? 'line-through text-slate-500' : 'text-slate-200'}">${item.text}</span>
+            </div>
+            <button onclick="state.vacation.supplies.splice(${idx},1); saveState(); renderVacation();" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+          </li>
+        `).join('');
+      }
+
+      const bookList = document.getElementById('summer-books-list');
+      if (bookList) {
+        bookList.innerHTML = state.vacation.books.map((b, idx) => `
+          <li class="bg-[#0b0f19] p-3 rounded-2xl text-xs border border-dark-border space-y-2">
+            <div class="flex justify-between font-bold text-white">
+              <span>${b.title}</span>
+              <button onclick="state.vacation.books.splice(${idx},1); saveState(); renderVacation();" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <select onchange="state.vacation.books[${idx}].status=this.value; saveState(); renderVacation();" class="w-full bg-slate-800 text-slate-200 p-2 rounded-lg">
+              <option value="à lire" ${b.status==='à lire'?'selected':''}>À lire 🔴</option>
+              <option value="en cours" ${b.status==='en cours'?'selected':''}>En cours 🟡</option>
+              <option value="lu" ${b.status==='lu'?'selected':''}>Lu 🟢</option>
+            </select>
+          </li>
+        `).join('');
+      }
+
+      const latinList = document.getElementById('latin-history-list');
+      if (latinList) {
+        latinList.innerHTML = state.vacation.latin.map((l, idx) => `
+          <div class="bg-[#0b0f19] p-3 rounded-xl text-xs flex justify-between items-center border border-dark-border">
+            <div>
+              <div class="font-bold text-amber-400 text-sm">${l.title}</div>
+              <div class="text-[10px] text-slate-400">${l.date}</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-amber-400 font-bold">${'★'.repeat(l.stars)}</div>
+              <button onclick="openLatinEditModal(${idx})" class="text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="state.vacation.latin.splice(${idx},1); saveState(); renderVacation();" class="text-slate-500 hover:text-red-400 bg-slate-800 px-2 py-1 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function addSupplyItem(e) {
+      e.preventDefault();
+      const input = document.getElementById('supply-input');
+      state.vacation.supplies.push({ text: input.value, done: false });
+      input.value = '';
+      saveState();
+      renderVacation();
+    }
+
+    function addSummerBook(e) {
+      e.preventDefault();
+      const title = document.getElementById('book-title-input').value;
+      const status = document.getElementById('book-status-input').value;
+      state.vacation.books.push({ title, status });
+      document.getElementById('book-title-input').value = '';
+      saveState();
+      renderVacation();
+    }
+
+    function setLatinStars(count) {
+      selectedLatinStars = count;
+      const stars = document.querySelectorAll('#latin-star-rating .star');
+      stars.forEach((s, idx) => {
+        if(idx < count) s.classList.add('text-amber-400');
+        else s.classList.remove('text-amber-400');
+      });
+    }
+
+    function addLatinEntry(e) {
+      e.preventDefault();
+      const title = document.getElementById('latin-title').value;
+      if(!selectedLatinStars) return alert("Veuillez évaluer la difficulté en cliquant sur les étoiles.");
+      state.vacation.latin.unshift({ title, stars: selectedLatinStars, date: new Date().toLocaleDateString('fr-FR') });
+      document.getElementById('latin-title').value = '';
+      selectedLatinStars = 0;
+      setLatinStars(0);
+      saveState();
+      renderVacation();
+    }
+
+    function openLatinEditModal(idx) {
+      const item = state.vacation.latin[idx];
+      document.getElementById('latin-edit-index').value = idx;
+      document.getElementById('latin-edit-title').value = item.title;
+      editLatinStarsCount = item.stars;
+      setEditLatinStars(editLatinStarsCount);
+      document.getElementById('latin-edit-modal').classList.remove('hidden');
+    }
+
+    function closeLatinEditModal() {
+      document.getElementById('latin-edit-modal').classList.add('hidden');
+    }
+
+    function setEditLatinStars(count) {
+      editLatinStarsCount = count;
+      const stars = document.querySelectorAll('#latin-edit-star-rating .edit-star');
+      stars.forEach((s, idx) => {
+        if(idx < count) s.classList.add('text-amber-400');
+        else s.classList.remove('text-amber-400');
+      });
+    }
+
+    function saveEditedLatin(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('latin-edit-index').value);
+      const newTitle = document.getElementById('latin-edit-title').value;
+      if(state.vacation.latin[idx]) {
+        state.vacation.latin[idx].title = newTitle;
+        state.vacation.latin[idx].stars = editLatinStarsCount;
+        saveState();
+        renderVacation();
+        closeLatinEditModal();
+      }
+    }
+
+    window.onload = function() {
+      try { updateProfileUI(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderTimerDisplay(); } catch(e) {}
+      try { renderPomodoroStats(); } catch(e) {}
+    };
+  </script>
+</body>
+</html>

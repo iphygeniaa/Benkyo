@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0b0f19] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0b0f19', card: 'rgba(19, 25, 39, 0.95)', border: 'rgba(255, 255, 255, 0.08)', sidebar: '#070a12' },
+            brand: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', cyan: '#06b6d4', green: '#10b981' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0b0f19; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(19, 25, 39, 0.92); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      will-change: transform;
+    }
+    .card-glow { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card-glow:hover { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.25); transform: translateY(-2px); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 3s forwards ease-in-out; }
+  </style>
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0b0f19]">
+
+  <aside class="w-full md:w-64 bg-[#070a12] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <img id="sidebar-profile-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md">
+        <div class="bg-gradient-to-tr from-brand-purple to-brand-blue text-white p-2 rounded-xl shadow-lg shadow-brand-purple/30">
+          <i class="fa-solid fa-graduation-cap text-base"></i>
+        </div>
+        <span class="font-black text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-purple bg-clip-text text-transparent">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Flashcards</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <section id="tab-calendar" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white">Calendrier 📆</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button onclick="openEventModal()" class="bg-brand-purple text-white text-xs px-3.5 py-2.5 rounded-xl font-semibold shadow-lg shadow-brand-purple/20"><i class="fa-solid fa-plus mr-1"></i> Événement</button>
+
+          <!-- Contrôles du mois et choix direct de l'année -->
+          <div class="flex items-center space-x-1 glass-panel p-1 rounded-xl border border-dark-border">
+            <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300"><i class="fa-solid fa-chevron-left"></i></button>
+            <span id="calendar-month-title" class="font-semibold text-sm px-2 text-center text-white capitalize"></span>
+            
+            <!-- Sélecteur d'année rapide -->
+            <select id="calendar-year-select" onchange="changeYear(this.value)" class="bg-transparent text-brand-purple font-bold text-sm outline-none cursor-pointer pr-1">
+            </select>
+
+            <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="glass-panel border border-dark-border rounded-3xl p-5 card-glow">
+        <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-400 text-xs pb-3 border-b border-dark-border uppercase tracking-wider">
+          <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+        </div>
+        <div id="calendar-days" class="grid grid-cols-7 gap-1.5 pt-3"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal d'ajout / Édition d'événement -->
+  <div id="event-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 id="modal-title" class="text-lg font-bold text-white">Événement de Calendrier</h3>
+      <form onsubmit="saveCalendarEvent(event)" class="space-y-3">
+        <input type="hidden" id="cal-id" value="">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Titre de l'événement</label>
+          <input type="text" id="cal-title" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Date</label>
+          <input type="date" id="cal-date" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Type d'événement</label>
+          <select id="cal-repeat" class="w-full bg-[#0b0f19] border border-dark-border text-white rounded-xl p-2.5 text-sm">
+            <option value="none">Événement unique 📌</option>
+            <option value="daily">Répétitif : Par jour 🔄</option>
+            <option value="weekly">Répétitif : Par semaine 🔄</option>
+            <option value="monthly">Répétitif : Par mois 🔄</option>
+            <option value="yearly">Répétitif : Par an 🔄</option>
+          </select>
+        </div>
+        <div class="flex justify-between items-center pt-2">
+          <!-- Bouton de suppression (uniquement visible lors de l'édition) -->
+          <button type="button" id="btn-delete-event" onclick="deleteCalendarEvent()" class="hidden px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold rounded-xl border border-red-500/30">
+            <i class="fa-solid fa-trash mr-1"></i> Supprimer
+          </button>
+
+          <div class="flex space-x-2 ml-auto">
+            <button type="button" onclick="closeEventModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+            <button type="submit" id="btn-save-event" class="px-4 py-2 bg-brand-purple text-sm font-semibold rounded-xl">Créer</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Chargement de l'état
+    let state = {};
+    try {
+      if (typeof BenkyoStorage !== 'undefined') {
+        state = BenkyoStorage.load() || {};
+        if (BenkyoStorage.autoFlushOn) BenkyoStorage.autoFlushOn(state);
+      }
+    } catch(err) {
+      console.warn("Storage non disponible, utilisation du mode secours", err);
+    }
+
+    if (!state.events) state.events = [];
+    if (!state.streak) state.streak = { count: 0, lastLogin: '' };
+
+    let currentCalendarDate = new Date();
+
+    function saveState() {
+      try {
+        if (typeof BenkyoStorage !== 'undefined' && BenkyoStorage.saveDebounced) {
+          BenkyoStorage.saveDebounced(state);
+        } else {
+          localStorage.setItem('benkyo_state', JSON.stringify(state));
+        }
+      } catch(e){}
+    }
+
+    function updateProfileUI() {
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg && state.profile && state.profile.img) {
+        sidebarImg.src = state.profile.img;
+      }
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) {
+          state.streak.count++;
+        } else {
+          state.streak.count = 1;
+        }
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakElem = document.getElementById('streak-count');
+      if (streakElem) streakElem.innerText = state.streak.count || 0;
+    }
+
+    // Modal : Réinitialisation pour création
+    function openEventModal() { 
+      document.getElementById('modal-title').innerText = "Créer un Événement";
+      document.getElementById('cal-id').value = "";
+      document.getElementById('cal-title').value = "";
+      document.getElementById('cal-date').value = "";
+      document.getElementById('cal-repeat').value = "none";
+      document.getElementById('btn-save-event').innerText = "Créer";
+      document.getElementById('btn-delete-event').classList.add('hidden');
+
+      document.getElementById('event-modal').classList.remove('hidden'); 
+    }
+
+    // Modal : Édition d'un événement existant
+    function editEventModal(eventId) {
+      const evt = state.events.find(e => e.id === eventId);
+      if (!evt) return;
+
+      document.getElementById('modal-title').innerText = "Modifier l'Événement";
+      document.getElementById('cal-id').value = evt.id;
+      document.getElementById('cal-title').value = evt.title;
+      document.getElementById('cal-date').value = evt.date;
+      document.getElementById('cal-repeat').value = evt.repeat || 'none';
+      document.getElementById('btn-save-event').innerText = "Enregistrer";
+      document.getElementById('btn-delete-event').classList.remove('hidden');
+
+      document.getElementById('event-modal').classList.remove('hidden');
+    }
+    
+    function closeEventModal() { 
+      document.getElementById('event-modal').classList.add('hidden'); 
+    }
+
+    // Création OU Édition d'un événement
+    function saveCalendarEvent(e) {
+      e.preventDefault();
+      
+      const idVal = document.getElementById('cal-id').value;
+      const titleVal = document.getElementById('cal-title').value.trim();
+      const dateVal = document.getElementById('cal-date').value;
+      const repeatVal = document.getElementById('cal-repeat').value;
+
+      if (!titleVal || !dateVal) return;
+
+      if (idVal) {
+        // Mode Édition
+        const evtIndex = state.events.findIndex(e => e.id == idVal);
+        if (evtIndex !== -1) {
+          state.events[evtIndex].title = titleVal;
+          state.events[evtIndex].date = dateVal;
+          state.events[evtIndex].repeat = repeatVal;
+        }
+      } else {
+        // Mode Création
+        const newEvent = {
+          id: Date.now(),
+          title: titleVal,
+          date: dateVal,
+          repeat: repeatVal
+        };
+        state.events.push(newEvent);
+      }
+
+      saveState();
+      closeEventModal();
+      renderCalendar();
+    }
+
+    // Supprimer l'événement courant
+    function deleteCalendarEvent() {
+      const idVal = document.getElementById('cal-id').value;
+      if (!idVal) return;
+
+      if (confirm("Voulez-vous vraiment supprimer cet événement ?")) {
+        state.events = state.events.filter(e => e.id != idVal);
+        saveState();
+        closeEventModal();
+        renderCalendar();
+      }
+    }
+
+    // Navigation des mois
+    function changeMonth(delta) {
+      currentCalendarDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + delta, 1);
+      renderCalendar();
+    }
+
+    // Changement d'année via le dropdown
+    function changeYear(newYear) {
+      currentCalendarDate.setFullYear(parseInt(newYear, 10));
+      renderCalendar();
+    }
+
+    // Vérification de la date de l'événement
+    function isEventOnDate(event, year, month, day) {
+      if (!event || !event.date) return false;
+
+      const parts = event.date.split('-');
+      if (parts.length !== 3) return false;
+      
+      const eventYear = parseInt(parts[0], 10);
+      const eventMonth = parseInt(parts[1], 10) - 1; 
+      const eventDay = parseInt(parts[2], 10);
+
+      const eventDate = new Date(eventYear, eventMonth, eventDay);
+      const targetDate = new Date(year, month, day);
+
+      if (isNaN(eventDate.getTime())) return false;
+
+      if (event.repeat === 'none') {
+        return eventYear === year && eventMonth === month && eventDay === day;
+      } else if (event.repeat === 'daily') {
+        return targetDate >= eventDate;
+      } else if (event.repeat === 'weekly') {
+        return targetDate >= eventDate && targetDate.getDay() === eventDate.getDay();
+      } else if (event.repeat === 'monthly') {
+        return targetDate >= eventDate && targetDate.getDate() === eventDay;
+      } else if (event.repeat === 'yearly') {
+        return targetDate >= eventDate && targetDate.getDate() === eventDay && targetDate.getMonth() === eventMonth;
+      }
+      return false;
+    }
+
+    function renderCalendar() {
+      const monthTitle = document.getElementById('calendar-month-title');
+      const yearSelect = document.getElementById('calendar-year-select');
+      const daysContainer = document.getElementById('calendar-days');
+      if (!daysContainer || !monthTitle || !yearSelect) return;
+      
+      daysContainer.innerHTML = '';
+
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+
+      // Mettre à jour le nom du mois uniquement (sans l'année)
+      const formattedMonth = currentCalendarDate.toLocaleDateString('fr-FR', { month: 'long' });
+      monthTitle.innerText = formattedMonth.charAt(0).toUpperCase() + formattedMonth.slice(1);
+
+      // Générer dynamiquement la liste des années dans le sélecteur (ex: -5 ans à +10 ans)
+      yearSelect.innerHTML = '';
+      const startYear = year - 5;
+      const endYear = year + 10;
+      for (let y = startYear; y <= endYear; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.innerText = y;
+        option.className = "bg-[#0b0f19] text-white";
+        if (y === year) option.selected = true;
+        yearSelect.appendChild(option);
+      }
+
+      // Index du premier jour du mois (Alignement Lundi = 0, ..., Dimanche = 6)
+      let firstDayIndex = new Date(year, month, 1).getDay();
+      firstDayIndex = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+
+      let html = '';
+
+      // Case vides de début de mois
+      for (let i = 0; i < firstDayIndex; i++) {
+        html += `<div class="h-20 bg-[#0b0f19]/40 border border-dark-border/30 rounded-xl p-1.5 opacity-20"></div>`;
+      }
+
+      // Jours du mois
+      for (let day = 1; day <= totalDays; day++) {
+        const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+
+        const dayEvents = state.events.filter(e => isEventOnDate(e, year, month, day));
+
+        let eventsHtml = '';
+        dayEvents.forEach(evt => {
+          eventsHtml += `
+            <div onclick="editEventModal(${evt.id})" class="text-[10px] bg-brand-purple/30 hover:bg-brand-purple/50 text-brand-purple hover:text-white border border-brand-purple/40 px-1.5 py-0.5 rounded truncate font-medium mt-1 cursor-pointer transition-colors" title="Cliquer pour modifier : ${evt.title}">
+              ${evt.title}
+            </div>
+          `;
+        });
+
+        html += `
+          <div class="h-20 bg-[#0b0f19] border ${isToday ? 'border-brand-purple ring-1 ring-brand-purple' : 'border-dark-border'} rounded-xl p-1.5 flex flex-col justify-between overflow-hidden">
+            <div class="flex justify-between items-center">
+              <span class="text-xs ${isToday ? 'text-brand-purple font-black' : 'text-slate-400 font-bold'}">${day}</span>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+              ${eventsHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      daysContainer.innerHTML = html;
+    }
+
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if (el && state.notes && state.notes[idx]) { 
+        state.notes[idx].content = el.innerHTML; 
+        saveState(); 
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateProfileUI();
+      checkStreak();
+      renderCalendar();
+    });
+  </script>
+</body>
+</html>
