@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0a0e17] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMyA1MCA1MCkiPgogICAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTAiIGZpbGw9IiNjMTI3MmQiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZjFhMWYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9IjAuODUiLz4KICAgIDx0ZXh0IHg9IjUwIiB5PSI0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IidOb3RvIFNlcmlmIEpQJywnSGlyYWdpbm8gTWluY2hvIFByb04nLHNlcmlmIiBmb250LXNpemU9IjMzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj7li4k8L3RleHQ+CiAgICA8dGV4dCB4PSI1MCIgeT0iNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInTm90byBTZXJpZiBKUCcsJ0hpcmFnaW5vIE1pbmNobyBQcm9OJyxzZXJpZiIgZm9udC1zaXplPSIzMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+5by3PC90ZXh0PgogICAgPGNpcmNsZSBjeD0iMTUiIGN5PSI4NiIgcj0iMi4yIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjE4Ii8+CiAgICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjE2IiByPSIxLjYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuMTUiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSIjMDAwMDAwIiBvcGFjaXR5PSIwLjAzIi8+CiAgPC9nPgo8L3N2Zz4K">
+  
+  <!-- Tailwind CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Bibliothèques JS chargées de manière différée -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0a0e17', card: 'rgba(15, 20, 32, 0.85)', border: 'rgba(255, 255, 255, 0.09)', sidebar: '#05070c' },
+            brand: { purple: '#cba6f7', blue: '#89b4fa', pink: '#f5c2e7', cyan: '#94e2d5', green: '#a6e3a1' },
+            bento: { blue: '#89b4fa', blue2: '#b4d0fd', orange: '#f8bd96', yellow: '#f9e2af' }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0a0e17; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      will-change: transform;
+    }
+    
+    .card-glow { 
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, box-shadow 0.2s; 
+    }
+    .card-glow:hover { 
+      border-color: rgba(203, 166, 247, 0.4); 
+      box-shadow: 0 0 25px -5px rgba(203, 166, 247, 0.25); 
+      transform: translateY(-2px); 
+    }
+    
+    .tab-content { transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; transform: translateY(10px); }
+    .tab-content:not(.hidden) { opacity: 1; transform: translateY(0); }
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
+
+  <aside class="w-full md:w-64 bg-[#05070c] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5 cursor-pointer transition hover:opacity-80" onclick="window.location.href='index.html'" title="Retour au tableau de bord" role="button">
+        <img id="sidebar-profile-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9InVybCgjZykiLz4KICA8cGF0aCBkPSJNNTAgMjIgTDU5IDQxIEw4MCA1MCBMNTkgNTkgTDUwIDc4IEw0MSA1OSBMMjAgNTAgTDQxIDQxIFoiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOTIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md" alt="Profil">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMyA1MCA1MCkiPgogICAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTAiIGZpbGw9IiNjMTI3MmQiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZjFhMWYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9IjAuODUiLz4KICAgIDx0ZXh0IHg9IjUwIiB5PSI0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IidOb3RvIFNlcmlmIEpQJywnSGlyYWdpbm8gTWluY2hvIFByb04nLHNlcmlmIiBmb250LXNpemU9IjMzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj7li4k8L3RleHQ+CiAgICA8dGV4dCB4PSI1MCIgeT0iNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInTm90byBTZXJpZiBKUCcsJ0hpcmFnaW5vIE1pbmNobyBQcm9OJyxzZXJpZiIgZm9udC1zaXplPSIzMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+5by3PC90ZXh0PgogICAgPGNpcmNsZSBjeD0iMTUiIGN5PSI4NiIgcj0iMi4yIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjE4Ii8+CiAgICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjE2IiByPSIxLjYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuMTUiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSIjMDAwMDAwIiBvcGFjaXR5PSIwLjAzIi8+CiAgPC9nPgo8L3N2Zz4K" alt="Benkyō" class="w-10 h-10 shrink-0" style="filter: drop-shadow(0 3px 6px rgba(193,39,45,0.35));">
+        <span class="font-black text-xl tracking-tight" style="color:#8f1a1f;font-family:'Plus Jakarta Sans',ui-sans-serif,sans-serif;">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+    <script>
+      // Synchronisation immédiate (avant le chargement des librairies lourdes)
+      // de la photo de profil et du compteur de série, pour éviter le flash
+      // "photo par défaut / 0 jour" pendant le rechargement de page.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('benkyo_profile') || 'null');
+          var img = document.getElementById('sidebar-profile-img');
+          if (p && p.img && img) img.src = p.img;
+        } catch (e) {}
+        try {
+          var s = JSON.parse(localStorage.getItem('benkyo_streak') || 'null');
+          var el = document.getElementById('streak-count');
+          if (s && typeof s.count === 'number' && el) el.textContent = s.count;
+        } catch (e) {}
+      })();
+    </script>
+
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40 shadow-[0_0_15px_rgba(166, 227, 161,0.15)]">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+    <section id="tab-revisions" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white flex items-center gap-2">Gestion des Révisions 🧠</h1>
+          <p class="text-slate-400 text-sm">Organisez vos cours en chapitres et suivez votre progression.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="openCourseModal()" class="bg-brand-blue hover:bg-brand-blue/80 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 shadow-lg shadow-brand-blue/20">
+            <i class="fa-solid fa-folder-plus"></i> Nouveau Cours
+          </button>
+          <button onclick="openChapterModal()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 shadow-lg shadow-brand-purple/20">
+            <i class="fa-solid fa-plus"></i> Nouveau Chapitre
+          </button>
+        </div>
+      </div>
+
+      <!-- Sous-onglets : Cours & Chapitres / Planning de révisions -->
+      <div class="flex items-center gap-2 border-b border-dark-border pb-0">
+        <button id="revsubtab-btn-courses" onclick="switchRevisionSubtab('courses')" class="px-4 py-2.5 text-sm font-semibold border-b-2 border-brand-purple text-brand-purple">
+          <i class="fa-solid fa-book-open mr-1.5"></i>Cours & Chapitres
+        </button>
+        <button id="revsubtab-btn-planning" onclick="switchRevisionSubtab('planning')" class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white">
+          <i class="fa-solid fa-calendar-week mr-1.5"></i>Planning de révisions
+        </button>
+      </div>
+
+      <div id="revision-subtab-courses" class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-4">
+            <div id="revision-courses-list" class="space-y-4"></div>
+          </div>
+
+          <div class="glass-panel border border-dark-border p-5 rounded-3xl card-glow h-fit space-y-4">
+            <div class="border-b border-dark-border pb-3">
+              <h3 class="font-bold text-white flex items-center gap-2" id="forgetting-chart-title"><i class="fa-solid fa-chart-line text-brand-pink"></i> Courbe d'oubli théorique</h3>
+              <p class="text-xs text-slate-400 mt-1">Évolution de la rétention mémoire après la dernière révision.</p>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1" for="forgetting-chapter-select">Chapitre à visualiser</label>
+              <select id="forgetting-chapter-select" onchange="renderForgettingCurve()" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm"></select>
+            </div>
+            <div class="h-64">
+              <canvas id="forgettingCurveChart"></canvas>
+            </div>
+            <div id="revision-recommendation" class="text-xs bg-brand-purple/10 border border-brand-purple/30 p-3 rounded-xl text-slate-300">
+              Sélectionnez un chapitre pour visualiser sa courbe théorique de rétention.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sous-onglet : Planning de révisions -->
+      <div id="revision-subtab-planning" class="hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-1 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-white text-sm">Mes plannings</h3>
+              <button onclick="openPlanningModal()" class="text-xs bg-brand-blue/20 text-brand-blue hover:bg-brand-blue/30 border border-brand-blue/30 px-3 py-1.5 rounded-xl font-semibold"><i class="fa-solid fa-plus mr-1"></i>Nouveau</button>
+            </div>
+            <div id="planning-list" class="space-y-2"></div>
+          </div>
+
+          <div class="lg:col-span-2">
+            <div id="planning-detail-empty" class="glass-panel p-8 rounded-3xl text-center text-slate-400">
+              <i class="fa-solid fa-calendar-days text-3xl mb-2 text-brand-purple"></i>
+              <p class="text-sm">Créez ou sélectionnez un planning pour organiser vos créneaux de révision.</p>
+            </div>
+            <div id="planning-detail" class="hidden glass-panel border border-dark-border rounded-3xl p-5 card-glow space-y-4">
+              <div class="flex items-start justify-between border-b border-dark-border pb-3 gap-2">
+                <div class="flex-1">
+                  <input id="planning-name-input" onchange="renamePlanning(this.value)" class="bg-transparent text-lg font-extrabold text-white border-b border-transparent hover:border-dark-border focus:border-brand-purple focus:outline-none w-full" />
+                  <p id="planning-range-label" class="text-xs text-slate-400 mt-1"></p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <div class="bg-[#0a0e17] border border-dark-border rounded-xl p-1 flex items-center gap-1">
+                    <button id="planning-view-btn-list" onclick="setPlanningView('list')" class="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition bg-brand-purple/20 text-brand-purple" title="Vue liste"><i class="fa-solid fa-list mr-1"></i>Liste</button>
+                    <button id="planning-view-btn-schedule" onclick="setPlanningView('schedule')" class="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition text-slate-400 hover:text-white" title="Vue emploi du temps"><i class="fa-solid fa-calendar-days mr-1"></i>Emploi du temps</button>
+                  </div>
+                  <button onclick="openSlotModal()" class="text-xs bg-brand-purple/20 text-brand-purple hover:bg-brand-purple/30 border border-brand-purple/30 px-3 py-1.5 rounded-xl font-semibold"><i class="fa-solid fa-plus mr-1"></i>Créneau</button>
+                  <button onclick="deleteCurrentPlanning()" class="text-slate-500 hover:text-red-400 p-1.5 text-xs" title="Supprimer le planning"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+              <div id="planning-slots-list" class="space-y-2"></div>
+              <div id="planning-slots-schedule" class="hidden space-y-4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Nouveau Cours -->
+  <div id="course-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 class="text-lg font-bold text-white">Créer un Nouveau Cours (Ensemble)</h3>
+      <form onsubmit="saveNewCourse(event)" class="space-y-3">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="course-subject">Matière</label>
+          <input type="text" id="course-subject" placeholder="Ex: Histoire, Mathématiques..." class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="course-title">Titre du cours <span class="text-slate-600 normal-case font-normal">(facultatif)</span></label>
+          <input type="text" id="course-title" placeholder="Ex: Histoire Moderne (laissez vide si inutile)" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeCourseModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-brand-blue text-sm font-semibold rounded-xl">Créer Cours</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Nouveau Chapitre -->
+  <div id="chapter-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 class="text-lg font-bold text-white">Ajouter un chapitre (Sous-ensemble)</h3>
+      <form onsubmit="saveNewChapter(event)" class="space-y-3">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="chap-course-select">Intitulé du cours</label>
+          <select id="chap-course-select" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="chap-title">Titre du Chapitre</label>
+          <input type="text" id="chap-title" placeholder="Ex: Chapitre 1 - La Révolution" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="chap-status">Statut initial</label>
+          <select id="chap-status" onchange="toggleChapterDifficultyField()" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm">
+            <option value="to_revise">À réviser 🔴</option>
+            <option value="in_progress">En cours 🟡</option>
+            <option value="mastered">Maîtrisé 🟢</option>
+            <option value="difficulties">Difficultés ⚠️</option>
+          </select>
+        </div>
+        <div id="chap-difficulty-field" class="hidden">
+          <label class="text-xs text-amber-400 block mb-1" for="chap-difficulty-notes"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Notez vos difficultés sur ce chapitre</label>
+          <textarea id="chap-difficulty-notes" placeholder="Ex: Je confonds les dates clés, revoir la partie sur..." class="w-full bg-[#0a0e17] border border-amber-500/30 text-white rounded-xl p-2.5 text-sm h-20"></textarea>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeChapterModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-brand-purple text-sm font-semibold rounded-xl">Créer Chapitre</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Note de Difficultés (édition rapide depuis la liste) -->
+  <div id="difficulty-note-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Notes de difficultés</h3>
+      <form onsubmit="saveDifficultyNote(event)" class="space-y-3">
+        <input type="hidden" id="diff-note-course-id">
+        <input type="hidden" id="diff-note-chapter-id">
+        <textarea id="diff-note-textarea" placeholder="Décrivez ce qui vous pose problème sur ce chapitre..." class="w-full bg-[#0a0e17] border border-amber-500/30 text-white rounded-xl p-2.5 text-sm h-28"></textarea>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeDifficultyNoteModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-amber-500 text-dark-bg text-sm font-semibold rounded-xl">Enregistrer la note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Nouveau Planning -->
+  <div id="planning-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-week text-brand-blue mr-2"></i>Nouveau planning de révisions</h3>
+      <form onsubmit="saveNewPlanning(event)" class="space-y-3">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="planning-name">Nom du planning</label>
+          <input type="text" id="planning-name" placeholder="Ex: Révisions Brevet Blanc" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1" for="planning-start">Début</label>
+            <input type="date" id="planning-start" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1" for="planning-end">Fin</label>
+            <input type="date" id="planning-end" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closePlanningModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-brand-blue text-sm font-semibold rounded-xl">Créer le planning</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Créneau de révision -->
+  <div id="slot-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 id="slot-modal-title" class="text-lg font-bold text-white"><i class="fa-solid fa-clock text-brand-purple mr-2"></i>Nouveau créneau</h3>
+      <form onsubmit="saveSlotModal(event)" class="space-y-3">
+        <input type="hidden" id="slot-edit-id">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="slot-subject">Matière</label>
+          <input type="text" id="slot-subject" placeholder="Ex: Mathématiques" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="slot-description">Objectifs de la session</label>
+          <textarea id="slot-description" placeholder="Ex: Revoir le chapitre sur les fonctions, faire 10 exercices..." class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm h-20"></textarea>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1" for="slot-date">Date</label>
+          <input type="date" id="slot-date" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1" for="slot-start-time">Heure de début</label>
+            <input type="time" id="slot-start-time" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1" for="slot-end-time">Heure de fin</label>
+            <input type="time" id="slot-end-time" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeSlotModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-brand-purple text-sm font-semibold rounded-xl">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale de confirmation générique (remplace confirm()) -->
+  <div id="generic-confirm-modal" class="hidden fixed inset-0 bg-[#0a0e17]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
+      </div>
+      <div class="text-red-400" style="line-height:1.15;">
+        <div class="text-2xl font-black" style="font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;">注意</div>
+        <div class="text-[10px] uppercase tracking-wider text-red-400/70 italic">Chūi — Attention</div>
+      </div>
+      <h3 id="generic-confirm-title" class="text-xl font-extrabold text-white">Confirmer la suppression</h3>
+      <p id="generic-confirm-message" class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeGenericConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale d'information générique (remplace alert()) -->
+  <div id="generic-info-modal" class="hidden fixed inset-0 bg-[#0a0e17]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-brand-blue/20 flex items-center justify-center">
+        <i class="fa-solid fa-circle-info text-2xl text-brand-blue"></i>
+      </div>
+      <h3 id="generic-info-title" class="text-xl font-extrabold text-white">Information</h3>
+      <p id="generic-info-message" class="text-sm text-slate-400"></p>
+      <button onclick="closeGenericInfoModal()" class="w-full bg-brand-purple hover:bg-brand-purple/80 text-white py-2.5 rounded-xl font-bold text-sm transition">Compris</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Chargement de l'état
+    let state = {};
+    try {
+      if (typeof BenkyoStorage !== 'undefined') {
+        state = BenkyoStorage.load() || {};
+        if (BenkyoStorage.autoFlushOn) BenkyoStorage.autoFlushOn(state);
+      }
+    } catch(err) {
+      console.warn("BenkyoStorage non disponible", err);
+    }
+
+    if (!state.courses) state.courses = [];
+    if (!state.streak) state.streak = { count: 0, lastLogin: '' };
+    if (!state.revisionPlannings) state.revisionPlannings = [];
+
+    // ======================================================
+    // SOUS-ONGLETS : Cours & Chapitres / Planning de révisions
+    // ======================================================
+    function switchRevisionSubtab(tab) {
+      const isCourses = tab === 'courses';
+      document.getElementById('revision-subtab-courses').classList.toggle('hidden', !isCourses);
+      document.getElementById('revision-subtab-planning').classList.toggle('hidden', isCourses);
+
+      document.getElementById('revsubtab-btn-courses').classList.toggle('border-brand-purple', isCourses);
+      document.getElementById('revsubtab-btn-courses').classList.toggle('text-brand-purple', isCourses);
+      document.getElementById('revsubtab-btn-courses').classList.toggle('border-transparent', !isCourses);
+      document.getElementById('revsubtab-btn-courses').classList.toggle('text-slate-400', !isCourses);
+
+      document.getElementById('revsubtab-btn-planning').classList.toggle('border-brand-purple', !isCourses);
+      document.getElementById('revsubtab-btn-planning').classList.toggle('text-brand-purple', !isCourses);
+      document.getElementById('revsubtab-btn-planning').classList.toggle('border-transparent', isCourses);
+      document.getElementById('revsubtab-btn-planning').classList.toggle('text-slate-400', isCourses);
+
+      if (!isCourses) renderPlanningList();
+    }
+
+    // -------- Modale de confirmation générique (remplace confirm()) --------
+    let _genericConfirmCallback = null;
+    function showConfirmModal(title, message, onConfirm, confirmLabel) {
+      document.getElementById('generic-confirm-title').innerText = title || 'Confirmer la suppression';
+      document.getElementById('generic-confirm-message').innerText = message || 'Cette action est définitive et ne peut pas être annulée.';
+      document.getElementById('generic-confirm-btn').innerText = confirmLabel || 'Supprimer';
+      _genericConfirmCallback = onConfirm;
+      document.getElementById('generic-confirm-modal').classList.remove('hidden');
+    }
+    function closeGenericConfirmModal() {
+      document.getElementById('generic-confirm-modal').classList.add('hidden');
+      _genericConfirmCallback = null;
+    }
+    function executeGenericConfirm() {
+      const cb = _genericConfirmCallback;
+      closeGenericConfirmModal();
+      if (cb) cb();
+    }
+
+    // -------- Modale d'information générique (remplace alert()) --------
+    function showInfoModal(title, message) {
+      document.getElementById('generic-info-title').innerText = title || 'Information';
+      document.getElementById('generic-info-message').innerText = message || '';
+      document.getElementById('generic-info-modal').classList.remove('hidden');
+    }
+    function closeGenericInfoModal() {
+      document.getElementById('generic-info-modal').classList.add('hidden');
+    }
+
+    // -------- Planning : gestion --------
+    let currentPlanningId = null;
+    let planningViewMode = 'list';
+
+    function setPlanningView(mode) {
+      planningViewMode = mode;
+      const listBtn = document.getElementById('planning-view-btn-list');
+      const scheduleBtn = document.getElementById('planning-view-btn-schedule');
+      const listEl = document.getElementById('planning-slots-list');
+      const scheduleEl = document.getElementById('planning-slots-schedule');
+      const isList = mode === 'list';
+      listEl.classList.toggle('hidden', !isList);
+      scheduleEl.classList.toggle('hidden', isList);
+      listBtn.className = 'text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition ' + (isList ? 'bg-brand-purple/20 text-brand-purple' : 'text-slate-400 hover:text-white');
+      scheduleBtn.className = 'text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition ' + (!isList ? 'bg-brand-purple/20 text-brand-purple' : 'text-slate-400 hover:text-white');
+      if (!isList) renderPlanningScheduleView();
+    }
+
+    // Palette de couleurs stable par matière pour distinguer les jours d'un coup d'oeil
+    const SUBJECT_COLOR_PALETTE = ['#cba6f7', '#89b4fa', '#f5c2e7', '#94e2d5', '#a6e3a1', '#f59e0b', '#f43f5e'];
+    function colorForSubject(subject) {
+      let hash = 0;
+      for (let i = 0; i < subject.length; i++) hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+      return SUBJECT_COLOR_PALETTE[Math.abs(hash) % SUBJECT_COLOR_PALETTE.length];
+    }
+
+    // Vue "emploi du temps" : regroupe les créneaux du planning actif par jour à réviser
+    function renderPlanningScheduleView() {
+      const container = document.getElementById('planning-slots-schedule');
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      if (!container || !planning) return;
+
+      if (!planning.slots.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center">Aucun créneau à afficher. Ajoutez des créneaux pour voir vos jours de révision.</p>';
+        return;
+      }
+
+      // Regroupement par date
+      const byDate = {};
+      planning.slots.forEach(s => {
+        if (!byDate[s.date]) byDate[s.date] = [];
+        byDate[s.date].push(s);
+      });
+      const sortedDates = Object.keys(byDate).sort();
+      const weekdayFmt = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' });
+
+      container.innerHTML = sortedDates.map(date => {
+        const daySlots = [...byDate[date]].sort((a, b) => a.startTime.localeCompare(b.startTime));
+        const d = new Date(date + 'T00:00:00');
+        const weekday = weekdayFmt.format(d);
+        const isToday = date === new Date().toISOString().slice(0, 10);
+        return `
+          <div class="bg-[#0a0e17] border ${isToday ? 'border-brand-purple/50' : 'border-dark-border'} rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-sm font-bold text-white capitalize">${weekday} <span class="text-slate-400 font-normal">${formatFrDate(date)}</span></h4>
+              ${isToday ? '<span class="text-[10px] bg-brand-purple/20 text-brand-purple px-2 py-0.5 rounded-full font-bold">Aujourd\'hui</span>' : ''}
+            </div>
+            <div class="space-y-2">
+              ${daySlots.map(s => `
+                <div class="flex items-center gap-3 pl-3 border-l-2" style="border-color:${colorForSubject(s.subject)}">
+                  <span class="font-mono text-[11px] text-slate-400 bg-slate-800/60 px-2 py-1 rounded-lg shrink-0">${s.startTime} - ${s.endTime}</span>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm font-semibold text-white truncate">${s.subject}</p>
+                    ${s.description ? `<p class="text-[11px] text-slate-400 truncate">${s.description}</p>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openPlanningModal() {
+      document.getElementById('planning-name').value = '';
+      const today = new Date().toISOString().slice(0, 10);
+      document.getElementById('planning-start').value = today;
+      document.getElementById('planning-end').value = today;
+      document.getElementById('planning-modal').classList.remove('hidden');
+    }
+    function closePlanningModal() { document.getElementById('planning-modal').classList.add('hidden'); }
+
+    function saveNewPlanning(e) {
+      e.preventDefault();
+      const name = document.getElementById('planning-name').value.trim();
+      const start = document.getElementById('planning-start').value;
+      const end = document.getElementById('planning-end').value;
+      if (!name || !start || !end) return;
+      const planning = { id: Date.now(), name, start, end, slots: [] };
+      state.revisionPlannings.push(planning);
+      saveState();
+      closePlanningModal();
+      currentPlanningId = planning.id;
+      renderPlanningList();
+      renderPlanningDetail();
+    }
+
+    function selectPlanning(id) {
+      currentPlanningId = id;
+      renderPlanningList();
+      renderPlanningDetail();
+    }
+
+    function renamePlanning(newName) {
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      if (planning && newName.trim()) {
+        planning.name = newName.trim();
+        saveState();
+        renderPlanningList();
+      }
+    }
+
+    function deleteCurrentPlanning() {
+      if (!currentPlanningId) return;
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      showConfirmModal(
+        'Supprimer ce planning ?',
+        planning ? `Le planning "${planning.name}" et ses ${planning.slots.length} créneau(x) seront définitivement supprimés.` : 'Ce planning et tous ses créneaux seront définitivement supprimés.',
+        () => {
+          state.revisionPlannings = state.revisionPlannings.filter(p => p.id !== currentPlanningId);
+          currentPlanningId = null;
+          saveState();
+          renderPlanningList();
+          renderPlanningDetail();
+        }
+      );
+    }
+
+    function formatFrDate(isoDate) {
+      if (!isoDate) return '';
+      const d = new Date(isoDate + 'T00:00:00');
+      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function renderPlanningList() {
+      const container = document.getElementById('planning-list');
+      if (!container) return;
+      if (!state.revisionPlannings.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic">Aucun planning pour le moment.</p>';
+        return;
+      }
+      container.innerHTML = state.revisionPlannings.map(p => `
+        <button onclick="selectPlanning(${p.id})" class="w-full text-left p-3 rounded-2xl border transition ${p.id === currentPlanningId ? 'bg-brand-purple/20 border-brand-purple/40' : 'bg-[#0a0e17] border-dark-border hover:border-brand-purple/30'}">
+          <p class="text-sm font-semibold text-white truncate">${p.name}</p>
+          <p class="text-[11px] text-slate-400">${formatFrDate(p.start)} → ${formatFrDate(p.end)}</p>
+          <p class="text-[11px] text-brand-purple mt-0.5">${p.slots.length} créneau${p.slots.length > 1 ? 'x' : ''}</p>
+        </button>
+      `).join('');
+    }
+
+    function renderPlanningDetail() {
+      const empty = document.getElementById('planning-detail-empty');
+      const detail = document.getElementById('planning-detail');
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      if (!planning) {
+        empty.classList.remove('hidden');
+        detail.classList.add('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      detail.classList.remove('hidden');
+      document.getElementById('planning-name-input').value = planning.name;
+      document.getElementById('planning-range-label').innerText = `Du ${formatFrDate(planning.start)} au ${formatFrDate(planning.end)}`;
+
+      const slotsContainer = document.getElementById('planning-slots-list');
+      if (!planning.slots.length) {
+        slotsContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-4 text-center">Aucun créneau. Ajoutez-en un pour commencer à organiser vos révisions.</p>';
+        return;
+      }
+      if (planningViewMode === 'schedule') renderPlanningScheduleView();
+
+      const sortedSlots = [...planning.slots].sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+      slotsContainer.innerHTML = sortedSlots.map(s => `
+        <div class="bg-[#0a0e17] border border-dark-border p-3 rounded-2xl flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-bold text-brand-purple bg-brand-purple/10 px-2 py-0.5 rounded-lg">${s.subject}</span>
+              <span class="text-[11px] text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${formatFrDate(s.date)}</span>
+              <span class="text-[11px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${s.startTime} - ${s.endTime}</span>
+            </div>
+            ${s.description ? `<p class="text-xs text-slate-300 mt-1.5">${s.description}</p>` : ''}
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="openSlotModal(${s.id})" class="text-slate-400 hover:text-brand-blue text-xs" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteSlot(${s.id})" class="text-slate-500 hover:text-red-400 text-xs" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // -------- Créneaux --------
+    function openSlotModal(slotId) {
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      if (!planning) return;
+      document.getElementById('slot-edit-id').value = slotId || '';
+      if (slotId) {
+        const slot = planning.slots.find(s => s.id === slotId);
+        document.getElementById('slot-modal-title').innerHTML = '<i class="fa-solid fa-pen text-brand-purple mr-2"></i>Modifier le créneau';
+        document.getElementById('slot-subject').value = slot.subject;
+        document.getElementById('slot-description').value = slot.description || '';
+        document.getElementById('slot-date').value = slot.date;
+        document.getElementById('slot-start-time').value = slot.startTime;
+        document.getElementById('slot-end-time').value = slot.endTime;
+      } else {
+        document.getElementById('slot-modal-title').innerHTML = '<i class="fa-solid fa-clock text-brand-purple mr-2"></i>Nouveau créneau';
+        document.getElementById('slot-subject').value = '';
+        document.getElementById('slot-description').value = '';
+        document.getElementById('slot-date').value = planning.start;
+        document.getElementById('slot-start-time').value = '';
+        document.getElementById('slot-end-time').value = '';
+      }
+      document.getElementById('slot-modal').classList.remove('hidden');
+    }
+    function closeSlotModal() { document.getElementById('slot-modal').classList.add('hidden'); }
+
+    function saveSlotModal(e) {
+      e.preventDefault();
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      if (!planning) return;
+      const editId = document.getElementById('slot-edit-id').value;
+      const slotData = {
+        subject: document.getElementById('slot-subject').value.trim(),
+        description: document.getElementById('slot-description').value.trim(),
+        date: document.getElementById('slot-date').value,
+        startTime: document.getElementById('slot-start-time').value,
+        endTime: document.getElementById('slot-end-time').value
+      };
+      if (editId) {
+        const idx = planning.slots.findIndex(s => s.id === parseInt(editId, 10));
+        if (idx !== -1) planning.slots[idx] = { ...planning.slots[idx], ...slotData };
+      } else {
+        planning.slots.push({ id: Date.now(), ...slotData });
+      }
+      saveState();
+      closeSlotModal();
+      renderPlanningList();
+      renderPlanningDetail();
+    }
+
+    function deleteSlot(slotId) {
+      const planning = state.revisionPlannings.find(p => p.id === currentPlanningId);
+      if (!planning) return;
+      const slot = planning.slots.find(s => s.id === slotId);
+      showConfirmModal(
+        'Supprimer ce créneau ?',
+        slot ? `Le créneau "${slot.subject}" du ${formatFrDate(slot.date)} sera définitivement supprimé.` : 'Cette action est définitive et ne peut pas être annulée.',
+        () => {
+          planning.slots = planning.slots.filter(s => s.id !== slotId);
+          saveState();
+          renderPlanningDetail();
+          renderPlanningList();
+        }
+      );
+    }
+
+    function saveState() {
+      try {
+        if (typeof BenkyoStorage !== 'undefined' && BenkyoStorage.save) {
+          BenkyoStorage.save(state);
+        } else {
+          localStorage.setItem('benkyo_state', JSON.stringify(state));
+        }
+      } catch(e){}
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) {
+          state.streak.count++;
+        } else {
+          state.streak.count = 1;
+        }
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakElem = document.getElementById('streak-count');
+      if (streakElem) streakElem.innerText = state.streak.count || 0;
+    }
+
+    // Gestion Modals
+    function openCourseModal() {
+      document.getElementById('course-subject').value = '';
+      document.getElementById('course-title').value = '';
+      document.getElementById('course-modal').classList.remove('hidden');
+    }
+
+    function closeCourseModal() {
+      document.getElementById('course-modal').classList.add('hidden');
+    }
+
+    function openChapterModal(defaultCourseId = null) {
+      const select = document.getElementById('chap-course-select');
+      select.innerHTML = '';
+
+      if (!state.courses.length) {
+        showInfoModal("Aucun cours pour l'instant", "Veuillez d'abord créer au moins un cours avant d'ajouter un chapitre.");
+        openCourseModal();
+        return;
+      }
+
+      state.courses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.innerText = `[${c.subject}] ${c.title}`;
+        if (defaultCourseId && c.id === defaultCourseId) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('chap-title').value = '';
+      document.getElementById('chap-status').value = 'to_revise';
+      document.getElementById('chap-difficulty-notes').value = '';
+      toggleChapterDifficultyField();
+      document.getElementById('chapter-modal').classList.remove('hidden');
+    }
+
+    function closeChapterModal() {
+      document.getElementById('chapter-modal').classList.add('hidden');
+    }
+
+    // Affiche/masque le champ de notes de difficultés selon le statut choisi
+    function toggleChapterDifficultyField() {
+      const status = document.getElementById('chap-status').value;
+      const field = document.getElementById('chap-difficulty-field');
+      if (field) field.classList.toggle('hidden', status !== 'difficulties');
+    }
+
+    function openDifficultyNoteModal(courseId, chapterId) {
+      const course = state.courses.find(c => c.id === courseId);
+      const chap = course && course.chapters.find(ch => ch.id === chapterId);
+      if (!chap) return;
+      document.getElementById('diff-note-course-id').value = courseId;
+      document.getElementById('diff-note-chapter-id').value = chapterId;
+      document.getElementById('diff-note-textarea').value = chap.difficultyNotes || '';
+      document.getElementById('difficulty-note-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('diff-note-textarea').focus(), 50);
+    }
+
+    function closeDifficultyNoteModal() {
+      document.getElementById('difficulty-note-modal').classList.add('hidden');
+    }
+
+    function saveDifficultyNote(e) {
+      e.preventDefault();
+      const courseId = parseInt(document.getElementById('diff-note-course-id').value, 10);
+      const chapterId = parseInt(document.getElementById('diff-note-chapter-id').value, 10);
+      const notes = document.getElementById('diff-note-textarea').value.trim();
+      const course = state.courses.find(c => c.id === courseId);
+      const chap = course && course.chapters.find(ch => ch.id === chapterId);
+      if (chap) {
+        chap.difficultyNotes = notes;
+        saveState();
+        closeDifficultyNoteModal();
+        renderRevisions();
+      }
+    }
+
+    // Sauvegardes
+    function saveNewCourse(e) {
+      e.preventDefault();
+      const subject = document.getElementById('course-subject').value.trim();
+      // Le titre est facultatif : si vide, on retombe sur le nom de la matière.
+      const title = document.getElementById('course-title').value.trim() || subject;
+
+      if (!subject) return;
+
+      state.courses.push({
+        id: Date.now(),
+        subject,
+        title,
+        chapters: []
+      });
+
+      saveState();
+      closeCourseModal();
+      renderRevisions();
+    }
+
+    function saveNewChapter(e) {
+      e.preventDefault();
+      const courseId = parseInt(document.getElementById('chap-course-select').value, 10);
+      const title = document.getElementById('chap-title').value.trim();
+      const status = document.getElementById('chap-status').value;
+      const difficultyNotes = document.getElementById('chap-difficulty-notes').value.trim();
+
+      const course = state.courses.find(c => c.id === courseId);
+      if (course) {
+        course.chapters.push({
+          id: Date.now(),
+          title,
+          status,
+          difficultyNotes,
+          lastRevised: new Date().toISOString()
+        });
+        saveState();
+        closeChapterModal();
+        renderRevisions();
+      }
+    }
+
+    // Fonctions de déplacement (Ordre)
+    function moveCourse(courseIndex, direction) {
+      const targetIndex = courseIndex + direction;
+      if (targetIndex < 0 || targetIndex >= state.courses.length) return;
+
+      const temp = state.courses[courseIndex];
+      state.courses[courseIndex] = state.courses[targetIndex];
+      state.courses[targetIndex] = temp;
+
+      saveState();
+      renderRevisions();
+    }
+
+    function moveChapter(courseIndex, chapterIndex, direction) {
+      const chapters = state.courses[courseIndex].chapters;
+      const targetIndex = chapterIndex + direction;
+      if (targetIndex < 0 || targetIndex >= chapters.length) return;
+
+      const temp = chapters[chapterIndex];
+      chapters[chapterIndex] = chapters[targetIndex];
+      chapters[targetIndex] = temp;
+
+      saveState();
+      renderRevisions();
+    }
+
+    // Suppression
+    function deleteCourse(courseId) {
+      const course = state.courses.find(c => c.id === courseId);
+      showConfirmModal(
+        'Supprimer ce cours ?',
+        course ? `Le cours "${course.title || course.subject}" et ses ${course.chapters.length} chapitre(s) seront définitivement supprimés.` : 'Ce cours et tous ses chapitres seront définitivement supprimés.',
+        () => {
+          state.courses = state.courses.filter(c => c.id !== courseId);
+          saveState();
+          renderRevisions();
+        }
+      );
+    }
+
+    function deleteChapter(courseId, chapterId) {
+      const course = state.courses.find(c => c.id === courseId);
+      if (!course) return;
+      const chapter = course.chapters.find(ch => ch.id === chapterId);
+      showConfirmModal(
+        'Supprimer ce chapitre ?',
+        chapter ? `Le chapitre "${chapter.title}" sera définitivement supprimé.` : 'Cette action est définitive et ne peut pas être annulée.',
+        () => {
+          course.chapters = course.chapters.filter(ch => ch.id !== chapterId);
+          saveState();
+          renderRevisions();
+        }
+      );
+    }
+
+    // Changement de statut du chapitre
+    function updateChapterStatus(courseId, chapterId, newStatus) {
+      const course = state.courses.find(c => c.id === courseId);
+      if (course) {
+        const chap = course.chapters.find(ch => ch.id === chapterId);
+        if (chap) {
+          chap.status = newStatus;
+          // On considère qu'un changement de statut correspond à une révision
+          chap.lastRevised = new Date().toISOString();
+          saveState();
+          renderRevisions();
+          // Si on passe en "Difficultés", on propose immédiatement de noter le problème
+          if (newStatus === 'difficulties') {
+            openDifficultyNoteModal(courseId, chapterId);
+          }
+        }
+      }
+    }
+
+    // Permet de renseigner manuellement la date de dernière révision d'un chapitre
+    function updateChapterRevisedDate(courseId, chapterId, dateStr) {
+      if (!dateStr) return;
+      const course = state.courses.find(c => c.id === courseId);
+      const chap = course && course.chapters.find(ch => ch.id === chapterId);
+      if (chap) {
+        // On conserve l'heure actuelle pour la date choisie
+        const now = new Date();
+        const picked = new Date(dateStr);
+        picked.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+        chap.lastRevised = picked.toISOString();
+        saveState();
+        if (typeof populateForgettingChapterSelect === 'function') {
+          populateForgettingChapterSelect(true);
+          renderForgettingCurve();
+        }
+      }
+    }
+
+    // Rendu Principal
+    function renderRevisions() {
+      const listContainer = document.getElementById('revision-courses-list');
+      if (!listContainer) return;
+
+      if (!state.courses || state.courses.length === 0) {
+        listContainer.innerHTML = `
+          <div class="glass-panel p-6 rounded-3xl text-center text-slate-400">
+            <i class="fa-solid fa-book-open text-3xl mb-2 text-brand-purple"></i>
+            <p class="text-sm">Aucun cours trouvé. Commencez par ajouter un nouveau cours !</p>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = state.courses.map((course, cIdx) => `
+        <div class="glass-panel border border-dark-border rounded-3xl p-5 card-glow space-y-3">
+          <div class="flex items-center justify-between border-b border-dark-border pb-3">
+            <div class="flex items-center gap-3">
+              <div class="flex flex-col gap-0.5">
+                <button onclick="moveCourse(${cIdx}, -1)" ${cIdx === 0 ? 'disabled class="opacity-20"' : ''} class="text-xs text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-up"></i></button>
+                <button onclick="moveCourse(${cIdx}, 1)" ${cIdx === state.courses.length - 1 ? 'disabled class="opacity-20"' : ''} class="text-xs text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-down"></i></button>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold text-brand-cyan uppercase tracking-wider">${course.subject}</span>
+                <h3 class="text-lg font-extrabold text-white">${course.title}</h3>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openChapterModal(${course.id})" class="text-xs bg-brand-purple/20 text-brand-purple hover:bg-brand-purple/30 border border-brand-purple/30 px-2.5 py-1.5 rounded-xl font-semibold">
+                <i class="fa-solid fa-plus mr-1"></i> Chapitre
+              </button>
+              <button onclick="deleteCourse(${course.id})" class="text-slate-500 hover:text-red-400 p-1.5 text-xs"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            ${course.chapters.length === 0 ? '<p class="text-xs text-slate-500 italic">Aucun chapitre dans ce cours.</p>' : ''}
+            ${course.chapters.map((chap, chIdx) => `
+              <div class="bg-[#0a0e17] border border-dark-border p-3 rounded-2xl flex flex-col gap-2 text-xs">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <div class="flex flex-col gap-0.5">
+                      <button onclick="moveChapter(${cIdx}, ${chIdx}, -1)" ${chIdx === 0 ? 'disabled class="opacity-20"' : ''} class="text-[10px] text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-up"></i></button>
+                      <button onclick="moveChapter(${cIdx}, ${chIdx}, 1)" ${chIdx === course.chapters.length - 1 ? 'disabled class="opacity-20"' : ''} class="text-[10px] text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <span class="font-medium text-slate-200">${chap.title}</span>
+                  </div>
+
+                  <div class="flex items-center gap-2 flex-wrap justify-end">
+                    <select onchange="updateChapterStatus(${course.id}, ${chap.id}, this.value)" class="bg-slate-800 text-slate-300 rounded-lg p-1.5 text-[11px] outline-none">
+                      <option value="to_revise" ${chap.status === 'to_revise' ? 'selected' : ''}>À réviser 🔴</option>
+                      <option value="in_progress" ${chap.status === 'in_progress' ? 'selected' : ''}>En cours 🟡</option>
+                      <option value="mastered" ${chap.status === 'mastered' ? 'selected' : ''}>Maîtrisé 🟢</option>
+                      <option value="difficulties" ${chap.status === 'difficulties' ? 'selected' : ''}>Difficultés ⚠️</option>
+                    </select>
+                    <label class="flex items-center gap-1 text-[10px] text-slate-500" title="Date de dernière révision">
+                      <i class="fa-regular fa-calendar-check"></i>
+                      <input type="date" value="${chap.lastRevised ? new Date(chap.lastRevised).toISOString().slice(0,10) : ''}" onchange="updateChapterRevisedDate(${course.id}, ${chap.id}, this.value)" class="bg-slate-800 text-slate-300 rounded-lg p-1.5 text-[11px] outline-none">
+                    </label>
+                    ${chap.status === 'difficulties' ? `<button onclick="openDifficultyNoteModal(${course.id}, ${chap.id})" class="text-amber-400 hover:text-amber-300 p-1 text-xs" title="Noter mes difficultés"><i class="fa-solid fa-note-sticky"></i></button>` : ''}
+                    <button onclick="deleteChapter(${course.id}, ${chap.id})" class="text-slate-500 hover:text-red-400 p-1 text-xs" title="Supprimer le chapitre"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+                </div>
+                ${chap.status === 'difficulties' && chap.difficultyNotes ? `<div class="text-[11px] text-amber-300/90 bg-amber-500/10 border border-amber-500/20 rounded-xl p-2 italic">"${chap.difficultyNotes}"</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      // Garde la courbe d'oubli synchronisée avec la liste de chapitres
+      if (typeof populateForgettingChapterSelect === 'function') {
+        populateForgettingChapterSelect(true);
+        renderForgettingCurve();
+      }
+    }
+
+    function loadUserProfile() {
+      const profile = state.profile || {};
+      const avatarUrl = profile.img || "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9InVybCgjZykiLz4KICA8cGF0aCBkPSJNNTAgMjIgTDU5IDQxIEw4MCA1MCBMNTkgNTkgTDUwIDc4IEw0MSA1OSBMMjAgNTAgTDQxIDQxIFoiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOTIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=";
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg) sidebarImg.src = avatarUrl;
+    }
+
+    // ======================================================
+    // COURBE D'OUBLI (Ebbinghaus) — enfin fonctionnelle
+    // ======================================================
+    // La rétention mémoire théorique d'un chapitre décroît selon
+    // R(t) = e^(-t/stabilité), stabilité dépendant du statut du chapitre
+    // (un chapitre "Maîtrisé" s'oublie plus lentement qu'un chapitre
+    // "À réviser" ou "En difficulté"). Ces mêmes fonctions sont utilisées
+    // sur le Dashboard pour générer les notifications de révision.
+
+    function populateForgettingChapterSelect(keepSelection) {
+      const select = document.getElementById('forgetting-chapter-select');
+      if (!select) return;
+      const previousValue = keepSelection ? select.value : null;
+      select.innerHTML = '';
+
+      const allChapters = [];
+      state.courses.forEach(course => {
+        course.chapters.forEach(chap => {
+          allChapters.push({ course, chap });
+        });
+      });
+
+      if (!allChapters.length) {
+        select.innerHTML = '<option value="">Aucun chapitre disponible</option>';
+        return;
+      }
+
+      allChapters.forEach(({ course, chap }) => {
+        const opt = document.createElement('option');
+        opt.value = `${course.id}::${chap.id}`;
+        opt.innerText = `[${course.subject}] ${chap.title}`;
+        select.appendChild(opt);
+      });
+
+      if (previousValue && Array.from(select.options).some(o => o.value === previousValue)) {
+        select.value = previousValue;
+      }
+    }
+
+    let forgettingChart = null;
+    function renderForgettingCurve() {
+      const select = document.getElementById('forgetting-chapter-select');
+      const recommendation = document.getElementById('revision-recommendation');
+      const canvas = document.getElementById('forgettingCurveChart');
+      if (!select || !canvas || typeof Chart === 'undefined') return;
+
+      const [courseIdStr, chapterIdStr] = (select.value || '').split('::');
+      const courseId = parseInt(courseIdStr, 10);
+      const chapterId = parseInt(chapterIdStr, 10);
+      const course = state.courses.find(c => c.id === courseId);
+      const chapter = course && course.chapters.find(ch => ch.id === chapterId);
+
+      if (forgettingChart) { forgettingChart.destroy(); forgettingChart = null; }
+
+      if (!chapter) {
+        if (recommendation) recommendation.innerText = "Créez un cours et un chapitre pour visualiser sa courbe théorique de rétention.";
+        return;
+      }
+
+      const stability = BenkyoStorage.getChapterStabilityDays(chapter.status);
+      const { daysSince, retention } = BenkyoStorage.getChapterRetention(chapter);
+
+      // On trace la courbe sur 21 jours à partir de la dernière révision
+      const maxDays = 21;
+      const labels = [];
+      const dataPoints = [];
+      for (let d = 0; d <= maxDays; d++) {
+        labels.push(d === 0 ? "Révision" : `J+${d}`);
+        dataPoints.push(+(Math.exp(-d / stability) * 100).toFixed(1));
+      }
+
+      const ctx = canvas.getContext('2d');
+      forgettingChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Rétention mémoire estimée (%)',
+              data: dataPoints,
+              borderColor: '#f5c2e7',
+              backgroundColor: 'rgba(245, 194, 231, 0.15)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0
+            },
+            {
+              label: "Aujourd'hui",
+              data: labels.map((_, idx) => idx === Math.round(daysSince) ? +(retention * 100).toFixed(1) : null),
+              borderColor: '#cba6f7',
+              backgroundColor: '#cba6f7',
+              pointRadius: 6,
+              pointHoverRadius: 7,
+              showLine: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 0, max: 100, grid: { color: '#1f293d' }, ticks: { callback: v => v + '%' } },
+            x: { grid: { color: '#1f293d' } }
+          },
+          plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } }
+        }
+      });
+
+      const retentionPct = Math.round(retention * 100);
+      if (recommendation) {
+        if (retention < 0.5) {
+          recommendation.className = "text-xs bg-red-500/10 border border-red-500/30 p-3 rounded-xl text-red-300";
+          recommendation.innerHTML = `⚠️ Rétention estimée à <strong>${retentionPct}%</strong> (${Math.floor(daysSince)} jour(s) depuis la dernière révision). Il est temps de réviser ce chapitre !`;
+        } else if (retention < 0.75) {
+          recommendation.className = "text-xs bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl text-amber-300";
+          recommendation.innerHTML = `🟡 Rétention estimée à <strong>${retentionPct}%</strong>. Une révision prochaine est recommandée pour ne pas perdre le fil.`;
+        } else {
+          recommendation.className = "text-xs bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl text-emerald-300";
+          recommendation.innerHTML = `🟢 Rétention estimée à <strong>${retentionPct}%</strong>. Ce chapitre est encore bien mémorisé, vous pouvez attendre un peu avant de le réviser.`;
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserProfile();
+      checkStreak();
+      renderRevisions();
+    });
+  </script>
+</body>
+</html>

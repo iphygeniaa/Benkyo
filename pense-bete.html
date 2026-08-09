@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0a0e17] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMyA1MCA1MCkiPgogICAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTAiIGZpbGw9IiNjMTI3MmQiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZjFhMWYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9IjAuODUiLz4KICAgIDx0ZXh0IHg9IjUwIiB5PSI0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IidOb3RvIFNlcmlmIEpQJywnSGlyYWdpbm8gTWluY2hvIFByb04nLHNlcmlmIiBmb250LXNpemU9IjMzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj7li4k8L3RleHQ+CiAgICA8dGV4dCB4PSI1MCIgeT0iNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInTm90byBTZXJpZiBKUCcsJ0hpcmFnaW5vIE1pbmNobyBQcm9OJyxzZXJpZiIgZm9udC1zaXplPSIzMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+5by3PC90ZXh0PgogICAgPGNpcmNsZSBjeD0iMTUiIGN5PSI4NiIgcj0iMi4yIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjE4Ii8+CiAgICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjE2IiByPSIxLjYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuMTUiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSIjMDAwMDAwIiBvcGFjaXR5PSIwLjAzIi8+CiAgPC9nPgo8L3N2Zz4K">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0a0e17', card: 'rgba(15, 20, 32, 0.85)', border: 'rgba(255, 255, 255, 0.09)', sidebar: '#05070c' },
+            brand: { purple: '#cba6f7', blue: '#89b4fa', pink: '#f5c2e7', cyan: '#94e2d5', green: '#a6e3a1' },
+            bento: { blue: '#89b4fa', blue2: '#b4d0fd', orange: '#f8bd96', yellow: '#f9e2af' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar optimizations */
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0a0e17; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    /* Optimized rendering performance with GPU acceleration */
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
+      contain: content;
+      will-change: transform;
+    }
+
+    .card-glow { 
+      transition: border-color 0.2s ease, transform 0.2s ease; 
+      will-change: transform;
+    }
+    .card-glow:hover { 
+      border-color: rgba(203, 166, 247, 0.4); 
+      transform: translateY(-2px); 
+    }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content.hidden { display: none; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 2.5s forwards ease-in-out; }
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
+
+  <aside class="w-full md:w-64 bg-[#05070c] border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5 cursor-pointer transition hover:opacity-80" onclick="window.location.href='index.html'" title="Retour au tableau de bord" role="button">
+        <img id="sidebar-profile-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9InVybCgjZykiLz4KICA8cGF0aCBkPSJNNTAgMjIgTDU5IDQxIEw4MCA1MCBMNTkgNTkgTDUwIDc4IEw0MSA1OSBMMjAgNTAgTDQxIDQxIFoiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOTIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMyA1MCA1MCkiPgogICAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTAiIGZpbGw9IiNjMTI3MmQiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZjFhMWYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9IjAuODUiLz4KICAgIDx0ZXh0IHg9IjUwIiB5PSI0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IidOb3RvIFNlcmlmIEpQJywnSGlyYWdpbm8gTWluY2hvIFByb04nLHNlcmlmIiBmb250LXNpemU9IjMzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj7li4k8L3RleHQ+CiAgICA8dGV4dCB4PSI1MCIgeT0iNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInTm90byBTZXJpZiBKUCcsJ0hpcmFnaW5vIE1pbmNobyBQcm9OJyxzZXJpZiIgZm9udC1zaXplPSIzMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+5by3PC90ZXh0PgogICAgPGNpcmNsZSBjeD0iMTUiIGN5PSI4NiIgcj0iMi4yIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjE4Ii8+CiAgICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjE2IiByPSIxLjYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuMTUiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSIjMDAwMDAwIiBvcGFjaXR5PSIwLjAzIi8+CiAgPC9nPgo8L3N2Zz4K" alt="Benkyō" class="w-10 h-10 shrink-0" style="filter: drop-shadow(0 3px 6px rgba(193,39,45,0.35));">
+        <span class="font-black text-xl tracking-tight" style="color:#8f1a1f;font-family:'Plus Jakarta Sans',ui-sans-serif,sans-serif;">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+    <script>
+      // Synchronisation immédiate (avant le chargement des librairies lourdes)
+      // de la photo de profil et du compteur de série, pour éviter le flash
+      // "photo par défaut / 0 jour" pendant le rechargement de page.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('benkyo_profile') || 'null');
+          var img = document.getElementById('sidebar-profile-img');
+          if (p && p.img && img) img.src = p.img;
+        } catch (e) {}
+        try {
+          var s = JSON.parse(localStorage.getItem('benkyo_streak') || 'null');
+          var el = document.getElementById('streak-count');
+          if (s && typeof s.count === 'number' && el) el.textContent = s.count;
+        } catch (e) {}
+      })();
+    </script>
+
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 hover:text-white hover:bg-emerald-500/10 border border-emerald-500/40">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+    <section id="tab-notes" class="tab-content space-y-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-extrabold text-white">Pense-bête 📝</h1>
+        <button onclick="addNote()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-4 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 transition shadow-lg shadow-brand-purple/20"><i class="fa-solid fa-plus"></i><span>Nouvelle note</span></button>
+      </div>
+      <div id="notes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let statsChartInstance = null;
+    let noteDebounceTimer = null;
+
+    function saveState() {
+      BenkyoStorage.save(state);
+    }
+
+    function updateProfileUI() {
+      const wName = document.getElementById('welcome-name');
+      if(wName) wName.innerText = state.profile.firstname;
+      const dTitle = document.getElementById('dash-main-title');
+      if(dTitle) dTitle.innerText = `Tableau de bord de ${state.profile.firstname} 🚀`;
+      
+      const pFirstname = document.getElementById('profile-firstname');
+      if(pFirstname) pFirstname.value = state.profile.firstname;
+      const pGender = document.getElementById('profile-gender');
+      if(pGender) pGender.value = state.profile.gender;
+      const pLevel = document.getElementById('profile-level');
+      if(pLevel) pLevel.value = state.profile.level;
+      
+      const pPreview = document.getElementById('profile-img-preview');
+      if(pPreview) pPreview.src = state.profile.img;
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if(sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function updateProfileName(val) {
+      state.profile.firstname = val || "Étudiant";
+      saveState();
+      updateProfileUI();
+    }
+
+    function saveProfileData() {
+      state.profile.gender = document.getElementById('profile-gender').value;
+      state.profile.level = document.getElementById('profile-level').value;
+      saveState();
+    }
+
+    function updateProfileImgFromUrl(url) {
+      if(url) {
+        state.profile.img = url;
+        saveState();
+        updateProfileUI();
+      }
+    }
+
+    function uploadProfileImg(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          state.profile.img = evt.target.result;
+          saveState();
+          updateProfileUI();
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const sCount = document.getElementById('streak-count');
+      if(sCount) sCount.innerText = state.streak.count;
+      const dStreak = document.getElementById('dash-streak-count');
+      if(dStreak) dStreak.innerText = state.streak.count;
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      if(!container) return;
+      container.innerHTML = state.notes.map((n, idx) => `
+        <div class="glass-panel border border-dark-border p-4 rounded-3xl space-y-3 card-glow relative">
+          <div class="flex justify-between items-center border-b border-dark-border pb-2">
+            <input type="text" value="${n.title || ''}" onchange="state.notes[${idx}].title=this.value; saveState();" placeholder="Titre..." class="bg-transparent font-bold text-white focus:outline-none w-full text-sm">
+            <button onclick="deleteNote(${idx})" class="text-slate-500 hover:text-red-400 text-xs ml-2" title="Supprimer la note"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 bg-[#0a0e17] p-1.5 rounded-xl border border-dark-border text-xs">
+            <button onclick="formatNoteText(${idx}, 'bold')" class="px-2 py-0.5 bg-slate-800 rounded font-bold">B</button>
+            <button onclick="formatNoteText(${idx}, 'italic')" class="px-2 py-0.5 bg-slate-800 rounded italic">I</button>
+            <button onclick="formatNoteText(${idx}, 'underline')" class="px-2 py-0.5 bg-slate-800 rounded underline">U</button>
+
+            <span class="text-[10px] text-slate-400 ml-1">Surligner:</span>
+            <button onclick="highlightNoteText(${idx}, '#fef08a')" class="w-4 h-4 rounded-full bg-yellow-200 border" title="Jaune Pastel (recliquer pour désurligner)"></button>
+            <button onclick="highlightNoteText(${idx}, '#bbf7d0')" class="w-4 h-4 rounded-full bg-green-200 border" title="Vert Pastel (recliquer pour désurligner)"></button>
+            <button onclick="highlightNoteText(${idx}, '#bfdbfe')" class="w-4 h-4 rounded-full bg-blue-200 border" title="Bleu Pastel (recliquer pour désurligner)"></button>
+            <button onclick="highlightNoteText(${idx}, '#fbcfe8')" class="w-4 h-4 rounded-full bg-pink-200 border" title="Rose Pastel (recliquer pour désurligner)"></button>
+            <button onclick="removeHighlightNoteText(${idx})" class="w-4 h-4 rounded-full bg-transparent border border-slate-500 flex items-center justify-center" title="Annuler le surlignage">
+              <i class="fa-solid fa-xmark text-[8px] text-slate-400"></i>
+            </button>
+
+            <input type="color" onchange="changeNoteTextColor(${idx}, this.value)" title="Couleur de écriture" class="w-5 h-5 bg-transparent cursor-pointer ml-1">
+            <select onchange="changeNoteFont(${idx}, this.value)" class="bg-slate-800 text-[10px] text-slate-200 rounded p-0.5">
+              <option value="sans-serif">Sans-Serif</option>
+              <option value="serif">Serif</option>
+              <option value="monospace">Monospace</option>
+              <option value="cursive">Cursive</option>
+            </select>
+          </div>
+
+          <div id="note-body-${idx}" contenteditable="true" oninput="debouncedSaveNote(${idx})" class="w-full h-28 bg-[#0a0e17] p-3 rounded-xl text-xs text-slate-200 focus:outline-none overflow-y-auto custom-scrollbar leading-relaxed" style="font-family: ${n.font || 'sans-serif'}; color: ${n.color || '#e2e8f0'}">
+            ${n.content || ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNote() { state.notes.push({ title: '', content: '', font: 'sans-serif', color: '#e2e8f0' }); saveState(); renderNotes(); }
+    function deleteNote(idx) { state.notes.splice(idx, 1); saveState(); renderNotes(); }
+    
+    /* Debounced saving prevents lag while typing in contenteditable notes */
+    function debouncedSaveNote(idx) {
+      clearTimeout(noteDebounceTimer);
+      noteDebounceTimer = setTimeout(() => {
+        saveNoteContent(idx);
+      }, 300);
+    }
+
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) { state.notes[idx].content = el.innerHTML; saveState(); }
+    }
+    function formatNoteText(idx, cmd) {
+      document.execCommand(cmd, false, null);
+      saveNoteContent(idx);
+    }
+    // Normalise une couleur (hex ou rgb) en chaîne rgb() comparable
+    function normalizeColorString(c) {
+      if (!c) return null;
+      const probe = document.createElement('div');
+      probe.style.color = c;
+      document.body.appendChild(probe);
+      const rgb = getComputedStyle(probe).color;
+      document.body.removeChild(probe);
+      return rgb;
+    }
+
+    // Surligne le texte sélectionné. Si la sélection porte déjà cette
+    // même couleur de surlignage, on la retire (toggle "désurligner").
+    function highlightNoteText(idx, color) {
+      const currentValue = document.queryCommandValue('hiliteColor') || document.queryCommandValue('backColor');
+      const currentNormalized = normalizeColorString(currentValue);
+      const targetNormalized = normalizeColorString(color);
+      if (currentNormalized && currentNormalized === targetNormalized) {
+        removeHighlightNoteText(idx);
+        return;
+      }
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('hiliteColor', false, color);
+      saveNoteContent(idx);
+    }
+
+    // Retire complètement le surlignage sur la sélection courante
+    function removeHighlightNoteText(idx) {
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('hiliteColor', false, 'transparent');
+      saveNoteContent(idx);
+    }
+    function changeNoteTextColor(idx, color) {
+      document.execCommand('foreColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteFont(idx, font) {
+      state.notes[idx].font = font;
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) el.style.fontFamily = font;
+      saveState();
+    }
+
+    /* Lazy-loaded initialization prevents lag on startup */
+    function benkyoInitPage() {
+      try { updateProfileUI(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderNotes(); } catch(e) {}
+    }
+    // DOMContentLoaded plutôt que window.onload : voir explication dans les
+    // autres pages — "load" peut ne jamais se déclencher si une ressource
+    // externe est lente/bloquée, laissant la page à moitié vide.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', benkyoInitPage);
+    } else {
+      benkyoInitPage();
+    }
+  </script>
+</body>
+</html>
