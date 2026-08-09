@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0a0e17] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMyA1MCA1MCkiPgogICAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTAiIGZpbGw9IiNjMTI3MmQiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZjFhMWYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9IjAuODUiLz4KICAgIDx0ZXh0IHg9IjUwIiB5PSI0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IidOb3RvIFNlcmlmIEpQJywnSGlyYWdpbm8gTWluY2hvIFByb04nLHNlcmlmIiBmb250LXNpemU9IjMzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj7li4k8L3RleHQ+CiAgICA8dGV4dCB4PSI1MCIgeT0iNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInTm90byBTZXJpZiBKUCcsJ0hpcmFnaW5vIE1pbmNobyBQcm9OJyxzZXJpZiIgZm9udC1zaXplPSIzMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+5by3PC90ZXh0PgogICAgPGNpcmNsZSBjeD0iMTUiIGN5PSI4NiIgcj0iMi4yIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjE4Ii8+CiAgICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjE2IiByPSIxLjYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuMTUiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSIjMDAwMDAwIiBvcGFjaXR5PSIwLjAzIi8+CiAgPC9nPgo8L3N2Zz4K">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { bg: '#0a0e17', card: 'rgba(15, 20, 32, 0.85)', border: 'rgba(255, 255, 255, 0.09)', sidebar: '#05070c' },
+            brand: { purple: '#cba6f7', blue: '#89b4fa', pink: '#f5c2e7', cyan: '#94e2d5', green: '#a6e3a1' },
+            bento: { blue: '#89b4fa', blue2: '#b4d0fd', orange: '#f8bd96', yellow: '#f9e2af' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0a0e17; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    /* Optimisation des performances du panneau en verre */
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      backdrop-filter: blur(4px); 
+      -webkit-backdrop-filter: blur(4px); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      will-change: transform;
+    }
+    .card-glow { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+    .card-glow:hover { border-color: rgba(203, 166, 247, 0.4); box-shadow: 0 0 20px -5px rgba(203, 166, 247, 0.25); transform: translateY(-2px); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 3s forwards ease-in-out; }
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
+
+  <aside class="w-full md:w-64 bg-[#05070c]/95 border-r border-dark-border flex flex-col shrink-0 z-20">
+    <div class="p-4 border-b border-dark-border flex items-center justify-between">
+      <div class="flex items-center space-x-2.5 cursor-pointer transition hover:opacity-80" onclick="window.location.href='index.html'" title="Retour au tableau de bord" role="button">
+        <img id="sidebar-profile-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9InVybCgjZykiLz4KICA8cGF0aCBkPSJNNTAgMjIgTDU5IDQxIEw4MCA1MCBMNTkgNTkgTDUwIDc4IEw0MSA1OSBMMjAgNTAgTDQxIDQxIFoiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOTIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=" class="w-9 h-9 rounded-full object-cover border-2 border-brand-purple shadow-md">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZyB0cmFuc2Zvcm09InJvdGF0ZSgtMyA1MCA1MCkiPgogICAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTAiIGZpbGw9IiNjMTI3MmQiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZjFhMWYiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiIG9wYWNpdHk9IjAuODUiLz4KICAgIDx0ZXh0IHg9IjUwIiB5PSI0MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IidOb3RvIFNlcmlmIEpQJywnSGlyYWdpbm8gTWluY2hvIFByb04nLHNlcmlmIiBmb250LXNpemU9IjMzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj7li4k8L3RleHQ+CiAgICA8dGV4dCB4PSI1MCIgeT0iNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInTm90byBTZXJpZiBKUCcsJ0hpcmFnaW5vIE1pbmNobyBQcm9OJyxzZXJpZiIgZm9udC1zaXplPSIzMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+5by3PC90ZXh0PgogICAgPGNpcmNsZSBjeD0iMTUiIGN5PSI4NiIgcj0iMi4yIiBmaWxsPSIjZmZmZmZmIiBvcGFjaXR5PSIwLjE4Ii8+CiAgICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjE2IiByPSIxLjYiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuMTUiLz4KICAgIDxyZWN0IHg9IjgiIHk9IjgiIHdpZHRoPSI4NCIgaGVpZ2h0PSI4NCIgcng9IjEwIiBmaWxsPSIjMDAwMDAwIiBvcGFjaXR5PSIwLjAzIi8+CiAgPC9nPgo8L3N2Zz4K" alt="Benkyō" class="w-10 h-10 shrink-0" style="filter: drop-shadow(0 3px 6px rgba(193,39,45,0.35));">
+        <span class="font-black text-xl tracking-tight" style="color:#8f1a1f;font-family:'Plus Jakarta Sans',ui-sans-serif,sans-serif;">Benkyō</span>
+      </div>
+      <div class="flex items-center space-x-1 bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold border border-amber-500/20">
+        <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+        <span id="streak-count">0</span>j
+      </div>
+    </div>
+    <script>
+      // Synchronisation immédiate (avant le chargement des librairies lourdes)
+      // de la photo de profil et du compteur de série, pour éviter le flash
+      // "photo par défaut / 0 jour" pendant le rechargement de page.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('benkyo_profile') || 'null');
+          var img = document.getElementById('sidebar-profile-img');
+          if (p && p.img && img) img.src = p.img;
+        } catch (e) {}
+        try {
+          var s = JSON.parse(localStorage.getItem('benkyo_streak') || 'null');
+          var el = document.getElementById('streak-count');
+          if (s && typeof s.count === 'number' && el) el.textContent = s.count;
+        } catch (e) {}
+      })();
+    </script>
+
+
+    <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto custom-scrollbar">
+      <button onclick="window.location.href='index.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-border-all w-5 text-center"></i><span>Dashboard</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-user-gear w-5 text-center"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-clock w-5 text-center"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-calendar-days w-5 text-center"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-list-check w-5 text-center"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-brain w-5 text-center"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-regular fa-note-sticky w-5 text-center"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-chart-line w-5 text-center"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-layer-group w-5 text-center"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-white hover:bg-dark-card">
+        <i class="fa-solid fa-stopwatch w-5 text-center"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn active w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-emerald-400 bg-emerald-500/20 border border-emerald-500 shadow-[0_0_15px_rgba(166, 227, 161,0.15)]">
+        <i class="fa-solid fa-sun w-5 text-center text-emerald-400"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <section id="tab-vacation" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white">Grandes Vacances ☀️</h1>
+          <p class="text-slate-400 text-sm">Espace temporaire de préparation de rentrée.</p>
+        </div>
+      </div>
+
+      <div class="glass-panel border border-emerald-500/30 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+          <i class="fa-solid fa-bars-progress"></i> Sélectionner le sous-onglet :
+        </div>
+        <select id="vacation-sub-select" onchange="switchVacationSubTab(this.value)" class="bg-[#0a0e17] border border-emerald-500/40 text-emerald-300 rounded-xl px-4 py-2 text-sm font-semibold focus:outline-none focus:border-emerald-400">
+          <option value="supplies">Fournitures et achats 🛒</option>
+          <option value="books">Lectures d'été 📚</option>
+          <option value="latin">Petit latin 🏛️</option>
+        </select>
+      </div>
+
+      <div id="sub-tab-supplies" class="vacation-sub-content glass-panel border border-dark-border p-6 rounded-3xl space-y-4 card-glow">
+        <h3 class="font-bold text-xl text-white flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-brand-cyan"></i> Fournitures & Achats 🛒</h3>
+        <form onsubmit="addSupplyItem(event)" class="flex flex-wrap gap-2">
+          <input type="text" id="supply-input" placeholder="Nouvelle fourniture..." class="flex-1 min-w-[160px] bg-[#0a0e17] border border-dark-border text-white rounded-xl p-3 text-xs focus:outline-none" required>
+          <input type="number" id="supply-price-input" placeholder="Prix € (facultatif)" min="0" step="0.01" class="w-36 bg-[#0a0e17] border border-dark-border text-white rounded-xl p-3 text-xs focus:outline-none">
+          <input type="url" id="supply-link-input" placeholder="Lien de l'article (facultatif)" class="flex-1 min-w-[160px] bg-[#0a0e17] border border-dark-border text-white rounded-xl p-3 text-xs focus:outline-none">
+          <button type="submit" class="shrink-0 bg-brand-cyan text-slate-900 px-5 py-3 rounded-xl text-xs font-bold">Ajouter</button>
+        </form>
+        <ul id="supplies-list" class="space-y-2.5 max-h-96 overflow-y-auto custom-scrollbar"></ul>
+      </div>
+
+      <div id="sub-tab-books" class="vacation-sub-content hidden glass-panel border border-dark-border p-6 rounded-3xl space-y-4 card-glow">
+        <h3 class="font-bold text-xl text-white flex items-center gap-2"><i class="fa-solid fa-book-open text-brand-purple"></i> Lectures d'été 📚</h3>
+        <form onsubmit="addSummerBook(event)" class="space-y-3 text-xs">
+          <input type="text" id="book-title-input" placeholder="Titre du livre..." class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-3 focus:outline-none" required>
+          <div class="flex gap-2">
+            <select id="book-status-input" class="flex-1 bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 focus:outline-none">
+              <option value="à lire">À lire 🔴</option>
+              <option value="en cours">En cours 🟡</option>
+              <option value="lu">Lu 🟢</option>
+            </select>
+            <button type="submit" class="bg-brand-purple text-white px-5 py-2.5 rounded-xl font-bold">Ajouter</button>
+          </div>
+        </form>
+        <ul id="summer-books-list" class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar"></ul>
+      </div>
+
+      <div id="sub-tab-latin" class="vacation-sub-content hidden glass-panel border border-dark-border p-6 rounded-3xl space-y-4 card-glow">
+        <h3 class="font-bold text-xl text-white flex items-center gap-2"><i class="fa-solid fa-scroll text-amber-400"></i> Petit Latin 🏛️</h3>
+        <form onsubmit="addLatinEntry(event)" class="space-y-3 text-xs">
+          <div>
+            <label class="text-slate-400 block mb-1">Nom de l'extrait travaillé :</label>
+            <input type="text" id="latin-title" placeholder="Ex: Cicéron, In Catilinam I..." class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-3 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Difficulté du texte traduit (Cliquez les étoiles) :</label>
+            <div id="latin-star-rating" class="flex gap-1 text-2xl text-slate-600 cursor-pointer">
+              <span onclick="setLatinStars(1)" class="star">★</span>
+              <span onclick="setLatinStars(2)" class="star">★</span>
+              <span onclick="setLatinStars(3)" class="star">★</span>
+              <span onclick="setLatinStars(4)" class="star">★</span>
+              <span onclick="setLatinStars(5)" class="star">★</span>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 rounded-xl transition">Enregistrer la traduction</button>
+        </form>
+        <div id="latin-history-list" class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar pt-2 border-t border-dark-border"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="latin-edit-modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 class="text-lg font-bold text-white">Modifier l'extrait latin</h3>
+      <form onsubmit="saveEditedLatin(event)" class="space-y-3">
+        <input type="hidden" id="latin-edit-index">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Titre de l'extrait</label>
+          <input type="text" id="latin-edit-title" class="w-full bg-[#0a0e17] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Difficulté (Étoiles)</label>
+          <div id="latin-edit-star-rating" class="flex gap-1 text-2xl text-slate-600 cursor-pointer">
+            <span onclick="setEditLatinStars(1)" class="edit-star">★</span>
+            <span onclick="setEditLatinStars(2)" class="edit-star">★</span>
+            <span onclick="setEditLatinStars(3)" class="edit-star">★</span>
+            <span onclick="setEditLatinStars(4)" class="edit-star">★</span>
+            <span onclick="setEditLatinStars(5)" class="edit-star">★</span>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeLatinEditModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-brand-purple text-sm font-semibold rounded-xl">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let statsChartInstance = null;
+
+    // Sauvegarde optimisée avec debounce
+    function saveState() {
+      BenkyoStorage.saveDebounced(state);
+    }
+
+    function updateProfileUI() {
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if(sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function switchVacationSubTab(subId) {
+      document.querySelectorAll('.vacation-sub-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(`sub-tab-${subId}`);
+      if(target) target.classList.remove('hidden');
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakEl = document.getElementById('streak-count');
+      if(streakEl) streakEl.innerText = state.streak.count;
+    }
+
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) { 
+        state.notes[idx].content = el.innerHTML; 
+        saveState(); 
+      }
+    }
+
+    function renderVacation() {
+      const supList = document.getElementById('supplies-list');
+      supList.innerHTML = state.vacation.supplies.map((item, idx) => `
+        <li class="flex flex-wrap justify-between items-center gap-2 bg-[#0a0e17] p-3 rounded-xl text-xs border border-dark-border">
+          <div class="flex items-center space-x-2 min-w-0">
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="state.vacation.supplies[${idx}].done=!state.vacation.supplies[${idx}].done; saveState(); renderVacation();" class="rounded text-brand-cyan shrink-0">
+            <span class="${item.done ? 'line-through text-slate-500' : 'text-slate-200'} break-words">${item.text}</span>
+            ${item.price ? `<span class="shrink-0 text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/30 px-2 py-0.5 rounded-full font-bold">${Number(item.price).toFixed(2)} €</span>` : ''}
+            ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-slate-400 hover:text-brand-cyan" title="Voir l'article"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : ''}
+          </div>
+          <button onclick="state.vacation.supplies.splice(${idx},1); saveState(); renderVacation();" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+        </li>
+      `).join('');
+
+      const bookList = document.getElementById('summer-books-list');
+      bookList.innerHTML = state.vacation.books.map((b, idx) => `
+        <li class="bg-[#0a0e17] p-3 rounded-2xl text-xs border border-dark-border space-y-2">
+          <div class="flex justify-between font-bold text-white">
+            <span>${b.title}</span>
+            <button onclick="state.vacation.books.splice(${idx},1); saveState(); renderVacation();" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <select onchange="state.vacation.books[${idx}].status=this.value; saveState(); renderVacation();" class="w-full bg-slate-800 text-slate-200 p-2 rounded-lg">
+            <option value="à lire" ${b.status==='à lire'?'selected':''}>À lire 🔴</option>
+            <option value="en cours" ${b.status==='en cours'?'selected':''}>En cours 🟡</option>
+            <option value="lu" ${b.status==='lu'?'selected':''}>Lu 🟢</option>
+          </select>
+        </li>
+      `).join('');
+
+      const latinList = document.getElementById('latin-history-list');
+      latinList.innerHTML = state.vacation.latin.map((l, idx) => `
+        <div class="bg-[#0a0e17] p-3 rounded-xl text-xs flex justify-between items-center border border-dark-border">
+          <div>
+            <div class="font-bold text-amber-400 text-sm">${l.title}</div>
+            <div class="text-[10px] text-slate-400">${l.date}</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-amber-400 font-bold">${'★'.repeat(l.stars)}</div>
+            <button onclick="openLatinEditModal(${idx})" class="text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="state.vacation.latin.splice(${idx},1); saveState(); renderVacation();" class="text-slate-500 hover:text-red-400 bg-slate-800 px-2 py-1 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addSupplyItem(e) {
+      e.preventDefault();
+      const input = document.getElementById('supply-input');
+      const priceInput = document.getElementById('supply-price-input');
+      const linkInput = document.getElementById('supply-link-input');
+      const price = priceInput.value !== '' ? parseFloat(priceInput.value) : null;
+      const link = linkInput.value.trim() || null;
+      state.vacation.supplies.push({ text: input.value, done: false, price: price, link: link });
+      input.value = '';
+      priceInput.value = '';
+      linkInput.value = '';
+      saveState();
+      renderVacation();
+    }
+
+    function addSummerBook(e) {
+      e.preventDefault();
+      const title = document.getElementById('book-title-input').value;
+      const status = document.getElementById('book-status-input').value;
+      state.vacation.books.push({ title, status });
+      document.getElementById('book-title-input').value = '';
+      saveState();
+      renderVacation();
+    }
+
+    function setLatinStars(count) {
+      selectedLatinStars = count;
+      const stars = document.querySelectorAll('#latin-star-rating .star');
+      stars.forEach((s, idx) => {
+        if(idx < count) s.classList.add('text-amber-400');
+        else s.classList.remove('text-amber-400');
+      });
+    }
+
+    function addLatinEntry(e) {
+      e.preventDefault();
+      const title = document.getElementById('latin-title').value;
+      if(!selectedLatinStars) return alert("Veuillez évaluer la difficulté en cliquant sur les étoiles.");
+      state.vacation.latin.unshift({ title, stars: selectedLatinStars, date: new Date().toLocaleDateString('fr-FR') });
+      document.getElementById('latin-title').value = '';
+      selectedLatinStars = 0;
+      setLatinStars(0);
+      saveState();
+      renderVacation();
+    }
+
+    function openLatinEditModal(idx) {
+      const item = state.vacation.latin[idx];
+      document.getElementById('latin-edit-index').value = idx;
+      document.getElementById('latin-edit-title').value = item.title;
+      editLatinStarsCount = item.stars;
+      setEditLatinStars(editLatinStarsCount);
+      document.getElementById('latin-edit-modal').classList.remove('hidden');
+    }
+
+    function closeLatinEditModal() {
+      document.getElementById('latin-edit-modal').classList.add('hidden');
+    }
+
+    function setEditLatinStars(count) {
+      editLatinStarsCount = count;
+      const stars = document.querySelectorAll('#latin-edit-star-rating .edit-star');
+      stars.forEach((s, idx) => {
+        if(idx < count) s.classList.add('text-amber-400');
+        else s.classList.remove('text-amber-400');
+      });
+    }
+
+    function saveEditedLatin(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('latin-edit-index').value);
+      const newTitle = document.getElementById('latin-edit-title').value;
+      if(state.vacation.latin[idx]) {
+        state.vacation.latin[idx].title = newTitle;
+        state.vacation.latin[idx].stars = editLatinStarsCount;
+        saveState();
+        renderVacation();
+        closeLatinEditModal();
+      }
+    }
+
+    window.onload = function() {
+      try { updateProfileUI(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderVacation(); } catch(e) {}
+    };
+  </script>
+</body>
+</html>
