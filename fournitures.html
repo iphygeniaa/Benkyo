@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Fournitures & Achats</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#EFC9BB">
+  <meta name="theme-color" content="#F4F0E6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="sakura.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.85)}</style>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F4F0E6; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #B88758; border-radius: 4px; }
+    
+    /* Optimisation des performances du panneau en verre */
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      backdrop-filter: blur(4px); 
+      -webkit-backdrop-filter: blur(4px); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .card-glow { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+    .card-glow:hover { border-color: rgba(203, 166, 247, 0.4); box-shadow: 0 0 20px -5px rgba(203, 166, 247, 0.25); transform: translateY(-2px); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 3s forwards ease-in-out; }
+  </style>
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="rpg-body h-full flex flex-col md:flex-row md:overflow-hidden">
+
+    <aside class="w-full md:w-72 flex flex-col shrink-0 z-20 md:h-full md:overflow-y-auto custom-scrollbar">
+
+    <div class="rpg-brand">
+      <div class="rpg-brand-plate" onclick="window.location.href='index.html'" role="button" title="Retour au campement">
+        <svg class="rpg-logo" width="34" height="34" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="2" width="14" height="12" fill="#5B4030"/><rect x="2" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="9" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="7" y="2" width="2" height="12" fill="#8A5F3E"/><rect x="3" y="5" width="3" height="1" fill="#8FA58B"/><rect x="3" y="7" width="3" height="1" fill="#8FA58B"/><rect x="10" y="5" width="3" height="1" fill="#C97D5D"/><rect x="10" y="7" width="3" height="1" fill="#C97D5D"/><rect x="4" y="10" width="2" height="2" fill="#D9C58C"/><rect x="10" y="10" width="2" height="2" fill="#B7C5A3"/></svg>
+        <span>
+          <span class="rpg-brand-name">Benkyō</span>
+          <span class="rpg-brand-sub">Cozy Study Quest</span>
+        </span>
+      </div>
+      <div class="rpg-streak" title="Série de jours d'étude">
+        <i class="fa-solid fa-fire" aria-hidden="true"></i><span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <div class="rpg-mascot">
+      <img src="mascotte.png" alt="Mascotte de Benkyō, petite fermière au chapeau de paille">
+      <div class="rpg-bubble"><b>Fournitures &amp; Achats</b><br>Direction la boutique du village !</div>
+    </div>
+
+    <div class="rpg-hud">
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Série</div>
+        <div class="rpg-hud-value"><span id="hud-streak">0</span> j</div>
+        <div class="rpg-hud-bar"><span id="hud-streak-bar" style="width:0%"></span></div>
+      </div>
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Tâches du jour</div>
+        <div class="rpg-hud-value"><span id="hud-tasks">0</span></div>
+        <div class="rpg-hud-bar"><span id="hud-tasks-bar" style="width:0%"></span></div>
+      </div>
+    </div>
+
+    <div class="rpg-nav-title">Menu du carnet</div>
+    <nav class="flex-1">
+      <button onclick="window.location.href='index.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-border-all" aria-hidden="true"></i><span>Zone de campement</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-clock" aria-hidden="true"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-brain" aria-hidden="true"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-note-sticky" aria-hidden="true"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-stopwatch" aria-hidden="true"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='fournitures.html'" class="nav-btn active" aria-current="page">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Fournitures &amp; Achats</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn nav-vacation" aria-current="false">
+        <i class="fa-solid fa-sun" aria-hidden="true"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 md:overflow-y-auto custom-scrollbar relative">
+  <div class="rpg-parchment">
+    <div class="rpg-questbar">
+      <img src="mascotte.png" alt="">
+      <div>
+        <div class="rpg-questbar-title">Fournitures &amp; Achats</div>
+        <div class="rpg-questbar-sub">Direction la boutique du village !</div>
+      </div>
+      <span class="rpg-chip" style="margin-left:auto"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Benkyō</span>
+    </div>
+
+    <section class="space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white">Fournitures &amp; Achats</h1>
+          <p class="text-slate-400 text-sm">Votre liste d'achats, disponible toute l'année. Elle est partagée avec l'onglet « Grandes vacances ».</p>
+        </div>
+        <div class="glass-panel border border-brand-cyan/30 rounded-2xl px-5 py-3 text-right">
+          <div class="text-[11px] uppercase tracking-wide text-slate-400">Total estimé</div>
+          <div id="supplies-total" class="text-2xl font-extrabold text-brand-cyan">0,00 €</div>
+          <div id="supplies-remaining" class="text-[11px] text-slate-400">0 article à acheter</div>
+        </div>
+      </div>
+
+      <div class="glass-panel border border-dark-border p-6 rounded-3xl space-y-4 card-glow">
+        <h3 class="font-bold text-xl text-white flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-brand-cyan"></i> Ma liste d'achats</h3>
+        <form onsubmit="addSupplyItem(event)" class="flex flex-wrap gap-2">
+          <input type="text" id="supply-input" placeholder="Nouvelle fourniture..." class="flex-1 min-w-[160px] bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-3 text-xs focus:outline-none" required>
+          <input type="number" id="supply-price-input" placeholder="Prix € (facultatif)" min="0" step="0.01" class="w-36 bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-3 text-xs focus:outline-none">
+          <input type="url" id="supply-link-input" placeholder="Lien de l'article (facultatif)" class="flex-1 min-w-[160px] bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-3 text-xs focus:outline-none">
+          <button type="submit" class="shrink-0 bg-brand-cyan text-slate-900 px-5 py-3 rounded-xl text-xs font-bold">Ajouter</button>
+        </form>
+        <ul id="supplies-list" class="space-y-2.5 max-h-[60vh] overflow-y-auto custom-scrollbar"></ul>
+        <p id="supplies-empty" class="hidden text-center text-slate-500 text-xs py-6">Aucune fourniture pour le moment. Ajoutez votre premier article ci-dessus.</p>
+      </div>
+    </section>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script src="tampons.js" defer></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    function saveState() { BenkyoStorage.saveDebounced(state); }
+
+    function updateProfileUI() {
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function checkStreak() {
+      const streakEl = document.getElementById('streak-count');
+      if (streakEl) streakEl.innerText = state.streak.count;
+    }
+
+    // La liste est la même que celle de l'onglet « Grandes vacances » :
+    // ce qui est ajouté ici s'y retrouve, et inversement.
+    function ensureSupplies() {
+      if (!state.vacation) state.vacation = BenkyoStorage.defaultState().vacation;
+      if (!Array.isArray(state.vacation.supplies)) state.vacation.supplies = [];
+      return state.vacation.supplies;
+    }
+
+    function renderSupplies() {
+      const supplies = ensureSupplies();
+      const list = document.getElementById('supplies-list');
+      const empty = document.getElementById('supplies-empty');
+
+      list.innerHTML = supplies.map((item, idx) => `
+        <li class="flex flex-wrap justify-between items-center gap-2 bg-[#F4F0E6] p-3 rounded-xl text-xs border border-dark-border">
+          <div class="flex items-center space-x-2 min-w-0">
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleSupply(${idx})" class="rounded text-brand-cyan shrink-0">
+            <span class="${item.done ? 'line-through text-slate-500' : 'text-slate-200'} break-words">${item.text}</span>
+            ${item.price ? `<span class="shrink-0 text-brand-cyan bg-brand-cyan/10 border border-brand-cyan/30 px-2 py-0.5 rounded-full font-bold">${Number(item.price).toFixed(2)} €</span>` : ''}
+            ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-slate-400 hover:text-brand-cyan" title="Voir l'article"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : ''}
+          </div>
+          <button onclick="deleteSupply(${idx})" class="text-slate-500 hover:text-red-400"><i class="fa-solid fa-trash"></i></button>
+        </li>
+      `).join('');
+
+      if (empty) empty.classList.toggle('hidden', supplies.length > 0);
+
+      const total = supplies.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
+      const todo = supplies.filter(i => !i.done).length;
+      const totalEl = document.getElementById('supplies-total');
+      const remainingEl = document.getElementById('supplies-remaining');
+      if (totalEl) totalEl.innerText = total.toFixed(2).replace('.', ',') + ' €';
+      if (remainingEl) remainingEl.innerText = todo + (todo > 1 ? ' articles à acheter' : ' article à acheter');
+    }
+
+    function toggleSupply(idx) {
+      const supplies = ensureSupplies();
+      if (!supplies[idx]) return;
+      supplies[idx].done = !supplies[idx].done;
+      saveState();
+      renderSupplies();
+    }
+
+    function deleteSupply(idx) {
+      ensureSupplies().splice(idx, 1);
+      saveState();
+      renderSupplies();
+    }
+
+    function addSupplyItem(e) {
+      e.preventDefault();
+      const input = document.getElementById('supply-input');
+      const priceInput = document.getElementById('supply-price-input');
+      const linkInput = document.getElementById('supply-link-input');
+      const price = priceInput.value !== '' ? parseFloat(priceInput.value) : null;
+      const link = linkInput.value.trim() || null;
+      ensureSupplies().push({ text: input.value, done: false, price: price, link: link });
+      input.value = '';
+      priceInput.value = '';
+      linkInput.value = '';
+      saveState();
+      renderSupplies();
+    }
+
+    function benkyoInitPage() {
+      try { updateProfileUI(); } catch (e) {}
+      try { checkStreak(); } catch (e) {}
+      try { renderSupplies(); } catch (e) {}
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', benkyoInitPage);
+    } else {
+      benkyoInitPage();
+    }
+  </script>
+  <script>
+    /* HUD cozy : série + quêtes du jour, lues depuis le stockage local */
+    (function(){
+      function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+      function bar(id,p){var e=document.getElementById(id);if(e)e.style.width=Math.max(0,Math.min(100,p))+'%';}
+      try{
+        var s=JSON.parse(localStorage.getItem('benkyo_streak')||'null');
+        var c=(s&&typeof s.count==='number')?s.count:0;
+        set('streak-count',c);set('hud-streak',c);bar('hud-streak-bar',(c/30)*100);
+      }catch(e){}
+      try{
+        var t=JSON.parse(localStorage.getItem('benkyo_todos')||localStorage.getItem('benkyo_todo')||'null');
+        if(Array.isArray(t)){
+          var done=t.filter(function(x){return x&&(x.done||x.completed);}).length;
+          set('hud-tasks',done+'/'+t.length);bar('hud-tasks-bar',t.length?done/t.length*100:0);
+        }
+      }catch(e){}
+      try{
+        var p=JSON.parse(localStorage.getItem('benkyo_profile')||'null');
+        var img=document.getElementById('sidebar-profile-img');
+        if(p&&p.img&&img)img.src=p.img;
+      }catch(e){}
+    })();
+  </script>
+  <script defer src="benkyo-extras.js"></script>
+</body>
+</html>
