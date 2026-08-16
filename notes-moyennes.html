@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#EFC9BB">
+  <meta name="theme-color" content="#F4F0E6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="sakura.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.85)}</style>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F4F0E6; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #B88758; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transform: translateZ(0);
+      contain: layout paint style;
+    }
+    @supports (backdrop-filter: blur(6px)) {
+      .glass-panel {
+        background: rgba(15, 20, 32, 0.70);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+    }
+
+    .card-glow { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; will-change: transform; }
+    .card-glow:hover { border-color: rgba(203, 166, 247, 0.4); box-shadow: 0 0 20px -5px rgba(203, 166, 247, 0.25); transform: translateY(-2px); }
+    
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+  </style>
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <style>
+    /* ===== Bulletin japonais : voile opaque + flou du reste de la page ===== */
+    #japanese-report-modal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 100 !important;
+      background: rgba(16, 19, 28, 0.55) !important;
+      backdrop-filter: blur(10px) saturate(120%);
+      overflow-y: auto !important;
+    }
+    #japanese-report-modal.hidden { display: none !important; }
+    /* Flou appliqué au reste du site pendant l'ouverture du bulletin */
+    body.jp-report-open > aside,
+    body.jp-report-open > main {
+      filter: blur(6px) brightness(0.85);
+      pointer-events: none;
+      user-select: none;
+    }
+    body.jp-report-open { overflow: hidden; }
+    #japanese-report-modal .jp-report {
+      background: #FAF8F0 !important;
+      color: #3E352D !important;
+      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.55) !important;
+    }
+    #japanese-report-modal .jp-report-header {
+      background: #C97D5D !important;
+      color: #3E352D !important;
+    }
+    #japanese-report-modal .jp-report-header * { color: #3E352D !important; }
+
+    /* ===== Impression : uniquement le bulletin ===== */
+    @media print {
+      @page { margin: 12mm; }
+      body.jp-report-open > aside,
+      body.jp-report-open > main { display: none !important; }
+      body.jp-report-open,
+      html { background: #ffffff !important; height: auto !important; overflow: visible !important; }
+      #japanese-report-modal {
+        position: static !important;
+        background: #ffffff !important;
+        backdrop-filter: none !important;
+        display: block !important;
+        padding: 0 !important;
+      }
+      #japanese-report-modal .jp-report {
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      .jp-no-print { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="rpg-body h-full flex flex-col md:flex-row md:overflow-hidden">
+
+    <aside class="w-full md:w-72 flex flex-col shrink-0 z-20 md:h-full md:overflow-y-auto custom-scrollbar">
+
+    <div class="rpg-brand">
+      <div class="rpg-brand-plate" onclick="window.location.href='index.html'" role="button" title="Retour au campement">
+        <svg class="rpg-logo" width="34" height="34" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="2" width="14" height="12" fill="#5B4030"/><rect x="2" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="9" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="7" y="2" width="2" height="12" fill="#8A5F3E"/><rect x="3" y="5" width="3" height="1" fill="#8FA58B"/><rect x="3" y="7" width="3" height="1" fill="#8FA58B"/><rect x="10" y="5" width="3" height="1" fill="#C97D5D"/><rect x="10" y="7" width="3" height="1" fill="#C97D5D"/><rect x="4" y="10" width="2" height="2" fill="#D9C58C"/><rect x="10" y="10" width="2" height="2" fill="#B7C5A3"/></svg>
+        <span>
+          <span class="rpg-brand-name">Benkyō</span>
+          <span class="rpg-brand-sub">Cozy Study Quest</span>
+        </span>
+      </div>
+      <div class="rpg-streak" title="Série de jours d'étude">
+        <i class="fa-solid fa-fire" aria-hidden="true"></i><span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <div class="rpg-mascot">
+      <img src="mascotte.png" alt="Mascotte de Benkyō, petite fermière au chapeau de paille">
+      <div class="rpg-bubble"><b>Notes & Moyennes</b><br>Tes récoltes de l'année, joliment rangées.</div>
+    </div>
+
+    <div class="rpg-hud">
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Série</div>
+        <div class="rpg-hud-value"><span id="hud-streak">0</span> j</div>
+        <div class="rpg-hud-bar"><span id="hud-streak-bar" style="width:0%"></span></div>
+      </div>
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Tâches du jour</div>
+        <div class="rpg-hud-value"><span id="hud-tasks">0</span></div>
+        <div class="rpg-hud-bar"><span id="hud-tasks-bar" style="width:0%"></span></div>
+      </div>
+    </div>
+
+    <div class="rpg-nav-title">Menu du carnet</div>
+    <nav class="flex-1">
+      <button onclick="window.location.href='index.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-border-all" aria-hidden="true"></i><span>Zone de campement</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-clock" aria-hidden="true"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-brain" aria-hidden="true"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-note-sticky" aria-hidden="true"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn active" aria-current="page">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-stopwatch" aria-hidden="true"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='fournitures.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Fournitures &amp; Achats</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn nav-vacation" aria-current="false">
+        <i class="fa-solid fa-sun" aria-hidden="true"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 md:overflow-y-auto custom-scrollbar relative">
+  <div class="rpg-parchment">
+    <div class="rpg-questbar">
+      <img src="mascotte.png" alt="">
+      <div>
+        <div class="rpg-questbar-title">Notes & Moyennes</div>
+        <div class="rpg-questbar-sub">Tes récoltes de l'année, joliment rangées.</div>
+      </div>
+      <span class="rpg-chip" style="margin-left:auto"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Benkyō</span>
+    </div>
+
+
+    <section id="tab-grades" class="tab-content space-y-6">
+      <div class="flex flex-col gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white">Notes & Moyennes</h1>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">          <!-- BOUTONS D'AJOUT DE NOTES (en premier, à gauche) -->
+          <button onclick="openGradeModal()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition shadow-lg shadow-brand-purple/20"><i class="fa-solid fa-plus mr-1"></i> Note Unique</button>
+          <button onclick="openBulkGradeModal()" class="bg-brand-green hover:bg-brand-green/80 text-[#526B4E] px-3 py-2.5 rounded-xl text-sm font-medium transition shadow-lg shadow-brand-green/30"><i class="fa-solid fa-layer-group mr-1"></i> + Plusieurs Notes</button>
+
+          <button onclick="resetDefaults()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs px-3 py-2.5 rounded-xl border border-red-500/30 transition" title="Réinitialiser les options par défaut">
+            <i class="fa-solid fa-rotate-left mr-1"></i>Reset Filtres
+          </button>
+          <button onclick="openPeriodModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2.5 rounded-xl border border-dark-border text-slate-200 transition">+ Période</button>
+          <button onclick="openEvalTypeModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2.5 rounded-xl border border-dark-border text-slate-200 transition">+ Type d'éval</button>
+          <button onclick="openManagePeriodsTypesModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2.5 rounded-xl border border-dark-border text-slate-200 transition" title="Gérer les périodes et types d'évaluation"><i class="fa-solid fa-gear mr-1"></i>Gérer</button>
+          <button onclick="openSubjectCoeffModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2.5 rounded-xl border border-dark-border text-slate-200 transition" title="Gérer les coefficients par matière"><i class="fa-solid fa-scale-balanced mr-1"></i>Coefficients</button>
+
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-panel border border-dark-border p-5 rounded-3xl flex items-center justify-between card-glow">
+          <div>
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">Moyenne Générale</div>
+            <div id="overall-average" class="text-3xl font-extrabold text-brand-purple mt-1">-- / 20</div>
+            <button onclick="openJapaneseReport()" class="mt-3 inline-flex items-center gap-2 bg-[#C97D5D]/15 hover:bg-[#C97D5D]/25 text-[#C97D5D] border border-[#C97D5D]/40 px-3 py-1.5 rounded-xl text-[11px] font-bold transition">
+              <span class="text-sm">通知表</span> Voir mon bulletin japonais
+            </button>
+          </div>
+          <i class="fa-solid fa-award text-3xl text-brand-purple/30"></i>
+        </div>
+        <div class="glass-panel border border-dark-border p-5 rounded-3xl flex items-center justify-between card-glow">
+          <div>
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">Total Évaluations</div>
+            <div id="total-evals" class="text-3xl font-extrabold text-[#526B4E] mt-1">0</div>
+          </div>
+          <i class="fa-solid fa-file-pen text-3xl text-brand-green/70"></i>
+        </div>
+        <div class="glass-panel border border-dark-border p-5 rounded-3xl flex items-center justify-between card-glow">
+          <div>
+            <div class="text-slate-400 text-xs uppercase font-bold tracking-wider">Bilan & Progrès</div>
+            <div id="progress-status" class="text-xs font-semibold text-slate-300 mt-1">Saisissez des notes pour voir le bilan</div>
+          </div>
+          <i class="fa-solid fa-chart-line text-3xl text-amber-500/30"></i>
+        </div>
+      </div>
+
+      <div class="glass-panel border border-dark-border p-5 rounded-3xl card-glow space-y-3">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2"><i class="fa-solid fa-list-ol text-brand-purple"></i> Moyennes par matière</h3>
+        <div id="subject-averages-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <p class="text-xs text-slate-500 italic col-span-full">Saisissez des notes pour voir les moyennes par matière.</p>
+        </div>
+      </div>
+
+      <!-- Filtres : placés sous les moyennes, juste au-dessus du tableau de notes -->
+      <div class="glass-panel border border-dark-border p-4 rounded-3xl flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1"><i class="fa-solid fa-filter mr-1"></i>Trier / filtrer les notes</span>
+        <select id="grade-period-filter" onchange="renderGrades()" class="text-xs sm:text-sm px-3 py-2.5 min-w-[150px]">
+          <option value="ALL">Toutes les périodes</option>
+        </select>
+        <select id="grade-subject-filter" onchange="renderGrades()" class="text-xs sm:text-sm px-3 py-2.5 min-w-[150px]">
+          <option value="ALL">Toutes les matières</option>
+        </select>
+        <select id="grade-sort-filter" onchange="renderGrades()" class="text-xs sm:text-sm px-3 py-2.5 min-w-[160px]">
+          <option value="newest">Plus récente Plus ancienne</option>
+          <option value="oldest">Plus ancienne Plus récente</option>
+          <option value="subject">Trier par Matière</option>
+          <option value="alpha">Ordre alphabétique (Intitulé)</option>
+        </select>
+      </div>
+
+      <div class="glass-panel border border-dark-border rounded-3xl overflow-hidden p-2">
+        <div class="overflow-x-auto rounded-2xl">
+        <table class="w-full text-left text-sm text-slate-300">
+          <thead class="bg-[#F4F0E6]/80 text-xs uppercase text-slate-400 border-b border-dark-border rounded-t-2xl">
+            <tr>
+              <th class="p-3 rounded-tl-2xl">Matière</th>
+              <th class="p-3">Intitulé</th>
+              <th class="p-3">Type</th>
+              <th class="p-3">Note (/20)</th>
+              <th class="p-3">Coeff</th>
+              <th class="p-3">Période</th>
+              <th class="p-3">Remarque</th>
+              <th class="p-3 text-right rounded-tr-2xl">Action</th>
+            </tr>
+          </thead>
+          <tbody id="grades-table-body" class="divide-y divide-dark-border"></tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+    </div>
+  </main>
+
+  <!-- MODAL DE SAISIE UNIQUE -->
+  <div id="grade-modal" class="hidden fixed inset-0 bg-dark-bg/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 id="grade-modal-title" class="text-lg font-bold text-white">Ajouter une Note</h3>
+      <form onsubmit="saveGrade(event)" class="space-y-3">
+        <input type="hidden" id="grade-edit-id">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Matière</label>
+          <input type="text" id="grade-subject" placeholder="Ex: Mathématiques" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Intitulé</label>
+          <input type="text" id="grade-title" placeholder="Ex: Contrôle 1" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs text-slate-400">Type</label>
+              <button type="button" onclick="openEvalTypeModal()" class="text-[10px] text-brand-purple font-bold hover:underline">+ Créer</button>
+            </div>
+            <select id="grade-type" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm"></select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Période</label>
+            <select id="grade-period" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm"></select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Note (/20)</label>
+            <input type="number" step="0.25" min="0" max="20" id="grade-value" placeholder="15.5" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Coefficient</label>
+            <input type="number" step="0.5" min="0.5" id="grade-coeff" value="1" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Remarque (optionnel)</label>
+          <input type="text" id="grade-remark" placeholder="Ex: Bon travail, revoir la méthode" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeGradeModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-brand-purple text-sm font-semibold rounded-xl">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL DE SAISIE EN MASSE (PLUSIEURS NOTES D'UN COUP) -->
+  <div id="bulk-grade-modal" class="hidden fixed inset-0 bg-dark-bg/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-lg space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-white">Ajout Rapide de Plusieurs Notes</h3>
+        <button onclick="closeBulkGradeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-400">Entrez une note par ligne au format suivant :<br>
+        <span class="font-mono text-brand-purple bg-black/30 px-1 py-0.5 rounded">Matière, Intitulé, Note, Coeff</span><br>
+        <i>Exemple : Mathématiques, DS1, 14.5, 2</i>
+      </p>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Type par défaut</label>
+          <select id="bulk-grade-type" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm"></select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Période par défaut</label>
+          <select id="bulk-grade-period" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm"></select>
+        </div>
+      </div>
+
+      <div>
+        <textarea id="bulk-grades-input" rows="6" placeholder="Histoire, Contrôle 1, 16, 1&#10;Anglais, Oral, 18, 1&#10;Physique, TP1, 12.5, 0.5" class="w-full bg-[#F4F0E6] border border-dark-border text-white font-mono text-xs rounded-xl p-3 focus:outline-none focus:border-brand-purple"></textarea>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2">
+        <button type="button" onclick="closeBulkGradeModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+        <button type="button" onclick="saveBulkGrades()" class="px-4 py-2 bg-brand-green hover:bg-brand-green/80 text-[#526B4E] text-sm font-semibold rounded-xl">Tout Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de félicitations pour une excellente note (>16) -->
+  <div id="grade-congrats-modal" class="hidden fixed inset-0 bg-dark-bg/90 z-[60] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4">
+      <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-amber-400 to-brand-pink flex items-center justify-center shadow-lg shadow-brand-pink/30">
+        <i class="fa-solid fa-trophy text-3xl text-white"></i>
+      </div>
+      <h3 class="text-xl font-extrabold text-white">Excellente note !</h3>
+      <p id="grade-congrats-message" class="text-sm text-slate-400"></p>
+      <button onclick="closeGradeCongratsModal()" class="w-full bg-brand-purple hover:bg-brand-purple/80 text-white py-2.5 rounded-xl font-bold text-sm transition">Merci !</button>
+    </div>
+  </div>
+
+  <!-- Modale de confirmation générique (remplace confirm()) -->
+  <div id="generic-confirm-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
+      </div>
+      <div class="text-red-400" style="line-height:1.15;">
+        <div class="text-2xl font-black" style="font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;">注意</div>
+        <div class="text-[10px] uppercase tracking-wider text-red-400/70 italic">Chūi — Attention</div>
+      </div>
+      <h3 id="generic-confirm-title" class="text-xl font-extrabold text-white">Confirmer la suppression</h3>
+      <p id="generic-confirm-message" class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeGenericConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de saisie générique (remplace prompt()) -->
+  <div id="generic-input-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-sm space-y-4">
+      <div class="flex items-center gap-3 border-b border-dark-border pb-3">
+        <div class="w-11 h-11 rounded-full bg-brand-purple/20 flex items-center justify-center shrink-0">
+          <i id="generic-input-icon" class="fa-solid fa-plus text-brand-purple"></i>
+        </div>
+        <div>
+          <h3 id="generic-input-title" class="text-base font-bold text-white">Nouvel élément</h3>
+          <p id="generic-input-subtitle" class="text-xs text-slate-400"></p>
+        </div>
+      </div>
+      <form onsubmit="submitGenericInput(event)" class="space-y-4">
+        <input id="generic-input-field" type="text" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-3 text-sm focus:border-brand-purple outline-none" placeholder="">
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="closeGenericInputModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+          <button type="submit" class="px-5 py-2 bg-brand-purple hover:bg-brand-purple/80 text-white text-sm font-semibold rounded-xl transition">Valider</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale de gestion des coefficients par matière (moyenne générale pondérée) -->
+  <div id="subject-coeff-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[65] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-5 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-dark-border pb-3 shrink-0">
+        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-scale-balanced text-brand-purple mr-2"></i>Coefficients par matière</h3>
+        <button onclick="closeSubjectCoeffModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-xs text-slate-500 -mt-2">Utilisés pour pondérer la moyenne générale entre matières (ex : Mathématiques coeff 5, Sport coeff 1). Une matière sans coefficient défini compte pour 1.</p>
+      <div class="flex gap-2 shrink-0">
+        <input type="text" id="new-subject-name" placeholder="Nom de la matière" class="flex-1 bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-purple">
+        <input type="number" id="new-subject-coeff" min="0" step="0.5" value="1" placeholder="Coeff" class="w-20 bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm text-center focus:outline-none focus:ring-1 focus:ring-brand-purple">
+        <button onclick="addSubjectCoeff()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-3.5 rounded-xl text-sm font-semibold transition"><i class="fa-solid fa-plus"></i></button>
+      </div>
+      <div id="subject-coeff-list" class="overflow-y-auto custom-scrollbar flex-1 space-y-1.5"></div>
+    </div>
+  </div>
+
+  <!-- Modale de gestion des périodes et types d'évaluation (ajout + suppression) -->
+  <div id="manage-periods-types-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[65] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-5 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-dark-border pb-3 shrink-0">
+        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-gear text-brand-purple mr-2"></i>Gérer périodes & types</h3>
+        <button onclick="closeManagePeriodsTypesModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="overflow-y-auto custom-scrollbar flex-1 space-y-5">
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Périodes</span>
+            <button onclick="openPeriodModal()" class="text-[11px] text-brand-purple font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>Ajouter</button>
+          </div>
+          <div id="manage-periods-list" class="space-y-1.5"></div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Types d'évaluation</span>
+            <button onclick="openEvalTypeModal()" class="text-[11px] text-brand-purple font-bold hover:underline"><i class="fa-solid fa-plus mr-1"></i>Ajouter</button>
+          </div>
+          <div id="manage-evaltypes-list" class="space-y-1.5"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BULLETIN JAPONAIS (通知表) ===== -->
+  <div id="japanese-report-modal" class="hidden fixed inset-0 bg-dark-bg/85 backdrop-blur-md z-50 flex items-start justify-center p-4 overflow-y-auto">
+    <div class="jp-report w-full max-w-2xl my-8 rounded-3xl overflow-hidden border border-[#C97D5D]/40 bg-[#FAF8F0] text-[#3E352D] shadow-2xl">
+      <div class="jp-report-header flex items-center justify-between px-6 py-4 bg-[#C97D5D] text-white">
+        <div>
+          <div class="text-xl font-extrabold tracking-wide">通知表</div>
+          <div class="text-[11px] opacity-90">Bulletin scolaire à la japonaise — notes converties sur 100</div>
+        </div>
+        <button onclick="closeJapaneseReport()" class="jp-no-print text-white/80 hover:text-white text-xl" title="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="japanese-report-body" class="p-6 space-y-5"></div>
+      <div class="jp-no-print px-6 pb-6 flex flex-wrap justify-end gap-2">
+        <button onclick="printJapaneseReport()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#3E352D] text-white"><i class="fa-solid fa-print mr-1"></i> Imprimer</button>
+        <button onclick="closeJapaneseReport()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#E9E1D0] text-[#3E352D]">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="pixel-deco.js" defer></script>
+  <script src="tampons.js" defer></script>
+  <script>
+    const DEFAULT_PERIODS = ['Semestre 1', 'Semestre 2', 'Trimestre 1', 'Trimestre 2', 'Trimestre 3'];
+    const DEFAULT_EVAL_TYPES = ['Contrôle', 'Examen', 'TP', 'Oral', 'DM', 'Quiz'];
+
+    let state = (typeof BenkyoStorage !== 'undefined') ? BenkyoStorage.load() : { periods: [], evalTypes: [], grades: [] };
+
+    function ensureDefaults() {
+      if (!state.periods || !Array.isArray(state.periods) || state.periods.length === 0) {
+        state.periods = [...DEFAULT_PERIODS];
+      }
+      if (!state.evalTypes || !Array.isArray(state.evalTypes) || state.evalTypes.length === 0) {
+        state.evalTypes = [...DEFAULT_EVAL_TYPES];
+      }
+      if (!state.grades) state.grades = [];
+      if (!state.subjectCoefficients || !Array.isArray(state.subjectCoefficients)) state.subjectCoefficients = [];
+    }
+
+    // -------- Coefficients par matière (pour la moyenne générale pondérée) --------
+    function getSubjectCoeff(subject) {
+      const entry = state.subjectCoefficients.find(s => s.name === subject);
+      return entry ? entry.coeff : 1; // coefficient par défaut si la matière n'a pas été configurée
+    }
+
+    function renderSubjectCoeffList() {
+      const container = document.getElementById('subject-coeff-list');
+      if (!container) return;
+
+      // On propose aussi les matières déjà utilisées dans des notes mais pas
+      // encore configurées, avec leur coefficient par défaut (1).
+      const usedSubjects = Array.from(new Set(state.grades.map(g => g.subject).filter(Boolean)));
+      const configuredNames = state.subjectCoefficients.map(s => s.name);
+      usedSubjects.forEach(name => {
+        if (!configuredNames.includes(name)) state.subjectCoefficients.push({ name, coeff: 1 });
+      });
+
+      if (!state.subjectCoefficients.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-3">Ajoutez une matière pour définir son coefficient dans la moyenne générale.</p>';
+        return;
+      }
+
+      container.innerHTML = state.subjectCoefficients
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(s => `
+          <div class="flex items-center gap-2 bg-[#F4F0E6] border border-dark-border rounded-xl p-2.5">
+            <span class="flex-1 text-sm text-slate-200 font-medium truncate" title="${s.name}">${s.name}</span>
+            <span class="text-[11px] text-slate-500">Coeff</span>
+            <input type="number" min="0" step="0.5" value="${s.coeff}" onchange="updateSubjectCoeff('${s.name.replace(/'/g, "\\'")}', this.value)" class="w-16 bg-[#E9E1D0] border border-dark-border text-white text-sm rounded-lg px-2 py-1 text-center focus:outline-none">
+            <button onclick="deleteSubjectCoeff('${s.name.replace(/'/g, "\\'")}')" class="text-slate-500 hover:text-red-400 px-1" title="Supprimer"><i class="fa-solid fa-trash text-xs"></i></button>
+          </div>
+        `).join('');
+    }
+
+    function addSubjectCoeff() {
+      const nameInput = document.getElementById('new-subject-name');
+      const coeffInput = document.getElementById('new-subject-coeff');
+      const name = (nameInput.value || '').trim();
+      const coeff = parseFloat(coeffInput.value) || 1;
+      if (!name) return;
+      const existing = state.subjectCoefficients.find(s => s.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        existing.coeff = coeff;
+      } else {
+        state.subjectCoefficients.push({ name, coeff });
+      }
+      nameInput.value = '';
+      coeffInput.value = '1';
+      saveState();
+      renderSubjectCoeffList();
+      renderGrades();
+    }
+
+    function updateSubjectCoeff(name, value) {
+      const entry = state.subjectCoefficients.find(s => s.name === name);
+      if (entry) entry.coeff = parseFloat(value) || 1;
+      saveState();
+      renderGrades();
+    }
+
+    function deleteSubjectCoeff(name) {
+      state.subjectCoefficients = state.subjectCoefficients.filter(s => s.name !== name);
+      saveState();
+      renderSubjectCoeffList();
+      renderGrades();
+    }
+
+    function openSubjectCoeffModal() {
+      renderSubjectCoeffList();
+      document.getElementById('subject-coeff-modal').classList.remove('hidden');
+    }
+
+    function closeSubjectCoeffModal() {
+      document.getElementById('subject-coeff-modal').classList.add('hidden');
+    }
+
+    function saveState() {
+      if (typeof BenkyoStorage !== 'undefined') {
+        BenkyoStorage.saveDebounced(state);
+      } else {
+        localStorage.setItem('benkyo_app_state', JSON.stringify(state));
+      }
+    }
+
+    // -------- Modale de confirmation générique (remplace confirm()) --------
+    let _genericConfirmCallback = null;
+    function showConfirmModal(title, message, onConfirm, confirmLabel) {
+      document.getElementById('generic-confirm-title').innerText = title || 'Confirmer la suppression';
+      document.getElementById('generic-confirm-message').innerText = message || 'Cette action est définitive et ne peut pas être annulée.';
+      document.getElementById('generic-confirm-btn').innerText = confirmLabel || 'Supprimer';
+      _genericConfirmCallback = onConfirm;
+      document.getElementById('generic-confirm-modal').classList.remove('hidden');
+    }
+    function closeGenericConfirmModal() {
+      document.getElementById('generic-confirm-modal').classList.add('hidden');
+      _genericConfirmCallback = null;
+    }
+    function executeGenericConfirm() {
+      const cb = _genericConfirmCallback;
+      closeGenericConfirmModal();
+      if (cb) cb();
+    }
+
+    // -------- Modale de saisie générique (remplace prompt()) --------
+    let _genericInputCallback = null;
+    function showInputModal(opts) {
+      document.getElementById('generic-input-title').innerText = opts.title || 'Nouvel élément';
+      document.getElementById('generic-input-subtitle').innerText = opts.subtitle || '';
+      document.getElementById('generic-input-field').placeholder = opts.placeholder || '';
+      document.getElementById('generic-input-field').value = '';
+      document.getElementById('generic-input-icon').className = 'fa-solid ' + (opts.icon || 'fa-plus') + ' text-brand-purple';
+      _genericInputCallback = opts.onSubmit;
+      document.getElementById('generic-input-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('generic-input-field').focus(), 50);
+    }
+    function closeGenericInputModal() {
+      document.getElementById('generic-input-modal').classList.add('hidden');
+      _genericInputCallback = null;
+    }
+    function submitGenericInput(e) {
+      e.preventDefault();
+      const val = document.getElementById('generic-input-field').value.trim();
+      const cb = _genericInputCallback;
+      if (!val) return;
+      closeGenericInputModal();
+      if (cb) cb(val);
+    }
+
+    // -------- Gestion des périodes / types d'évaluation (ajout + suppression) --------
+    function openManagePeriodsTypesModal() {
+      renderManagePeriodsTypesLists();
+      document.getElementById('manage-periods-types-modal').classList.remove('hidden');
+    }
+    function closeManagePeriodsTypesModal() {
+      document.getElementById('manage-periods-types-modal').classList.add('hidden');
+    }
+    function renderManagePeriodsTypesLists() {
+      const periodsList = document.getElementById('manage-periods-list');
+      const typesList = document.getElementById('manage-evaltypes-list');
+      if (periodsList) {
+        periodsList.innerHTML = (state.periods || []).map(p => `
+          <div class="flex items-center justify-between bg-[#F4F0E6] border border-dark-border rounded-xl px-3 py-2">
+            <span class="text-sm text-white">${p}</span>
+            <button onclick="deletePeriod('${p.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-red-400 text-sm" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `).join('') || '<p class="text-slate-500 text-xs text-center py-3">Aucune période.</p>';
+      }
+      if (typesList) {
+        typesList.innerHTML = (state.evalTypes || []).map(t => `
+          <div class="flex items-center justify-between bg-[#F4F0E6] border border-dark-border rounded-xl px-3 py-2">
+            <span class="text-sm text-white">${t}</span>
+            <button onclick="deleteEvalType('${t.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-red-400 text-sm" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `).join('') || '<p class="text-slate-500 text-xs text-center py-3">Aucun type.</p>';
+      }
+    }
+    function deletePeriod(p) {
+      const used = (state.grades || []).filter(g => g.period === p).length;
+      showConfirmModal(
+        'Supprimer cette période ?',
+        used ? `${used} note(s) utilisent "${p}". Elles conserveront cette valeur, mais elle ne sera plus proposée dans la liste.` : `La période "${p}" sera définitivement supprimée.`,
+        () => {
+          state.periods = state.periods.filter(x => x !== p);
+          saveState();
+          renderGradeSelects();
+          renderManagePeriodsTypesLists();
+        }
+      );
+    }
+    function deleteEvalType(t) {
+      const used = (state.grades || []).filter(g => g.type === t).length;
+      showConfirmModal(
+        'Supprimer ce type ?',
+        used ? `${used} note(s) utilisent "${t}". Elles conserveront cette valeur, mais elle ne sera plus proposée dans la liste.` : `Le type "${t}" sera définitivement supprimé.`,
+        () => {
+          state.evalTypes = state.evalTypes.filter(x => x !== t);
+          saveState();
+          renderGradeSelects();
+          renderManagePeriodsTypesLists();
+        }
+      );
+    }
+
+    function resetDefaults() {
+      state.periods = [...DEFAULT_PERIODS];
+      state.evalTypes = [...DEFAULT_EVAL_TYPES];
+      saveState();
+      renderGradeSelects();
+      renderGrades();
+    }
+
+    function openGradeModal() {
+      renderGradeSelects();
+      document.getElementById('grade-edit-id').value = '';
+      document.getElementById('grade-modal-title').innerText = "Ajouter une Note";
+      document.getElementById('grade-subject').value = '';
+      document.getElementById('grade-title').value = '';
+      document.getElementById('grade-value').value = '';
+      document.getElementById('grade-coeff').value = '1';
+      document.getElementById('grade-remark').value = '';
+      document.getElementById('grade-modal').classList.remove('hidden');
+    }
+
+    function closeGradeModal() { document.getElementById('grade-modal').classList.add('hidden'); }
+
+    function openBulkGradeModal() {
+      renderGradeSelects();
+      document.getElementById('bulk-grades-input').value = '';
+      document.getElementById('bulk-grade-modal').classList.remove('hidden');
+    }
+
+    function closeBulkGradeModal() {
+      document.getElementById('bulk-grade-modal').classList.add('hidden');
+    }
+
+    function saveBulkGrades() {
+      const rawText = document.getElementById('bulk-grades-input').value.trim();
+      if (!rawText) return;
+
+      const defaultType = document.getElementById('bulk-grade-type').value;
+      const defaultPeriod = document.getElementById('bulk-grade-period').value;
+
+      const lines = rawText.split('\n');
+      let addedCount = 0;
+
+      lines.forEach((line, index) => {
+        if (!line.trim()) return;
+        const parts = line.split(',').map(p => p.trim());
+        if (parts.length >= 3) {
+          const subject = parts[0];
+          const title = parts[1];
+          const value = parseFloat(parts[2]);
+          const coeff = parts[3] ? parseFloat(parts[3]) : 1;
+
+          if (subject && title && !isNaN(value)) {
+            state.grades.push({
+              id: Date.now() + index,
+              subject: subject,
+              title: title,
+              type: defaultType,
+              period: defaultPeriod,
+              value: value,
+              coeff: isNaN(coeff) ? 1 : coeff,
+              remark: ''
+            });
+            addedCount++;
+          }
+        }
+      });
+
+      if (addedCount > 0) {
+        saveState();
+        renderGradeSelects();
+        renderGrades();
+        closeBulkGradeModal();
+      } else {
+        alert("Format invalide. Assurez-vous d'entrer : Matière, Intitulé, Note, Coeff");
+      }
+    }
+
+    function editGrade(id) {
+      const g = state.grades.find(item => item.id === id);
+      if (!g) return;
+      renderGradeSelects();
+      document.getElementById('grade-edit-id').value = g.id;
+      document.getElementById('grade-modal-title').innerText = "Modifier la Note";
+      document.getElementById('grade-subject').value = g.subject || '';
+      document.getElementById('grade-title').value = g.title || '';
+      document.getElementById('grade-type').value = g.type || (state.evalTypes[0] || '');
+      document.getElementById('grade-period').value = g.period || (state.periods[0] || '');
+      document.getElementById('grade-value').value = g.value;
+      document.getElementById('grade-coeff').value = g.coeff;
+      document.getElementById('grade-remark').value = g.remark || '';
+      document.getElementById('grade-modal').classList.remove('hidden');
+    }
+
+    function openPeriodModal() {
+      showInputModal({
+        title: 'Nouvelle période',
+        subtitle: 'Ex : Semestre 3, Trimestre 1...',
+        placeholder: 'Nom de la période',
+        icon: 'fa-calendar-days',
+        onSubmit: (p) => {
+          if (!state.periods.includes(p)) {
+            state.periods.push(p);
+            saveState();
+            renderGradeSelects();
+            renderManagePeriodsTypesLists();
+          }
+        }
+      });
+    }
+
+    function openEvalTypeModal() {
+      showInputModal({
+        title: "Nouveau type d'évaluation",
+        subtitle: 'Ex : TP, Oral, Quiz...',
+        placeholder: "Nom du type d'évaluation",
+        icon: 'fa-file-pen',
+        onSubmit: (t) => {
+          if (!state.evalTypes.includes(t)) {
+            state.evalTypes.push(t);
+            saveState();
+            renderGradeSelects();
+            renderManagePeriodsTypesLists();
+          }
+        }
+      });
+    }
+
+    function updateSubjectFilter() {
+      const elSubjectFilter = document.getElementById('grade-subject-filter');
+      if (!elSubjectFilter) return;
+      const currentVal = elSubjectFilter.value;
+      const subjects = Array.from(new Set(state.grades.map(g => g.subject).filter(Boolean)));
+      elSubjectFilter.innerHTML = '<option value="ALL">Toutes les matières</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+      if (subjects.includes(currentVal)) {
+        elSubjectFilter.value = currentVal;
+      } else {
+        elSubjectFilter.value = "ALL";
+      }
+    }
+
+    function renderGradeSelects() {
+      ensureDefaults();
+
+      const elPeriodFilter = document.getElementById('grade-period-filter');
+      if (elPeriodFilter) {
+        const curPeriod = elPeriodFilter.value || 'ALL';
+        let optionsHTML = '<option value="ALL">Toutes les périodes</option>';
+        state.periods.forEach(p => {
+          optionsHTML += `<option value="${p}">${p}</option>`;
+        });
+        elPeriodFilter.innerHTML = optionsHTML;
+        if (state.periods.includes(curPeriod) || curPeriod === 'ALL') {
+          elPeriodFilter.value = curPeriod;
+        } else {
+          elPeriodFilter.value = 'ALL';
+        }
+      }
+
+      const elPeriod = document.getElementById('grade-period');
+      if (elPeriod) {
+        elPeriod.innerHTML = state.periods.map(p => `<option value="${p}">${p}</option>`).join('');
+      }
+
+      const elBulkPeriod = document.getElementById('bulk-grade-period');
+      if (elBulkPeriod) {
+        elBulkPeriod.innerHTML = state.periods.map(p => `<option value="${p}">${p}</option>`).join('');
+      }
+      
+      const elType = document.getElementById('grade-type');
+      if (elType) {
+        elType.innerHTML = state.evalTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+      }
+
+      const elBulkType = document.getElementById('bulk-grade-type');
+      if (elBulkType) {
+        elBulkType.innerHTML = state.evalTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+      }
+
+      updateSubjectFilter();
+    }
+
+    function saveGrade(e) {
+      e.preventDefault();
+      const editId = document.getElementById('grade-edit-id').value;
+      const gradeData = {
+        subject: document.getElementById('grade-subject').value.trim(),
+        title: document.getElementById('grade-title').value.trim(),
+        type: document.getElementById('grade-type').value,
+        period: document.getElementById('grade-period').value,
+        value: parseFloat(document.getElementById('grade-value').value),
+        coeff: parseFloat(document.getElementById('grade-coeff').value),
+        remark: document.getElementById('grade-remark').value.trim()
+      };
+
+      if (editId) {
+        const idx = state.grades.findIndex(g => g.id === parseInt(editId));
+        if (idx !== -1) {
+          state.grades[idx] = { ...state.grades[idx], ...gradeData };
+        }
+      } else {
+        state.grades.push({
+          id: Date.now(),
+          ...gradeData
+        });
+      }
+
+      saveState();
+      renderGradeSelects();
+      renderGrades();
+      closeGradeModal();
+      celebrateGradeIfNeeded(gradeData.value, gradeData.subject, gradeData.title);
+    }
+
+    function changeGradeType(id, newType) {
+      const g = state.grades.find(g => g.id === id);
+      if (g) { g.type = newType; saveState(); }
+    }
+
+    // Cotillons pour une bonne note (>15) et petit message en plus si >16
+    function celebrateGradeIfNeeded(value, subject, title) {
+      if (typeof value !== 'number' || value <= 15) return;
+      if (window.confetti) confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
+      if (value > 16) {
+        showGradeCongratsModal(subject, title, value);
+      }
+    }
+
+    function showGradeCongratsModal(subject, title, value) {
+      const modal = document.getElementById('grade-congrats-modal');
+      if (!modal) return;
+      document.getElementById('grade-congrats-message').innerText = `${value}/20 en ${subject}${title ? ' — ' + title : ''} ! Continue comme ça`;
+      modal.classList.remove('hidden');
+    }
+    function closeGradeCongratsModal() {
+      const modal = document.getElementById('grade-congrats-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderGrades() {
+      updateSubjectFilter();
+      const tbody = document.getElementById('grades-table-body');
+      if(!tbody) return;
+
+      const periodFilter = document.getElementById('grade-period-filter')?.value || 'ALL';
+      const subjectFilter = document.getElementById('grade-subject-filter')?.value || 'ALL';
+      const sortFilter = document.getElementById('grade-sort-filter')?.value || 'newest';
+
+      let filtered = state.grades.filter(g => {
+        const matchPeriod = (periodFilter === 'ALL' || g.period === periodFilter);
+        const matchSubject = (subjectFilter === 'ALL' || g.subject === subjectFilter);
+        return matchPeriod && matchSubject;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortFilter === 'newest') return b.id - a.id;
+        if (sortFilter === 'oldest') return a.id - b.id;
+        if (sortFilter === 'subject') return (a.subject || '').localeCompare(b.subject || '');
+        if (sortFilter === 'alpha') return (a.title || '').localeCompare(b.title || '');
+        return 0;
+      });
+
+      tbody.innerHTML = filtered.map(g => `
+        <tr>
+          <td class="p-3 font-semibold text-white">${g.subject}</td>
+          <td class="p-3 text-slate-300">${g.title}</td>
+          <td class="p-3">
+            <select onchange="changeGradeType(${g.id}, this.value)" class="bg-brand-purple/20 text-brand-purple text-xs px-2 py-1 rounded font-bold border-none focus:outline-none focus:ring-1 focus:ring-brand-purple cursor-pointer">
+              ${state.evalTypes.map(t => `<option value="${t}" ${t === g.type ? 'selected' : ''}>${t}</option>`).join('')}
+            </select>
+          </td>
+          <td class="p-3 font-bold ${g.value < 10 ? 'text-red-400' : 'text-[#526B4E]'}">${g.value}/20 ${g.value > 15 ? '' : ''}</td>
+          <td class="p-3">x${g.coeff}</td>
+          <td class="p-3">${g.period}</td>
+          <td class="p-3 text-xs text-slate-400 italic">${g.remark ? g.remark : '<span class="text-slate-600">-</span>'}</td>
+          <td class="p-3 text-right space-x-2">
+            <button onclick="editGrade(${g.id})" class="text-slate-400 hover:text-white" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteGrade(${g.id})" class="text-slate-500 hover:text-red-400" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+
+      const elAvg = document.getElementById('overall-average');
+      const elTotal = document.getElementById('total-evals');
+      const elProgress = document.getElementById('progress-status');
+
+      if(filtered.length) {
+        // Moyenne générale pondérée : on calcule d'abord la moyenne de chaque
+        // matière (pondérée par le coefficient de chaque note), puis on
+        // pondère ces moyennes entre elles par le coefficient de la matière
+        // (ex: Mathématiques coeff 5, Sport coeff 1) — comme un vrai bulletin.
+        const bySubjectForAvg = {};
+        filtered.forEach(g => {
+          if (!g.subject) return;
+          if (!bySubjectForAvg[g.subject]) bySubjectForAvg[g.subject] = { totalVal: 0, totalCoeff: 0 };
+          bySubjectForAvg[g.subject].totalVal += g.value * g.coeff;
+          bySubjectForAvg[g.subject].totalCoeff += g.coeff;
+        });
+        let totalVal = 0, totalCoeff = 0;
+        Object.keys(bySubjectForAvg).forEach(subj => {
+          const s = bySubjectForAvg[subj];
+          if (s.totalCoeff <= 0) return;
+          const subjAvg = s.totalVal / s.totalCoeff;
+          const subjCoeff = getSubjectCoeff(subj);
+          totalVal += subjAvg * subjCoeff;
+          totalCoeff += subjCoeff;
+        });
+        const avg = totalCoeff > 0 ? (totalVal / totalCoeff).toFixed(2) : "--";
+        
+        if (elAvg) elAvg.innerText = `${avg} / 20`;
+        if (elTotal) elTotal.innerText = filtered.length;
+
+        if (elProgress && avg !== "--") {
+          const numericAvg = parseFloat(avg);
+          if (numericAvg >= 16) {
+            elProgress.innerText = "Excellent bilan ! Conservez ce rythme d'excellence.";
+          } else if (numericAvg >= 14) {
+            elProgress.innerText = "Très bon travail ! Vos progrès sont très encourageants.";
+          } else if (numericAvg >= 12) {
+            elProgress.innerText = "Bon ensemble, travail régulier à poursuivre.";
+          } else if (numericAvg >= 10) {
+            elProgress.innerText = "Moyenne satisfaisante, attention aux lacunes.";
+          } else {
+            elProgress.innerText = "Bilan fragile, des révisions ciblées sont recommandées.";
+          }
+        }
+      } else {
+        if (elAvg) elAvg.innerText = "-- / 20";
+        if (elTotal) elTotal.innerText = "0";
+        if (elProgress) elProgress.innerText = "Saisissez des notes pour voir le bilan";
+      }
+
+      renderSubjectAverages(periodFilter);
+    }
+
+    // Calcule et affiche la moyenne de chaque matière (pondérée par les
+    // coefficients), pour la période sélectionnée (indépendamment du
+    // filtre "Matière" du tableau, qui lui ne sert qu'à filtrer les lignes).
+    function renderSubjectAverages(periodFilter) {
+      const container = document.getElementById('subject-averages-container');
+      if (!container) return;
+
+      const periodFiltered = state.grades.filter(g => (periodFilter === 'ALL' || g.period === periodFilter));
+
+      const bySubject = {};
+      periodFiltered.forEach(g => {
+        if (!g.subject) return;
+        if (!bySubject[g.subject]) bySubject[g.subject] = { totalVal: 0, totalCoeff: 0, count: 0 };
+        bySubject[g.subject].totalVal += g.value * g.coeff;
+        bySubject[g.subject].totalCoeff += g.coeff;
+        bySubject[g.subject].count += 1;
+      });
+
+      const subjects = Object.keys(bySubject).sort((a, b) => a.localeCompare(b));
+
+      if (!subjects.length) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic col-span-full">Saisissez des notes pour voir les moyennes par matière.</p>';
+        return;
+      }
+
+      container.innerHTML = subjects.map(subj => {
+        const s = bySubject[subj];
+        const avg = s.totalCoeff > 0 ? (s.totalVal / s.totalCoeff) : 0;
+        const avgStr = avg.toFixed(2);
+        let colorClass = 'text-slate-300';
+        if (avg >= 16) colorClass = 'text-[#526B4E]';
+        else if (avg >= 12) colorClass = 'text-brand-cyan';
+        else if (avg >= 10) colorClass = 'text-amber-400';
+        else colorClass = 'text-red-400';
+        return `
+          <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-3.5 flex flex-col">
+            <span class="text-xs font-semibold text-slate-300 truncate" title="${subj}">${subj}</span>
+            <span class="text-2xl font-extrabold ${colorClass} mt-1">${avgStr} <span class="text-xs font-medium text-slate-500">/20</span></span>
+            <span class="text-[10px] text-slate-500 mt-1">${s.count} note${s.count > 1 ? 's' : ''} · coeff ${getSubjectCoeff(subj)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =======================================================================
+    // BULLETIN JAPONAIS (通知表)
+    // -----------------------------------------------------------------------
+    // Reprend exactement les mêmes calculs que le bulletin français, mais
+    // exprime tout sur 100 (comme au Japon, où l'on note sur 100) et
+    // remplace les appréciations par les mentions japonaises classiques :
+    //   秀 (shū, 90+) / 優 (yū, 80+) / 良 (ryō, 70+) / 可 (ka, 60+) / 不可 (fuka, <60)
+    // La conversion est une simple règle de trois : note/20 × 5 = note/100.
+    // =======================================================================
+    function toHundred(valueOn20) {
+      return Math.round(valueOn20 * 5);
+    }
+
+    function japaneseMention(scoreOn100) {
+      if (scoreOn100 >= 90) return { kanji: '秀', romaji: 'shū', label: 'Excellence remarquable', color: '#526B4E' };
+      if (scoreOn100 >= 80) return { kanji: '優', romaji: 'yū', label: 'Très bon niveau', color: '#526B4E' };
+      if (scoreOn100 >= 70) return { kanji: '良', romaji: 'ryō', label: 'Bon travail', color: '#526B4E' };
+      if (scoreOn100 >= 60) return { kanji: '可', romaji: 'ka', label: 'Niveau acceptable', color: '#8A5F3E' };
+      return { kanji: '不可', romaji: 'fuka', label: 'Insuffisant, à retravailler', color: '#C97D5D' };
+    }
+
+    function japaneseComment(scoreOn100) {
+      if (scoreOn100 >= 90) return "大変よくできました — Travail exemplaire. Votre rigueur et votre constance sont remarquables ; continuez sur cette voie.";
+      if (scoreOn100 >= 80) return "よくできました — Très bons résultats, obtenus par un effort régulier. Encore un peu de persévérance vers l'excellence.";
+      if (scoreOn100 >= 70) return "できました — Ensemble solide. Un travail quotidien plus soutenu permettra de franchir le palier suivant.";
+      if (scoreOn100 >= 60) return "もう少し頑張りましょう — Les bases sont là ; il faut désormais approfondir et réviser plus régulièrement.";
+      return "頑張りましょう — Le niveau reste fragile. Reprenez les fondamentaux étape par étape : la régularité fera la différence.";
+    }
+
+    function openJapaneseReport() {
+      const periodFilter = document.getElementById('grade-period-filter')?.value || 'ALL';
+      const grades = state.grades.filter(g => (periodFilter === 'ALL' || g.period === periodFilter));
+      const body = document.getElementById('japanese-report-body');
+      const modal = document.getElementById('japanese-report-modal');
+      if (!body || !modal) return;
+
+      if (!grades.length) {
+        body.innerHTML = '<p class="text-sm italic text-[#6B5D4F]">Aucune note enregistrée pour cette période : ajoutez des notes pour générer votre bulletin japonais.</p>';
+        modal.classList.remove('hidden');
+        return;
+      }
+
+      // Moyennes par matière (mêmes pondérations que le bulletin classique)
+      const bySubject = {};
+      grades.forEach(g => {
+        if (!g.subject) return;
+        if (!bySubject[g.subject]) bySubject[g.subject] = { totalVal: 0, totalCoeff: 0, count: 0 };
+        bySubject[g.subject].totalVal += g.value * g.coeff;
+        bySubject[g.subject].totalCoeff += g.coeff;
+        bySubject[g.subject].count += 1;
+      });
+
+      let totalVal = 0, totalCoeff = 0;
+      const rows = Object.keys(bySubject).sort((a, b) => a.localeCompare(b)).map(subj => {
+        const s = bySubject[subj];
+        const avg20 = s.totalCoeff > 0 ? s.totalVal / s.totalCoeff : 0;
+        const subjCoeff = getSubjectCoeff(subj);
+        totalVal += avg20 * subjCoeff;
+        totalCoeff += subjCoeff;
+        const score = toHundred(avg20);
+        const mention = japaneseMention(score);
+        return `
+          <tr class="border-b border-[#E9E1D0]">
+            <td class="py-2.5 pr-3 font-semibold">${subj}</td>
+            <td class="py-2.5 px-3 text-right font-extrabold" style="color:${mention.color}">${score} <span class="text-[11px] font-medium text-[#8C7C6B]">/100</span></td>
+            <td class="py-2.5 px-3 text-center text-lg font-extrabold" style="color:${mention.color}" title="${mention.romaji}">${mention.kanji}</td>
+            <td class="py-2.5 pl-3 text-[11px] text-[#6B5D4F]">${mention.label} · ${s.count} note${s.count > 1 ? 's' : ''} · 係数 ${subjCoeff}</td>
+          </tr>`;
+      }).join('');
+
+      const overall20 = totalCoeff > 0 ? totalVal / totalCoeff : 0;
+      const overall100 = toHundred(overall20);
+      const overallMention = japaneseMention(overall100);
+      const studentName = (state.profile && state.profile.firstname) ? state.profile.firstname : 'Élève';
+      const periodLabel = periodFilter === 'ALL' ? '全期間 (toutes les périodes)' : periodFilter;
+
+      body.innerHTML = `
+        <div class="flex flex-wrap justify-between gap-3 text-[12px] text-[#6B5D4F]">
+          <div><span class="font-bold text-[#3E352D]">氏名 (Nom) :</span> ${studentName}</div>
+          <div><span class="font-bold text-[#3E352D]">学期 (Période) :</span> ${periodLabel}</div>
+          <div><span class="font-bold text-[#3E352D]">日付 (Date) :</span> ${new Date().toLocaleDateString('fr-FR')}</div>
+        </div>
+
+        <div class="rounded-2xl border-2 border-[#C97D5D]/30 bg-white p-5 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-[#8C7C6B] font-bold">総合評価 — Moyenne générale</div>
+            <div class="text-4xl font-black" style="color:${overallMention.color}">${overall100} <span class="text-base font-semibold text-[#8C7C6B]">/ 100</span></div>
+            <div class="text-[11px] text-[#8C7C6B] mt-1">(soit ${overall20.toFixed(2)} / 20)</div>
+          </div>
+          <div class="text-center">
+            <div class="text-5xl font-black leading-none" style="color:${overallMention.color}">${overallMention.kanji}</div>
+            <div class="text-[11px] text-[#8C7C6B] mt-1">${overallMention.romaji} — ${overallMention.label}</div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-[#E9E1D0] bg-white overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-[#F4F0E6] text-[11px] uppercase tracking-wide text-[#8C7C6B]">
+                <th class="py-2.5 pl-4 pr-3 text-left">教科 (Matière)</th>
+                <th class="py-2.5 px-3 text-right">点数 (Note)</th>
+                <th class="py-2.5 px-3 text-center">評定</th>
+                <th class="py-2.5 pl-3 pr-4 text-left">所見 (Appréciation)</th>
+              </tr>
+            </thead>
+            <tbody class="[&>tr>td:first-child]:pl-4 [&>tr>td:last-child]:pr-4">${rows}</tbody>
+          </table>
+        </div>
+
+        <div class="rounded-2xl border border-[#E9E1D0] bg-white p-5">
+          <div class="text-[11px] uppercase tracking-wider text-[#8C7C6B] font-bold mb-1">担任所見 — Appréciation générale</div>
+          <p class="text-sm leading-relaxed">${japaneseComment(overall100)}</p>
+        </div>
+
+        <div class="text-[11px] text-[#8C7C6B] text-center">
+          評定：秀 90+ ・ 優 80+ ・ 良 70+ ・ 可 60+ ・ 不可 &lt;60 — notes sur 20 converties sur 100 (×5).
+        </div>`;
+
+      modal.classList.remove('hidden');
+      // Flou du reste de la page + blocage du défilement de fond
+      document.body.classList.add('jp-report-open');
+    }
+
+    function closeJapaneseReport() {
+      document.getElementById('japanese-report-modal').classList.add('hidden');
+      document.body.classList.remove('jp-report-open');
+    }
+
+    // Fermeture au clavier (Échap) et au clic sur le voile
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !document.getElementById('japanese-report-modal').classList.contains('hidden')) {
+        closeJapaneseReport();
+      }
+    });
+    document.getElementById('japanese-report-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'japanese-report-modal') closeJapaneseReport();
+    });
+
+    function printJapaneseReport() {
+      // Les règles @media print n'affichent que le bulletin (aside/main masqués)
+      window.print();
+    }
+
+    function deleteGrade(id) {
+      const g = state.grades.find(x => x.id === id);
+      showConfirmModal(
+        'Supprimer cette note ?',
+        g ? `La note "${g.title || g.subject}" (${g.value}/20) sera définitivement supprimée.` : 'Cette action est définitive et ne peut pas être annulée.',
+        () => {
+          state.grades = state.grades.filter(x => x.id !== id);
+          saveState();
+          renderGradeSelects();
+          renderGrades();
+        }
+      );
+    }
+
+    function loadUserProfile() {
+      const profile = state.profile || {};
+      const avatarUrl = profile.img || "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9InVybCgjZykiLz4KICA8cGF0aCBkPSJNNTAgMjIgTDU5IDQxIEw4MCA1MCBMNTkgNTkgTDUwIDc4IEw0MSA1OSBMMjAgNTAgTDQxIDQxIFoiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOTIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=";
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg) sidebarImg.src = avatarUrl;
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakElem = document.getElementById('streak-count');
+      if (streakElem) streakElem.innerText = state.streak.count;
+    }
+
+    function benkyoInitPage() {
+      try { ensureDefaults(); } catch(e) {}
+      try { loadUserProfile(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderGradeSelects(); } catch(e) {}
+      try { renderGrades(); } catch(e) {}
+    }
+    // DOMContentLoaded plutôt que window.onload : voir explication dans les
+    // autres pages — "load" peut ne jamais se déclencher si une ressource
+    // externe est lente/bloquée, laissant la page à moitié vide.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', benkyoInitPage);
+    } else {
+      benkyoInitPage();
+    }
+  </script>
+  <script>
+    /* HUD cozy : série + quêtes du jour, lues depuis le stockage local */
+    (function(){
+      function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+      function bar(id,p){var e=document.getElementById(id);if(e)e.style.width=Math.max(0,Math.min(100,p))+'%';}
+      try{
+        var s=JSON.parse(localStorage.getItem('benkyo_streak')||'null');
+        var c=(s&&typeof s.count==='number')?s.count:0;
+        set('streak-count',c);set('hud-streak',c);bar('hud-streak-bar',(c/30)*100);
+      }catch(e){}
+      try{
+        var t=JSON.parse(localStorage.getItem('benkyo_todos')||localStorage.getItem('benkyo_todo')||'null');
+        if(Array.isArray(t)){
+          var done=t.filter(function(x){return x&&(x.done||x.completed);}).length;
+          set('hud-tasks',done+'/'+t.length);bar('hud-tasks-bar',t.length?done/t.length*100:0);
+        }
+      }catch(e){}
+      try{
+        var p=JSON.parse(localStorage.getItem('benkyo_profile')||'null');
+        var img=document.getElementById('sidebar-profile-img');
+        if(p&&p.img&&img)img.src=p.img;
+      }catch(e){}
+    })();
+  </script>
+  <script defer src="benkyo-extras.js"></script>
+</body>
+</html>

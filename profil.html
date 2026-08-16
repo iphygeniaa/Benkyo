@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#EFC9BB">
+  <meta name="theme-color" content="#F4F0E6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script defer src="sakura.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.85)}</style>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F4F0E6; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #B88758; border-radius: 4px; }
+    
+    /* Optimisation des performances graphiques */
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .card-glow { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card-glow:hover { border-color: rgba(203, 166, 247, 0.4); box-shadow: 0 0 20px -5px rgba(203, 166, 247, 0.25); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content.hidden { display: none; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 2s forwards ease-in-out; }
+
+    /* 認印 — Tampon "Hanko" de validation des résultats (成果) */
+    @keyframes hankoStampIn {
+      0%   { opacity: 0; transform: scale(2.3) rotate(-20deg); }
+      45%  { opacity: 1; transform: scale(0.85) rotate(-4deg); }
+      70%  { transform: scale(1.08) rotate(-10deg); }
+      100% { opacity: 1; transform: scale(1) rotate(-8deg); }
+    }
+    .hanko-stamp.stamping { animation: hankoStampIn 0.65s cubic-bezier(.2,.8,.2,1) forwards; }
+    .hanko-stamp:not(.hidden) { filter: drop-shadow(0 4px 10px rgba(143,26,31,0.4)); transform: rotate(-8deg); }
+    #hanko-validate-btn:not(:disabled):hover { filter: brightness(1.08); }
+    #hanko-validate-btn:disabled { cursor: not-allowed; }
+  </style>
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="rpg-body h-full flex flex-col md:flex-row md:overflow-hidden">
+
+  <!-- Modale de confirmation générique (remplace confirm()) -->
+  <div id="generic-confirm-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
+      </div>
+      <div class="text-red-400" style="line-height:1.15;">
+        <div class="text-2xl font-black" style="font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;">注意</div>
+        <div class="text-[10px] uppercase tracking-wider text-red-400/70 italic">Chūi — Attention</div>
+      </div>
+      <h3 id="generic-confirm-title" class="text-xl font-extrabold text-white">Confirmer la suppression</h3>
+      <p id="generic-confirm-message" class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeGenericConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de réinitialisation complète des données, avec confirmation par saisie de texte -->
+  <div id="reset-data-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-red-500/30 rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-triangle-exclamation text-2xl text-red-400"></i>
+      </div>
+      <h3 class="text-xl font-extrabold text-white">Réinitialiser toutes les données ?</h3>
+      <p class="text-sm text-slate-400">Cette action supprime <span class="text-red-400 font-semibold">définitivement</span> toutes vos données (profil, notes, todos, decks, révisions, statistiques...) de ce navigateur. Elle ne peut pas être annulée.</p>
+      <p class="text-xs text-slate-500">Pensez à télécharger une sauvegarde avant de continuer si vous n'êtes pas <span data-g-m="sûr" data-g-f="sûre" data-g-n="sûr·e">sûr</span>.</p>
+      <div class="text-left">
+        <label class="text-xs text-slate-400 block mb-1">Tapez <span class="font-mono text-red-400 font-bold">SUPPRIMER</span> pour confirmer</label>
+        <input type="text" id="reset-data-confirm-input" oninput="updateResetDataBtnState()" autocomplete="off" class="w-full bg-[#F4F0E6] border border-dark-border focus:border-red-500/50 text-white rounded-xl p-2.5 text-sm text-center font-mono tracking-widest uppercase">
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeResetDataModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button id="reset-data-confirm-btn" onclick="executeResetAllData()" disabled class="flex-1 px-4 py-2.5 bg-red-500/40 text-white/60 text-sm font-semibold rounded-xl transition cursor-not-allowed"><i class="fa-solid fa-trash mr-1.5"></i>Réinitialiser</button>
+      </div>
+    </div>
+  </div>
+
+    <aside class="w-full md:w-72 flex flex-col shrink-0 z-20 md:h-full md:overflow-y-auto custom-scrollbar">
+
+    <div class="rpg-brand">
+      <div class="rpg-brand-plate" onclick="window.location.href='index.html'" role="button" title="Retour au campement">
+        <svg class="rpg-logo" width="34" height="34" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="2" width="14" height="12" fill="#5B4030"/><rect x="2" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="9" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="7" y="2" width="2" height="12" fill="#8A5F3E"/><rect x="3" y="5" width="3" height="1" fill="#8FA58B"/><rect x="3" y="7" width="3" height="1" fill="#8FA58B"/><rect x="10" y="5" width="3" height="1" fill="#C97D5D"/><rect x="10" y="7" width="3" height="1" fill="#C97D5D"/><rect x="4" y="10" width="2" height="2" fill="#D9C58C"/><rect x="10" y="10" width="2" height="2" fill="#B7C5A3"/></svg>
+        <span>
+          <span class="rpg-brand-name">Benkyō</span>
+          <span class="rpg-brand-sub">Cozy Study Quest</span>
+        </span>
+      </div>
+      <div class="rpg-streak" title="Série de jours d'étude">
+        <i class="fa-solid fa-fire" aria-hidden="true"></i><span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <div class="rpg-mascot">
+      <img src="mascotte.png" alt="Mascotte de Benkyō, petite fermière au chapeau de paille">
+      <div class="rpg-bubble"><b>Mon Profil</b><br>Voici ta fiche de personnage. Tes stats montent bien !</div>
+    </div>
+
+    <div class="rpg-hud">
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Série</div>
+        <div class="rpg-hud-value"><span id="hud-streak">0</span> j</div>
+        <div class="rpg-hud-bar"><span id="hud-streak-bar" style="width:0%"></span></div>
+      </div>
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Tâches du jour</div>
+        <div class="rpg-hud-value"><span id="hud-tasks">0</span></div>
+        <div class="rpg-hud-bar"><span id="hud-tasks-bar" style="width:0%"></span></div>
+      </div>
+    </div>
+
+    <div class="rpg-nav-title">Menu du carnet</div>
+    <nav class="flex-1">
+      <button onclick="window.location.href='index.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-border-all" aria-hidden="true"></i><span>Zone de campement</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn active" aria-current="page">
+        <i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-clock" aria-hidden="true"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-brain" aria-hidden="true"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-note-sticky" aria-hidden="true"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-stopwatch" aria-hidden="true"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='fournitures.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Fournitures &amp; Achats</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn nav-vacation" aria-current="false">
+        <i class="fa-solid fa-sun" aria-hidden="true"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 md:overflow-y-auto custom-scrollbar relative">
+  <div class="rpg-parchment">
+    <div class="rpg-questbar">
+      <img src="mascotte.png" alt="">
+      <div>
+        <div class="rpg-questbar-title">Mon Profil</div>
+        <div class="rpg-questbar-sub">Voici ta fiche de personnage. Tes stats montent bien !</div>
+      </div>
+      <span class="rpg-chip" style="margin-left:auto"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Benkyō</span>
+    </div>
+
+
+    <section id="tab-profile" class="tab-content nb-section">
+      <div class="nb-shell">
+        <div class="nb-tabs" role="tablist" aria-label="Sections du carnet">
+          <button class="nb-tab is-active" data-subtab="profil" role="tab" onclick="switchProfileSubtab('profil')"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Mon profil</span></button>
+          <button class="nb-tab" data-subtab="resultats" role="tab" onclick="switchProfileSubtab('resultats')"><i class="fa-solid fa-award" aria-hidden="true"></i><span>Mes résultats</span></button>
+          <button class="nb-tab" data-subtab="tampons" role="tab" onclick="switchProfileSubtab('tampons')"><i class="fa-solid fa-stamp" aria-hidden="true"></i><span>Mes tampons</span></button>
+          <button class="nb-tab" data-subtab="moral" role="tab" onclick="switchProfileSubtab('moral')"><i class="fa-solid fa-heart" aria-hidden="true"></i><span>Mon moral</span></button>
+        </div>
+
+        <div class="nb-book">
+          <span class="nb-corner nb-corner-tl"></span>
+          <span class="nb-corner nb-corner-br"></span>
+          <div class="nb-paper">
+            <div class="nb-rings" aria-hidden="true"></div>
+            <div class="nb-page">
+              <div class="nb-page-head">
+                <img class="nb-head-sprite" src="pixel/food/food-05.png" alt="" aria-hidden="true">
+                <div>
+                  <h1 class="nb-title" id="nb-page-title">Mon Profil</h1>
+                  <p class="nb-sub" id="nb-page-sub">Personnalisez vos informations d'<span data-g-m="étudiant" data-g-f="étudiante" data-g-n="étudiant·e">étudiant</span>.</p>
+                </div>
+                <img class="nb-head-sprite nb-head-sprite--right" src="pixel/food/food-03.png" alt="" aria-hidden="true">
+              </div>
+
+              <div id="tp-pane-profil" class="tp-pane">
+              <div class="nb-sheet">
+      <div class="glass-panel p-8 rounded-3xl border border-dark-border space-y-6 card-glow">
+        <div class="flex flex-col items-center space-y-4">
+          <img id="profile-img-preview" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTAwIiB5Mj0iMTAwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjOGI1Y2Y2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNiODJmNiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9InVybCgjZykiLz4KICA8cGF0aCBkPSJNNTAgMjIgTDU5IDQxIEw4MCA1MCBMNTkgNTkgTDUwIDc4IEw0MSA1OSBMMjAgNTAgTDQxIDQxIFoiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9IjAuOTIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI2IiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=" class="w-28 h-28 rounded-full object-cover border-4 border-brand-purple shadow-xl">
+          <div class="flex gap-2">
+            <input type="text" id="profile-img-url" placeholder="Lien image Google / Web..." onchange="updateProfileImgFromUrl(this.value)" class="bg-[#F4F0E6]/80 border border-dark-border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-purple w-60">
+            <label class="bg-brand-purple hover:bg-brand-purple/80 text-white px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-1">
+              <i class="fa-solid fa-upload"></i> Appareil
+              <input type="file" accept="image/*" onchange="uploadProfileImg(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="text-slate-300 font-semibold block mb-1">Prénom</label>
+            <input type="text" id="profile-firstname" placeholder="Entrez votre prénom..." oninput="updateProfileName(this.value)" class="w-full bg-[#F4F0E6]/80 border border-dark-border text-white rounded-xl p-3 focus:outline-none focus:border-brand-purple text-sm">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-slate-300 font-semibold block mb-1">Genre</label>
+              <select id="profile-gender" onchange="saveProfileData(); if (window.BenkyoTampons) BenkyoTampons.refresh();" class="w-full bg-[#F4F0E6]/80 border border-dark-border text-white rounded-xl p-3 focus:outline-none">
+                <option value="Garçon">Garçon</option>
+                <option value="Fille">Fille</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-slate-300 font-semibold block mb-1">Niveau d'étude</label>
+              <input type="text" id="profile-level" placeholder="Ex: Khâgne, L2, Terminale..." onchange="saveProfileData()" class="w-full bg-[#F4F0E6]/80 border border-dark-border text-white rounded-xl p-3 focus:outline-none">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Hydratation immédiate (pendant le parsing HTML, avant les librairies
+        // externes) : la grande photo de profil, le prénom, le genre et le
+        // niveau s'affichent tout de suite, sans temps de chargement.
+        (function () {
+          try {
+            var p = JSON.parse(localStorage.getItem('benkyo_profile') || 'null');
+            if (!p) return;
+            var set = function (id, prop, val) {
+              var el = document.getElementById(id);
+              if (el && val) el[prop] = val;
+            };
+            set('profile-img-preview', 'src', p.img);
+            set('profile-firstname', 'value', p.firstname);
+            set('profile-gender', 'value', p.gender);
+            set('profile-level', 'value', p.level);
+            set('welcome-name', 'innerText', p.firstname);
+            var t = document.getElementById('dash-main-title');
+            if (t && p.firstname) t.innerText = 'Zone de campement de ' + p.firstname + '';
+          } catch (e) {}
+        })();
+      </script>
+
+      <!-- 冒険 — Niveau d'aventure et titres (français / japonais) -->
+      <div id="adventure-level-root"></div>
+              </div>
+
+              <div class="nb-sheet">
+      <div id="tp-manual-root"></div>
+
+      <div class="glass-panel p-8 rounded-3xl border border-dark-border space-y-4 card-glow">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down text-brand-purple"></i> Sauvegarde de mes données</h2>
+          <p class="text-slate-400 text-xs mt-1">Vos données sont enregistrées automatiquement dans ce navigateur. Téléchargez un fichier de sauvegarde de temps en temps pour ne rien perdre si vous changez d'appareil ou effacez votre navigateur.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button type="button" onclick="exportBenkyoBackup()" class="bg-brand-purple hover:bg-brand-purple/80 text-white px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-2">
+            <i class="fa-solid fa-download"></i> Télécharger une sauvegarde
+          </button>
+          <label class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-2">
+            <i class="fa-solid fa-upload"></i> Restaurer une sauvegarde
+            <input type="file" accept="application/json" onchange="importBenkyoBackup(event)" class="hidden">
+          </label>
+        </div>
+        <p id="backup-status" class="text-xs text-emerald-400 hidden"></p>
+      </div>
+
+      <div class="glass-panel p-8 rounded-3xl border border-red-500/20 space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-red-400"></i> Zone dangereuse</h2>
+          <p class="text-slate-400 text-xs mt-1">Réinitialise entièrement l'application : profil, emploi du temps, notes, todos, decks, révisions, statistiques... Pensez à télécharger une sauvegarde avant si besoin.</p>
+        </div>
+        <button type="button" onclick="openResetDataModal()" class="bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition flex items-center gap-2">
+          <i class="fa-solid fa-trash"></i> Réinitialiser toutes les données
+        </button>
+      </div>
+              </div>
+              </div>
+
+              <div id="tp-pane-resultats" class="tp-pane" hidden>
+              <div class="nb-sheet">
+      <div class="glass-panel p-8 rounded-3xl border border-dark-border space-y-5 card-glow">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-award text-amber-400"></i> 成果 — Mes résultats</h2>
+          <p id="results-month-label" class="text-slate-400 text-xs mt-1">Bilan du mois</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-4 text-center space-y-1">
+            <div class="text-2xl"></div>
+            <div class="text-lg font-black text-white" id="res-chapters-count">0</div>
+            <div class="text-[10px] text-slate-500 leading-tight">Chapitres révisés</div>
+          </div>
+          <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-4 text-center space-y-1">
+            <div class="text-2xl"></div>
+            <div class="text-lg font-black text-white" id="res-goals-count">0</div>
+            <div class="text-[10px] text-slate-500 leading-tight">Objectifs atteints</div>
+          </div>
+          <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-4 text-center space-y-1">
+            <div class="text-2xl" id="res-school-kanji" style="color:#6B5D4F">－</div>
+            <div class="text-lg font-black text-white" id="res-school-value">－</div>
+            <div class="text-[10px] text-slate-500 leading-tight">Résultats scolaires</div>
+          </div>
+          <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-4 text-center space-y-1">
+            <div class="text-2xl" id="res-learn-kanji" style="color:#6B5D4F">－</div>
+            <div class="text-lg font-black text-white" id="res-learn-value">－</div>
+            <div class="text-[10px] text-slate-500 leading-tight">Résultats Apprentissage</div>
+          </div>
+        </div>
+
+        <!-- Travail réellement accompli : tâches cochées + heures Pomodoro / Entraînements -->
+        <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-300"><i class="fa-solid fa-hourglass-half text-brand-cyan mr-1.5"></i>Travail accompli</span>
+            <span class="text-[10px] text-slate-500">To-do list · Pomodoro · Entraînements</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3 text-center">
+              <div class="text-[10px] text-slate-500 uppercase tracking-wide">Cette semaine</div>
+              <div class="text-base font-black text-white" id="res-week-time">0 min</div>
+              <div class="text-[10px] text-slate-400" id="res-week-todos">0 tâche cochée</div>
+            </div>
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3 text-center">
+              <div class="text-[10px] text-slate-500 uppercase tracking-wide">Ce mois-ci</div>
+              <div class="text-base font-black text-white" id="res-month-time">0 min</div>
+              <div class="text-[10px] text-slate-400" id="res-month-todos">0 tâche cochée</div>
+            </div>
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3 text-center">
+              <div class="text-[10px] text-slate-500 uppercase tracking-wide">Détail du mois</div>
+              <div class="text-base font-black text-white" id="res-month-pomo">0 min</div>
+              <div class="text-[10px] text-slate-400" id="res-month-training">Entraînements : 0 min</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bilan de l'année (visible à partir de décembre) et de l'année scolaire (juin) -->
+        <div id="annual-summary" class="hidden bg-gradient-to-r from-amber-500/10 to-brand-purple/10 border border-amber-500/25 rounded-2xl p-4 space-y-3">
+          <div>
+            <p class="text-sm font-bold text-white" id="annual-summary-title">Bilan de l'année</p>
+            <p class="text-xs text-slate-400" id="annual-summary-sub"></p>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3">
+              <div class="text-base font-black text-white" id="annual-total-time">0 min</div>
+              <div class="text-[10px] text-slate-500">Temps de travail</div>
+            </div>
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3">
+              <div class="text-base font-black text-white" id="annual-todos">0</div>
+              <div class="text-[10px] text-slate-500">Tâches cochées</div>
+            </div>
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3">
+              <div class="text-base font-black text-white" id="annual-chapters">0</div>
+              <div class="text-[10px] text-slate-500">Chapitres révisés</div>
+            </div>
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3">
+              <div class="text-base font-black text-white" id="annual-goals">0</div>
+              <div class="text-[10px] text-slate-500">Objectifs atteints</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3">
+              <div class="text-base font-black text-white" id="annual-school">－</div>
+              <div class="text-[10px] text-slate-500">Résultats scolaires</div>
+            </div>
+            <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3">
+              <div class="text-base font-black text-white" id="annual-learn">－</div>
+              <div class="text-[10px] text-slate-500">Résultats d'apprentissage</div>
+            </div>
+          </div>
+          <div class="bg-[#F4F0E6] border border-dark-border rounded-xl p-3 text-center">
+            <div class="text-lg font-black" id="annual-global" style="color:#D9C58C">－</div>
+            <div class="text-[10px] text-slate-500">Note globale de l'année</div>
+          </div>
+        </div>
+
+      </div>
+              </div>
+
+              <div class="nb-sheet">
+      <div class="glass-panel p-8 rounded-3xl border border-dark-border space-y-5 card-glow">
+        <div class="bg-[#F4F0E6] border border-dark-border rounded-2xl p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-300">Progression globale</span>
+            <span class="text-sm font-black" id="res-progress-value" style="color:#C97D5D">－</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+            <div id="res-progress-bar" class="h-full bg-gradient-to-r from-brand-purple to-brand-cyan transition-all" style="width:0%"></div>
+          </div>
+          <p class="text-[10px] text-slate-500" id="res-work-progress">－</p>
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <label for="work-goal-hours" class="text-[10px] text-slate-400 font-semibold">Mon objectif d'heures de travail par mois :</label>
+            <input type="number" min="1" max="400" step="1" id="work-goal-hours" value="20"
+              onchange="saveWorkGoalHours(this.value)"
+              class="w-20 bg-[#F4F0E6] border border-dark-border text-white text-xs rounded-lg px-2 py-1 text-center focus:outline-none focus:border-brand-purple">
+            <span class="text-[10px] text-slate-400">h</span>
+            <span class="text-[10px] text-slate-600" id="work-goal-saved"></span>
+          </div>
+          <p class="text-[10px] text-slate-600">Calculée à partir des résultats scolaires, des résultats d'apprentissage et des heures de travail accomplies, avec un malus pour les notes en dessous de la moyenne.</p>
+          <p class="text-[10px] text-slate-600" id="res-progress-detail"></p>
+        </div>
+
+        <div id="res-encouragement" class="bg-gradient-to-r from-brand-purple/10 to-brand-cyan/10 border border-brand-purple/20 rounded-2xl p-4 flex items-center gap-3">
+          <span class="text-3xl font-black text-brand-purple" id="res-enc-kanji">頑張って</span>
+          <div>
+            <p class="text-sm font-bold text-white" id="res-enc-romaji"></p>
+            <p class="text-xs text-slate-400" id="res-enc-fr"></p>
+          </div>
+        </div>
+
+        <!-- Validation détaillée exigée pour les bilans annuels (1er janvier / 30 juin) -->
+        <div id="hanko-checklist" class="hidden bg-[#F4F0E6] border border-amber-500/30 rounded-2xl p-4 space-y-2">
+          <p class="text-xs font-bold text-amber-400">Valide chaque point avant d'apposer ton tampon :</p>
+          <label class="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" class="hanko-check accent-brand-purple" onchange="renderHankoSection()"> Note globale de l'année</label>
+          <label class="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" class="hanko-check accent-brand-purple" onchange="renderHankoSection()"> Chapitres révisés</label>
+          <label class="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" class="hanko-check accent-brand-purple" onchange="renderHankoSection()"> Objectifs atteints</label>
+          <label class="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" class="hanko-check accent-brand-purple" onchange="renderHankoSection()"> Résultats scolaires</label>
+          <label class="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" class="hanko-check accent-brand-purple" onchange="renderHankoSection()"> Résultats d'apprentissage</label>
+        </div>
+
+        <!-- 認印 — Tampon de validation hebdomadaire (dimanche) / mensuelle (fin de mois) -->
+        <div id="hanko-section" class="hanko-box bg-[#F4F0E6] border border-dark-border rounded-2xl p-5 flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
+          <div class="hanko-slot relative shrink-0 flex items-center justify-center">
+
+            <div id="hanko-ghost" class="hidden absolute inset-0 rounded-full border-2 border-dashed border-red-500/30 items-center justify-center text-red-400/60 text-[11px] font-bold text-center leading-tight px-1">
+              À<br>tamponner
+            </div>
+            <svg id="hanko-stamp-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" class="hanko-stamp hidden w-20 h-20" style="width:8.5rem;height:8.5rem">
+              <defs>
+                <filter id="hankoInkTexture" x="-30%" y="-30%" width="160%" height="160%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="24" result="grain"/>
+                  <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0" result="grainAlpha"/>
+                  <feComponentTransfer in="grainAlpha" result="grainAlphaAdj">
+                    <feFuncA type="linear" slope="0.4" intercept="0.62"/>
+                  </feComponentTransfer>
+                  <feComposite in="SourceGraphic" in2="grainAlphaAdj" operator="in"/>
+                </filter>
+              </defs>
+              <g transform="rotate(-8 60 60)">
+                <circle cx="60" cy="60" r="53" fill="#C97D5D" filter="url(#hankoInkTexture)"/>
+                <circle cx="60" cy="60" r="53" fill="none" stroke="#5B4030" stroke-width="2.5" opacity="0.55"/>
+                <circle cx="60" cy="60" r="43" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.9" filter="url(#hankoInkTexture)"/>
+                <text x="60" y="76" text-anchor="middle" font-family="'Noto Serif JP','Hiragino Mincho ProN',serif" font-size="50" fill="#ffffff" font-weight="700" filter="url(#hankoInkTexture)">済</text>
+              </g>
+            </svg>
+          </div>
+          <div class="flex-1 text-center sm:text-left">
+            <p class="text-sm font-bold text-white" id="hanko-status-title">Chargement…</p>
+            <p class="text-xs text-slate-400 mt-0.5" id="hanko-status-sub"></p>
+          </div>
+          <button id="hanko-validate-btn" onclick="validateHankoResults()" disabled class="hanko-btn rounded-xl font-bold transition-all duration-200 shadow-lg hover:-translate-y-0.5 active:scale-95 opacity-50 cursor-not-allowed" style="background:linear-gradient(135deg,#C97D5D,#8A5F3E);color:#3E352D;">
+            <i class="fa-solid fa-stamp" aria-hidden="true"></i> <span>J'ai bien pris connaissance de mes résultats</span>
+          </button>
+
+        </div>
+      </div>
+              </div>
+
+              </div>
+
+              <div id="tp-pane-tampons" class="tp-pane" hidden>
+                <div class="nb-sheet nb-sheet--wide"><div id="tp-carnet-root"></div></div>
+                <div class="nb-sheet"><div id="tp-stickers-root"></div></div>
+                <div class="nb-sheet"><div id="tp-collection-root"></div></div>
+                <div class="nb-sheet"><div id="tp-shop-root"></div></div>
+              </div>
+
+              <div id="tp-pane-moral" class="tp-pane" hidden>
+                <div class="nb-sheet nb-sheet--wide">
+                  <div class="nb-moral-layout">
+                    <div id="tp-mood-root"></div>
+                    <div id="tp-mood-cal-root"></div>
+                  </div>
+                </div>
+              </div>
+
+
+              <nav class="nb-pager" id="nb-pager" hidden>
+                <button type="button" class="nb-pager-btn" id="nb-pager-prev" onclick="BenkyoCarnet.prev()" aria-label="Pages précédentes">‹</button>
+                <span class="nb-pager-label" id="nb-pager-label"></span>
+                <button type="button" class="nb-pager-btn" id="nb-pager-next" onclick="BenkyoCarnet.next()" aria-label="Pages suivantes">›</button>
+              </nav>
+
+              <div class="nb-footer-sprites" aria-hidden="true">
+                <img src="pixel/food/food-10.png" alt="">
+                <img src="pixel/food/flower.png" alt="">
+                <img src="pixel/food/food-07.png" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script src="pixel-deco.js" defer></script>
+  <script src="tampons.js" defer></script>
+  <script src="carnet.js" defer></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let statsChartInstance = null;
+    let debounceTimer = null;
+
+    function saveState() {
+      BenkyoStorage.save(state);
+    }
+
+    function updateProfileUI() {
+      const nameEl = document.getElementById('welcome-name');
+      if (nameEl) nameEl.innerText = state.profile.firstname;
+      const mainTitleEl = document.getElementById('dash-main-title');
+      if (mainTitleEl) mainTitleEl.innerText = `Zone de campement de ${state.profile.firstname}`;
+      
+      const fnInput = document.getElementById('profile-firstname');
+      if (fnInput) fnInput.value = state.profile.firstname;
+      
+      const genderSel = document.getElementById('profile-gender');
+      if (genderSel) genderSel.value = state.profile.gender;
+
+      const levelInput = document.getElementById('profile-level');
+      if (levelInput) levelInput.value = state.profile.level;
+
+      const imgPrev = document.getElementById('profile-img-preview');
+      if (imgPrev) imgPrev.src = state.profile.img;
+
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function updateProfileName(val) {
+      state.profile.firstname = val || "Étudiant";
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        saveState();
+        updateProfileUI();
+      }, 300);
+    }
+
+    function exportBenkyoBackup() {
+      BenkyoStorage.flush(state);
+      BenkyoStorage.exportBackup(state);
+      const statusEl = document.getElementById('backup-status');
+      statusEl.textContent = 'Sauvegarde téléchargée';
+      statusEl.classList.remove('hidden');
+      setTimeout(() => statusEl.classList.add('hidden'), 4000);
+    }
+
+    function importBenkyoBackup(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusEl = document.getElementById('backup-status');
+      if (!confirm("Restaurer cette sauvegarde va remplacer toutes les données actuelles (notes, todos, decks, etc.). Continuer ?")) {
+        e.target.value = '';
+        return;
+      }
+      BenkyoStorage.importBackup(file).then(() => {
+        statusEl.textContent = 'Sauvegarde restaurée, rechargement...';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => location.reload(), 1000);
+      }).catch(() => {
+        statusEl.classList.remove('text-emerald-400');
+        statusEl.classList.add('text-red-400');
+        statusEl.textContent = "Fichier de sauvegarde invalide.";
+        statusEl.classList.remove('hidden');
+      });
+      e.target.value = '';
+    }
+
+    // -------- Modale de confirmation générique (remplace confirm()) --------
+    let _genericConfirmCallback = null;
+    function showConfirmModal(title, message, onConfirm, confirmLabel) {
+      document.getElementById('generic-confirm-title').innerText = title || 'Confirmer la suppression';
+      document.getElementById('generic-confirm-message').innerText = message || 'Cette action est définitive et ne peut pas être annulée.';
+      document.getElementById('generic-confirm-btn').innerText = confirmLabel || 'Supprimer';
+      _genericConfirmCallback = onConfirm;
+      document.getElementById('generic-confirm-modal').classList.remove('hidden');
+    }
+    function closeGenericConfirmModal() {
+      document.getElementById('generic-confirm-modal').classList.add('hidden');
+      _genericConfirmCallback = null;
+    }
+    function executeGenericConfirm() {
+      const cb = _genericConfirmCallback;
+      closeGenericConfirmModal();
+      if (cb) cb();
+    }
+
+    // -------- Modale de réinitialisation complète des données --------
+    function openResetDataModal() {
+      const input = document.getElementById('reset-data-confirm-input');
+      if (input) input.value = '';
+      updateResetDataBtnState();
+      document.getElementById('reset-data-modal').classList.remove('hidden');
+    }
+    function closeResetDataModal() {
+      document.getElementById('reset-data-modal').classList.add('hidden');
+    }
+    function updateResetDataBtnState() {
+      const input = document.getElementById('reset-data-confirm-input');
+      const btn = document.getElementById('reset-data-confirm-btn');
+      if (!input || !btn) return;
+      const ready = input.value.trim().toUpperCase() === 'SUPPRIMER';
+      btn.disabled = !ready;
+      btn.classList.toggle('bg-red-500/40', !ready);
+      btn.classList.toggle('text-white/60', !ready);
+      btn.classList.toggle('cursor-not-allowed', !ready);
+      btn.classList.toggle('bg-red-500', ready);
+      btn.classList.toggle('hover:bg-red-600', ready);
+      btn.classList.toggle('text-white', ready);
+      btn.classList.toggle('cursor-pointer', ready);
+    }
+    function executeResetAllData() {
+      const input = document.getElementById('reset-data-confirm-input');
+      if (!input || input.value.trim().toUpperCase() !== 'SUPPRIMER') return;
+      const btn = document.getElementById('reset-data-confirm-btn');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Suppression...'; }
+      // Vide le localStorage ET neutralise le `state` en mémoire (sinon le
+      // filet de sécurité autoFlushOn() de app.js réécrirait les anciennes
+      // données au moment de quitter la page, juste après leur suppression).
+      BenkyoStorage.resetAllData(state);
+      closeResetDataModal();
+      // Redirection "dure" (et non un simple location.href) pour repartir
+      // sur une page entièrement fraîche, sans aucun état JS résiduel.
+      window.location.replace('index.html');
+    }
+
+    function saveProfileData() {
+      state.profile.gender = document.getElementById('profile-gender').value;
+      state.profile.level = document.getElementById('profile-level').value;
+      saveState();
+    }
+
+    function updateProfileImgFromUrl(url) {
+      if(url) {
+        state.profile.img = url;
+        saveState();
+        updateProfileUI();
+      }
+    }
+
+    function uploadProfileImg(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          state.profile.img = evt.target.result;
+          saveState();
+          updateProfileUI();
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Sous-onglets du carnet "Mon profil"
+    const NB_SUBTABS = {
+      profil:     { pane: 'tp-pane-profil',     title: 'Mon Profil',     sub: "Personnalisez vos informations d'étudiant·e." },
+      resultats:  { pane: 'tp-pane-resultats',  title: 'Mes résultats',  sub: 'Le bilan de ton travail et ton tampon de validation.' },
+      tampons:    { pane: 'tp-pane-tampons',    title: 'Mes tampons',    sub: 'Ton carnet de tampons et ta collection de stickers.' },
+      moral:      { pane: 'tp-pane-moral',      title: 'Mon moral',      sub: 'Note ton humeur du jour et suis ton énergie.' }
+    };
+    function switchProfileSubtab(name) {
+      if (!NB_SUBTABS[name]) name = 'profil';
+      Object.keys(NB_SUBTABS).forEach(k => {
+        const el = document.getElementById(NB_SUBTABS[k].pane);
+        if (el) el.hidden = (k !== name);
+      });
+      document.querySelectorAll('.nb-tab, .tp-subtab').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.subtab === name);
+        btn.setAttribute('aria-selected', String(btn.dataset.subtab === name));
+      });
+      const t = document.getElementById('nb-page-title');
+      const s = document.getElementById('nb-page-sub');
+      if (t) t.innerText = NB_SUBTABS[name].title;
+      if (s) s.innerText = NB_SUBTABS[name].sub;
+      if (window.BenkyoTampons) BenkyoTampons.refresh();
+      if (window.BenkyoCarnet) BenkyoCarnet.reset();
+      if (history.replaceState) history.replaceState(null, '', '#' + name);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        if(!el.getAttribute('onclick')?.includes('vacation')) {
+          el.classList.remove('bg-brand-purple/20', 'text-brand-purple', 'border', 'border-brand-purple/30');
+          el.classList.add('text-slate-400');
+        } else {
+          el.classList.remove('bg-emerald-500/20', 'border-emerald-500');
+        }
+      });
+      
+      const selectedTab = document.getElementById(`tab-${tabId}`);
+      if(selectedTab) selectedTab.classList.remove('hidden');
+      
+      if(event && event.currentTarget) {
+        if(tabId === 'vacation') {
+          event.currentTarget.classList.add('bg-emerald-500/20', 'border-emerald-500');
+          event.currentTarget.classList.remove('text-slate-400');
+        } else {
+          event.currentTarget.classList.add('bg-brand-purple/20', 'text-brand-purple', 'border', 'border-brand-purple/30');
+          event.currentTarget.classList.remove('text-slate-400');
+        }
+      }
+
+      // Dynamic deferred loading based on targeted tab
+      switch(tabId) {
+        case 'dashboard': renderDashboard(); break;
+        case 'revisions': if(typeof renderRevisions === 'function') renderRevisions(); break;
+        case 'flashcards': renderDecks(); renderFlashcardCharts(); break;
+        case 'notes': renderNotes(); break;
+        case 'todo': renderTodos(); break;
+        case 'timetable': renderTimetable(); break;
+        case 'vacation': renderVacation(); break;
+        case 'pomodoro': renderPomodoroStats(); break;
+        case 'profile': updateProfileUI(); break;
+      }
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const sc = document.getElementById('streak-count');
+      if (sc) sc.innerText = state.streak.count;
+      const dsc = document.getElementById('dash-streak-count');
+      if (dsc) dsc.innerText = state.streak.count;
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      if (!container) return;
+      container.innerHTML = state.notes.map((n, idx) => `
+        <div class="glass-panel border border-dark-border p-4 rounded-3xl space-y-3 card-glow relative">
+          <div class="flex justify-between items-center border-b border-dark-border pb-2">
+            <input type="text" value="${n.title || ''}" onchange="state.notes[${idx}].title=this.value; saveState();" placeholder="Titre..." class="bg-transparent font-bold text-white focus:outline-none w-full text-sm">
+            <button onclick="deleteNote(${idx})" class="text-slate-500 hover:text-red-400 text-xs ml-2" title="Supprimer la note"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 bg-[#F4F0E6] p-1.5 rounded-xl border border-dark-border text-xs">
+            <button onclick="formatNoteText(${idx}, 'bold')" class="px-2 py-0.5 bg-slate-800 rounded font-bold">B</button>
+            <button onclick="formatNoteText(${idx}, 'italic')" class="px-2 py-0.5 bg-slate-800 rounded italic">I</button>
+            <button onclick="formatNoteText(${idx}, 'underline')" class="px-2 py-0.5 bg-slate-800 rounded underline">U</button>
+
+            <span class="text-[10px] text-slate-400 ml-1">Surligner:</span>
+            <button onclick="highlightNoteText(${idx}, '#EFE0B4')" class="hl-swatch hl-yellow" title="Jaune Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#C7DAB4')" class="hl-swatch hl-green" title="Vert Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#AFC8DD')" class="hl-swatch hl-blue" title="Bleu Pastel"></button>
+            <button onclick="highlightNoteText(${idx}, '#F0C1B3')" class="hl-swatch hl-pink" title="Rose Pastel"></button>
+
+            <input type="color" onchange="changeNoteTextColor(${idx}, this.value)" title="Couleur de écriture" class="w-5 h-5 bg-transparent cursor-pointer ml-1">
+            <select onchange="changeNoteFont(${idx}, this.value)" class="bg-slate-800 text-[10px] text-slate-200 rounded p-0.5">
+              <option value="sans-serif">Sans-Serif</option>
+              <option value="serif">Serif</option>
+              <option value="monospace">Monospace</option>
+              <option value="cursive">Cursive</option>
+            </select>
+          </div>
+
+          <div id="note-body-${idx}" contenteditable="true" oninput="debouncedSaveNoteContent(${idx})" class="w-full h-28 bg-[#F4F0E6] p-3 rounded-xl text-xs text-slate-200 focus:outline-none overflow-y-auto custom-scrollbar leading-relaxed" style="font-family: ${n.font || 'sans-serif'}; color: ${n.color || '#E9E1D0'}">
+            ${n.content || ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNote() { state.notes.push({ title: '', content: '', font: 'sans-serif', color: '#E9E1D0' }); saveState(); renderNotes(); }
+    function deleteNote(idx) { state.notes.splice(idx, 1); saveState(); renderNotes(); }
+    
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) { state.notes[idx].content = el.innerHTML; saveState(); }
+    }
+
+    function debouncedSaveNoteContent(idx) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => saveNoteContent(idx), 300);
+    }
+
+    function formatNoteText(idx, cmd) {
+      document.execCommand(cmd, false, null);
+      saveNoteContent(idx);
+    }
+    function highlightNoteText(idx, color) {
+      document.execCommand('hiliteColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteTextColor(idx, color) {
+      document.execCommand('foreColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteFont(idx, font) {
+      state.notes[idx].font = font;
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) el.style.fontFamily = font;
+      saveState();
+    }
+
+    function benkyoInitPage() {
+      try { updateProfileUI(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderMyResults(); } catch(e) {}
+      try { renderHankoSection(); } catch(e) {}
+      try {
+        const wanted = (location.hash || '').replace('#', '');
+        if (['profil','resultats','tampons','moral'].indexOf(wanted) !== -1) switchProfileSubtab(wanted);
+      } catch(e) {}
+    }
+    // DOMContentLoaded plutôt que window.onload : "load" attend TOUTES les
+    // ressources externes (polices, FontAwesome, Chart.js, html2pdf,
+    // confetti...) et peut ne jamais se déclencher si l'une d'elles est
+    // lente ou bloquée, laissant la page (photo, prénom, résultats, tampon)
+    // bloquée sur son état par défaut / "Chargement…".
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', benkyoInitPage);
+    } else {
+      benkyoInitPage();
+    }
+
+    /* ============================================================
+       成果 — Bilan "Mes résultats" (chapitres révisés, objectifs
+       atteints, résultats scolaires, résultats Apprentissage,
+       progression globale) + phrase d'encouragement en japonais.
+       ============================================================ */
+    const RESULTS_JGRADE_SCALE = [
+      { min: 90, kanji: '秀', color: '#8A5F3E' },
+      { min: 80, kanji: '優', color: '#B7C5A3' },
+      { min: 70, kanji: '良', color: '#8FA58B' },
+      { min: 60, kanji: '可', color: '#8FA58B' },
+      { min: 50, kanji: '合格', color: '#D9C58C' },
+      { min: 0,  kanji: '不可', color: '#C97D5D' }
+    ];
+    function resultsJgradeFor(percent) {
+      return RESULTS_JGRADE_SCALE.find(g => percent >= g.min) || RESULTS_JGRADE_SCALE[RESULTS_JGRADE_SCALE.length - 1];
+    }
+
+    // Objectif d'heures de travail mensuel, paramétrable par l'utilisateur
+    // (stocké dans les données du profil, valeur par défaut : 20 h / mois).
+    const DEFAULT_WORK_GOAL_HOURS = 20;
+    function getWorkGoalHours() {
+      const v = Number(state.workGoalHours);
+      return (isFinite(v) && v > 0) ? v : DEFAULT_WORK_GOAL_HOURS;
+    }
+    function saveWorkGoalHours(value) {
+      const v = Math.max(1, Math.min(400, Math.round(Number(value) || DEFAULT_WORK_GOAL_HOURS)));
+      state.workGoalHours = v;
+      saveState();
+      const saved = document.getElementById('work-goal-saved');
+      if (saved) {
+        saved.innerText = 'Objectif enregistré';
+        setTimeout(() => { saved.innerText = ''; }, 2000);
+      }
+      renderMyResults();
+    }
+
+    function renderMyResults() {
+      const now = new Date();
+      const monthLabel = document.getElementById('results-month-label');
+      if (monthLabel) monthLabel.innerText = `Bilan de ${now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`;
+
+      const isThisMonth = (isoDate) => {
+        if (!isoDate) return false;
+        const d = new Date(isoDate);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      };
+
+      // --- Chapitres révisés ce mois (Révisions à répétition espacée + Texte à trous / Carte mentale) ---
+      let chaptersCount = 0;
+      (state.courses || []).forEach(c => (c.chapters || []).forEach(ch => {
+        if (ch.lastRevised && isThisMonth(ch.lastRevised)) chaptersCount++;
+      }));
+      chaptersCount += (state.blankHistory || []).filter(h => isThisMonth(h.isoDate)).length;
+      const chEl = document.getElementById('res-chapters-count');
+      if (chEl) chEl.innerText = chaptersCount;
+
+      // --- Objectifs atteints ---
+      const goalsDone = (state.goals || []).filter(g => g.done).length;
+      const goalsTotal = (state.goals || []).length;
+      const goalsEl = document.getElementById('res-goals-count');
+      if (goalsEl) goalsEl.innerText = goalsTotal ? `${goalsDone}/${goalsTotal}` : '0';
+
+      // --- Résultats scolaires (moyenne générale pondérée par matière, sur 20 -> converti en %) ---
+      let schoolPercent = null;
+      if ((state.grades || []).length) {
+        const bySubject = {};
+        state.grades.forEach(g => {
+          if (!bySubject[g.subject]) bySubject[g.subject] = { totalVal: 0, totalCoeff: 0 };
+          bySubject[g.subject].totalVal += g.value * g.coeff;
+          bySubject[g.subject].totalCoeff += g.coeff;
+        });
+        const coeffOf = (name) => {
+          const entry = (state.subjectCoefficients || []).find(s => s.name === name);
+          return entry ? entry.coeff : 1;
+        };
+        let sumWeighted = 0, sumCoeff = 0;
+        Object.keys(bySubject).forEach(subj => {
+          const subjAvg = bySubject[subj].totalVal / bySubject[subj].totalCoeff; // /20
+          const c = coeffOf(subj);
+          sumWeighted += subjAvg * c;
+          sumCoeff += c;
+        });
+        if (sumCoeff > 0) schoolPercent = Math.round((sumWeighted / sumCoeff / 20) * 100);
+      }
+      const schoolKanjiEl = document.getElementById('res-school-kanji');
+      const schoolValEl = document.getElementById('res-school-value');
+      if (schoolPercent !== null) {
+        const g = resultsJgradeFor(schoolPercent);
+        if (schoolKanjiEl) { schoolKanjiEl.innerText = g.kanji; schoolKanjiEl.style.color = g.color; }
+        if (schoolValEl) schoolValEl.innerText = `${(schoolPercent / 5).toFixed(1)}/20`;
+      }
+
+      // --- Résultats Apprentissage (Flashcards + Texte à trous / Carte mentale), priorité au mois en cours ---
+      const learnEntries = []
+        .concat((state.flashcardHistory || []).map(h => ({ percent: Math.round((h.score / 20) * 100), isoDate: h.isoDate })))
+        .concat((state.blankHistory || []).map(h => ({ percent: Math.round(h.percent), isoDate: h.isoDate })));
+      let monthEntries = learnEntries.filter(e => isThisMonth(e.isoDate));
+      let usedEntries = monthEntries.length ? monthEntries : learnEntries;
+      let learnPercent = usedEntries.length ? Math.round(usedEntries.reduce((s, e) => s + e.percent, 0) / usedEntries.length) : null;
+      const learnKanjiEl = document.getElementById('res-learn-kanji');
+      const learnValEl = document.getElementById('res-learn-value');
+      if (learnPercent !== null) {
+        const g = resultsJgradeFor(learnPercent);
+        if (learnKanjiEl) { learnKanjiEl.innerText = g.kanji; learnKanjiEl.style.color = g.color; }
+        if (learnValEl) learnValEl.innerText = `${learnPercent}/100`;
+      }
+
+      // --- Heures de travail accomplies ce mois : 3e composante de la progression ---
+      // Objectif de référence : 20 h de travail effectif par mois (Pomodoro +
+      // entraînements). 20 h ou plus = 100 % sur cette composante.
+      const WORK_GOAL_HOURS = getWorkGoalHours();
+      const WORK_GOAL_MINUTES = WORK_GOAL_HOURS * 60;
+      const goalInput = document.getElementById('work-goal-hours');
+      if (goalInput) goalInput.value = WORK_GOAL_HOURS;
+      const monthRangeForWork = BenkyoStorage.getMonthRange();
+      const monthWork = BenkyoStorage.getWorkSummary(state, monthRangeForWork.from, monthRangeForWork.to);
+      const workedMinutes = monthWork.totalMinutes || 0;
+      const workPercent = workedMinutes > 0
+        ? Math.min(100, Math.round((workedMinutes / WORK_GOAL_MINUTES) * 100))
+        : null;
+      const workEl = document.getElementById('res-work-progress');
+      if (workEl) {
+        workEl.innerText = workPercent !== null
+          ? `${BenkyoStorage.formatMinutes(workedMinutes)} ce mois · ${workPercent}% de l'objectif (${WORK_GOAL_HOURS} h)`
+          : `Aucune heure de travail enregistrée ce mois (objectif : ${WORK_GOAL_HOURS} h)`;
+      }
+
+      // --- Progression globale : notation sévère ---
+      // 1) Chaque composante passe par une courbe exigeante (x/100)^1.5 : il faut
+      //    de très bons résultats pour approcher les 100 %.
+      // 2) Les mauvaises notes (< 10/20) appliquent un malus direct, proportionnel
+      //    à leur poids : la progression ralentit vraiment quand on rate.
+      const severe = (v) => Math.round(100 * Math.pow(Math.max(0, Math.min(100, v)) / 100, 1.5));
+
+      const badGradesPenalty = (() => {
+        const grades = state.grades || [];
+        if (!grades.length) return 0;
+        let totalCoeff = 0, badCoeff = 0, deficit = 0;
+        grades.forEach(g => {
+          const c = Number(g.coeff) || 1;
+          totalCoeff += c;
+          if (g.value < 10) {
+            badCoeff += c;
+            deficit += (10 - g.value) * c; // plus la note est basse, plus ça coûte
+          }
+        });
+        if (!totalCoeff || !badCoeff) return 0;
+        const shareBad = badCoeff / totalCoeff;         // part des notes ratées
+        const severity = deficit / totalCoeff / 10;     // gravité moyenne (0 → 1)
+        return Math.min(30, Math.round(shareBad * 25 + severity * 15));
+      })();
+
+      const weighted = [
+        { v: schoolPercent, w: 0.45 },
+        { v: learnPercent,  w: 0.30 },
+        { v: workPercent,   w: 0.25 }
+      ].filter(x => x.v !== null);
+      const parts = weighted.map(x => x.v);
+      const totalWeight = weighted.reduce((s2, x) => s2 + x.w, 0);
+      let progress = 0;
+      if (weighted.length) {
+        const base = weighted.reduce((s2, x) => s2 + severe(x.v) * x.w, 0) / totalWeight;
+        // Une composante manquante ne peut pas être considérée comme acquise :
+        // on plafonne tant que les trois indicateurs ne sont pas renseignés.
+        const cap = weighted.length === 3 ? 100 : (weighted.length === 2 ? 80 : 60);
+        progress = Math.max(0, Math.min(cap, Math.floor(base) - badGradesPenalty));
+      }
+      const detailEl = document.getElementById('res-progress-detail');
+      if (detailEl) {
+        detailEl.innerText = badGradesPenalty > 0
+          ? `Malus appliqué : −${badGradesPenalty} points à cause des notes en dessous de 10/20.`
+          : (weighted.length ? "Aucune note en dessous de 10/20 : pas de malus." : "");
+      }
+      const progressBar = document.getElementById('res-progress-bar');
+      const progressVal = document.getElementById('res-progress-value');
+      if (progressBar) progressBar.style.width = `${progress}%`;
+      if (progressVal) progressVal.innerText = parts.length ? `${progress}%` : 'Pas encore de données';
+
+      // --- Travail accompli : tâches cochées + heures Pomodoro / Entraînements ---
+      const fmt = BenkyoStorage.formatMinutes;
+      const weekRange = BenkyoStorage.getWeekRange();
+      const monthRange = BenkyoStorage.getMonthRange();
+      const weekSum = BenkyoStorage.getWorkSummary(state, weekRange.from, weekRange.to);
+      const monthSum = BenkyoStorage.getWorkSummary(state, monthRange.from, monthRange.to);
+      const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+      const plural = (n) => `${n} tâche${n > 1 ? 's' : ''} cochée${n > 1 ? 's' : ''}`;
+      setTxt('res-week-time', fmt(weekSum.totalMinutes));
+      setTxt('res-week-todos', plural(weekSum.todosDone));
+      setTxt('res-month-time', fmt(monthSum.totalMinutes));
+      setTxt('res-month-todos', plural(monthSum.todosDone));
+      setTxt('res-month-pomo', `Pomodoro : ${fmt(monthSum.studyMinutes)}`);
+      setTxt('res-month-training', `Entraînements : ${fmt(monthSum.trainingMinutes)}`);
+
+      // --- Bilan annuel (dès décembre) / de l'année scolaire (en juin) ---
+      renderAnnualSummary(schoolPercent, learnPercent);
+
+      // --- Phrase d'encouragement japonaise, adaptée au niveau de progression globale ---
+      const enc = getResultsEncouragementFor(parts.length ? progress : null);
+      const k = document.getElementById('res-enc-kanji');
+      const r = document.getElementById('res-enc-romaji');
+      const f = document.getElementById('res-enc-fr');
+      if (k) k.innerText = enc.kanji;
+      if (r) r.innerText = enc.romaji;
+      if (f) f.innerText = `« ${enc.fr} »`;
+    }
+
+    // Bilan de l'année civile (affiché à partir de décembre, validé au tampon
+    // le 1er janvier) et bilan de l'année scolaire (affiché en juin, validé le 30).
+    function isSchoolYearSummaryAvailable(now) {
+      return now.getMonth() === 5; // juin
+    }
+
+    function renderAnnualSummary(schoolPercent, learnPercent) {
+      const box = document.getElementById('annual-summary');
+      if (!box) return;
+      const now = new Date();
+      const annual = BenkyoStorage.isAnnualSummaryAvailable(now);
+      const school = isSchoolYearSummaryAvailable(now);
+      if (!annual && !school) { box.classList.add('hidden'); return; }
+      box.classList.remove('hidden');
+
+      const range = annual
+        ? BenkyoStorage.getYearRange(now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear())
+        : BenkyoStorage.getSchoolYearRange(now);
+      const sum = BenkyoStorage.getWorkSummary(state, range.from, range.to);
+
+      const inRange = (iso) => {
+        if (!iso) return false;
+        const d = new Date(iso);
+        return !isNaN(d.getTime()) && d >= range.from && d <= range.to;
+      };
+      let chapters = 0;
+      (state.courses || []).forEach(c => (c.chapters || []).forEach(ch => {
+        if (ch.lastRevised && inRange(ch.lastRevised)) chapters++;
+      }));
+      chapters += (state.blankHistory || []).filter(h => inRange(h.isoDate)).length;
+      const goalsDone = (state.goals || []).filter(g => g.done).length;
+
+      const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+      setTxt('annual-summary-title', annual
+        ? `Bilan de l'année ${range.from.getFullYear()}`
+        : `Bilan de l'année scolaire ${range.from.getFullYear()}–${range.to.getFullYear()}`);
+      setTxt('annual-summary-sub', annual
+        ? "Relis ton année, puis valide-la au tampon le 1er janvier."
+        : "Fin de l'année scolaire : relis ton bilan, puis valide-le au tampon le 30 juin.");
+      setTxt('annual-total-time', BenkyoStorage.formatMinutes(sum.totalMinutes));
+      setTxt('annual-todos', sum.todosDone);
+      setTxt('annual-chapters', chapters);
+      setTxt('annual-goals', goalsDone);
+      setTxt('annual-school', schoolPercent !== null ? `${(schoolPercent / 5).toFixed(1)}/20` : '－');
+      setTxt('annual-learn', learnPercent !== null ? `${learnPercent}/100` : '－');
+
+      const parts = [schoolPercent, learnPercent].filter(v => v !== null && v !== undefined);
+      const global = parts.length ? Math.round(parts.reduce((a, b) => a + b, 0) / parts.length) : null;
+      setTxt('annual-global', global !== null ? `${(global / 5).toFixed(1)}/20 (${global}%)` : '－');
+    }
+
+    // Phrases japonaises différentes selon la tranche de progression globale
+    // (null = pas encore de données du tout).
+    const RESULTS_ENCOURAGEMENT_TIERS = [
+      {
+        min: 80,
+        messages: [
+          { kanji: '完璧', romaji: 'Kanpeki', fr: 'Parfait, continue comme ça !' },
+          { kanji: '素晴らしい', romaji: 'Subarashii', fr: 'Formidable ! Ton travail paie vraiment.' },
+          { kanji: 'さすがだね', romaji: 'Sasuga da ne', fr: 'Tu es vraiment doué(e) !' }
+        ]
+      },
+      {
+        min: 60,
+        messages: [
+          { kanji: 'その調子', romaji: 'Sono chōshi', fr: 'Continue comme ça, tu progresses bien !' },
+          { kanji: 'よく頑張ったね', romaji: 'Yoku ganbatta ne', fr: 'Tu as vraiment bien travaillé !' },
+          { kanji: 'いい感じ', romaji: 'Ii kanji', fr: 'Ça avance bien, garde ce rythme !' }
+        ]
+      },
+      {
+        min: 35,
+        messages: [
+          { kanji: '頑張って', romaji: 'Ganbatte', fr: 'Courage, tu es sur la bonne voie !' },
+          { kanji: '一歩一歩', romaji: 'Ippo ippo', fr: 'Pas à pas, tu avances dans la bonne direction.' },
+          { kanji: '諦めないで', romaji: 'Akiramenaide', fr: 'N\u2019abandonne pas, ça va payer !' }
+        ]
+      },
+      {
+        min: 0,
+        messages: [
+          { kanji: '始めよう', romaji: 'Hajimeyou', fr: 'C\u2019est le moment de s\u2019y remettre !' },
+          { kanji: '無理しないで', romaji: 'Muri shinaide', fr: 'Vas-y à ton rythme, chaque petit pas compte.' },
+          { kanji: '応援してる', romaji: 'Ouen shiteru', fr: 'On croit en toi, lance-toi !' }
+        ]
+      }
+    ];
+    const RESULTS_ENCOURAGEMENT_NO_DATA = [
+      { kanji: '今から始めよう', romaji: 'Ima kara hajimeyou', fr: 'Commence dès maintenant, tes résultats apparaîtront ici !' },
+      { kanji: 'よろしくお願いします', romaji: 'Yoroshiku onegaishimasu', fr: ((window.benkyoG ? window.benkyoG('Prêt', 'Prête', 'Prêt·e') : 'Prêt·e') + ' pour cette nouvelle aventure ?') }
+    ];
+    function getResultsEncouragementFor(percent) {
+      const pool = (percent === null || percent === undefined)
+        ? RESULTS_ENCOURAGEMENT_NO_DATA
+        : (RESULTS_ENCOURAGEMENT_TIERS.find(t => percent >= t.min) || RESULTS_ENCOURAGEMENT_TIERS[RESULTS_ENCOURAGEMENT_TIERS.length - 1]).messages;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    /* ============================================================
+       認印 — Tampon "Hanko" de validation des résultats.
+       Un tampon hebdomadaire est dû chaque dimanche, un tampon mensuel
+       le dernier jour du mois. Une fois posé, il reste affiché (persisté
+       dans state.hankoValidations via app.js / localStorage).
+       ============================================================ */
+    function formatHankoWeekLabel(now) {
+      const day = now.getDay();
+      const start = new Date(now);
+      start.setDate(now.getDate() - ((day + 6) % 7)); // lundi de la semaine
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6); // dimanche
+      return `semaine du ${start.toLocaleDateString('fr-FR', { day: 'numeric' })} au ${end.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}`;
+    }
+    function formatHankoMonthLabel(now) {
+      return now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    }
+
+    const HANKO_TYPE_LABELS = {
+      weekly: 'hebdomadaire',
+      monthly: 'mensuel',
+      yearly: "de l'année",
+      schoolyear: "de l'année scolaire"
+    };
+
+    function hankoLabelFor(type, now) {
+      if (type === 'weekly') return formatHankoWeekLabel(now);
+      if (type === 'monthly') return formatHankoMonthLabel(now);
+      if (type === 'yearly') return `année ${now.getFullYear() - 1}`;
+      return `année scolaire ${now.getFullYear() - 1}–${now.getFullYear()}`;
+    }
+
+    function hankoChecklistComplete() {
+      const boxes = Array.from(document.querySelectorAll('.hanko-check'));
+      return boxes.length > 0 && boxes.every(b => b.checked);
+    }
+
+    function renderHankoSection() {
+      const now = new Date();
+      const svg = document.getElementById('hanko-stamp-svg');
+      const ghost = document.getElementById('hanko-ghost');
+      const title = document.getElementById('hanko-status-title');
+      const sub = document.getElementById('hanko-status-sub');
+      const btn = document.getElementById('hanko-validate-btn');
+      const checklist = document.getElementById('hanko-checklist');
+      if (!svg || !ghost || !title || !sub || !btn) return;
+
+      const due = BenkyoStorage.getPendingHankoDeadlines(state);
+      const bigDue = due.some(d => d.type === 'yearly' || d.type === 'schoolyear');
+      const history = (state.hankoValidations || []).slice().sort((a, b) => new Date(b.validatedAt) - new Date(a.validatedAt));
+      const lastEntry = history[0] || null;
+
+      if (checklist) checklist.classList.toggle('hidden', !bigDue);
+
+      const setBtnDisabled = (label) => {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        btn.innerHTML = label;
+      };
+
+      if (due.length > 0) {
+        svg.classList.add('hidden');
+        ghost.classList.remove('hidden');
+        ghost.classList.add('flex');
+        const labels = due.map(d => HANKO_TYPE_LABELS[d.type] || d.type).join(' et ');
+        title.innerText = `Bilan ${labels} à valider`;
+        sub.innerText = bigDue
+          ? "Relis ton bilan complet, coche chaque point ci-dessus, puis appose ton tampon."
+          : "Prends connaissance de tes résultats ci-dessus, puis appose ton tampon.";
+        if (bigDue && !hankoChecklistComplete()) {
+          setBtnDisabled(`<i class="fa-solid fa-stamp"></i> Coche d'abord tous les points`);
+        } else {
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          btn.innerHTML = `<i class="fa-solid fa-stamp"></i> J'ai bien pris connaissance de mes résultats`;
+        }
+        return;
+      }
+
+      // Aucune échéance en attente : soit celle du jour vient d'être validée,
+      // soit il n'y a rien à valider aujourd'hui.
+      ghost.classList.add('hidden');
+      ghost.classList.remove('flex');
+
+      const todayKeys = [
+        BenkyoStorage.getISOWeekKey(now),
+        BenkyoStorage.getMonthKey(now),
+        (now.getFullYear() - 1) + '-Y',
+        now.getFullYear() + '-SY'
+      ];
+      const validatedToday = history.find(v => todayKeys.indexOf(v.periodKey) !== -1
+        && new Date(v.validatedAt).toDateString() === now.toDateString());
+
+      if (validatedToday) {
+        svg.classList.remove('hidden');
+        svg.style.opacity = '1';
+        title.innerText = 'Bilan validé';
+        sub.innerText = `Tamponné le ${new Date(validatedToday.validatedAt).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} — bravo !`;
+        setBtnDisabled(`<i class="fa-solid fa-circle-check"></i> Déjà validé aujourd'hui`);
+        return;
+      }
+
+      setBtnDisabled(`<i class="fa-solid fa-stamp"></i> Rendez-vous dimanche`);
+      if (lastEntry) {
+        svg.classList.remove('hidden');
+        svg.style.opacity = '0.55';
+        title.innerText = 'Prochain bilan à valider : dimanche';
+        sub.innerText = `Dernier tampon posé le ${new Date(lastEntry.validatedAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}${lastEntry.label ? ' (' + lastEntry.label + ')' : ''}.`;
+      } else {
+        svg.classList.add('hidden');
+        title.innerText = 'Aucune validation pour l\'instant';
+        sub.innerText = "Chaque dimanche (et en fin de mois), reviens ici consulter et valider tes résultats.";
+      }
+    }
+
+    function validateHankoResults() {
+      const now = new Date();
+      const due = BenkyoStorage.getPendingHankoDeadlines(state);
+      if (!due.length) return;
+      const bigDue = due.some(d => d.type === 'yearly' || d.type === 'schoolyear');
+      if (bigDue && !hankoChecklistComplete()) return;
+
+      let stamped = false;
+      due.forEach(d => {
+        if (BenkyoStorage.addHankoValidation(state, d.type, d.periodKey, hankoLabelFor(d.type, now))) stamped = true;
+      });
+      if (!stamped) return;
+
+      saveState();
+      renderHankoSection();
+
+      const svg = document.getElementById('hanko-stamp-svg');
+      if (svg) {
+        svg.classList.remove('hidden');
+        svg.style.opacity = '1';
+        svg.classList.remove('stamping');
+        void svg.offsetWidth; // force le reflow pour rejouer l'animation
+        svg.classList.add('stamping');
+      }
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: bigDue ? 160 : 55, spread: bigDue ? 100 : 65, origin: { y: 0.7 }, colors: ['#C97D5D', '#E4A982', '#C97D5D'] });
+      }
+    }
+  </script>
+  <script>
+    /* HUD cozy : série + quêtes du jour, lues depuis le stockage local */
+    (function(){
+      function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+      function bar(id,p){var e=document.getElementById(id);if(e)e.style.width=Math.max(0,Math.min(100,p))+'%';}
+      try{
+        var s=JSON.parse(localStorage.getItem('benkyo_streak')||'null');
+        var c=(s&&typeof s.count==='number')?s.count:0;
+        set('streak-count',c);set('hud-streak',c);bar('hud-streak-bar',(c/30)*100);
+      }catch(e){}
+      try{
+        var t=JSON.parse(localStorage.getItem('benkyo_todos')||localStorage.getItem('benkyo_todo')||'null');
+        if(Array.isArray(t)){
+          var done=t.filter(function(x){return x&&(x.done||x.completed);}).length;
+          set('hud-tasks',done+'/'+t.length);bar('hud-tasks-bar',t.length?done/t.length*100:0);
+        }
+      }catch(e){}
+      try{
+        var p=JSON.parse(localStorage.getItem('benkyo_profile')||'null');
+        var img=document.getElementById('sidebar-profile-img');
+        if(p&&p.img&&img)img.src=p.img;
+      }catch(e){}
+    })();
+  </script>
+  <script defer src="benkyo-extras.js"></script>
+</body>
+</html>
