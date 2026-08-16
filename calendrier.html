@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" href="favicon.ico?v=3" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png?v=3">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png?v=3">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png?v=3">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3">
+  <link rel="mask-icon" href="favicon.svg?v=3" color="#5B4030">
+  <link rel="manifest" href="site.webmanifest?v=3">
+  <meta name="msapplication-TileImage" content="icon-192.png?v=3">
+  <meta name="msapplication-TileColor" content="#F4F0E6">
+  <meta name="theme-color" content="#F4F0E6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="sakura.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.95)}</style>
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F4F0E6; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #B88758; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.92); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .card-glow { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+    .card-glow:hover { border-color: rgba(203, 166, 247, 0.4); box-shadow: 0 0 25px -5px rgba(203, 166, 247, 0.25); transform: translateY(-2px); }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content { transition: opacity 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; }
+    .tab-content:not(.hidden) { opacity: 1; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 3s forwards ease-in-out; }
+  </style>
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="rpg-body h-full flex flex-col md:flex-row md:overflow-hidden">
+
+    <aside class="w-full md:w-72 flex flex-col shrink-0 z-20 md:h-full md:overflow-y-auto custom-scrollbar">
+
+    <div class="rpg-brand">
+      <div class="rpg-brand-plate" onclick="window.location.href='index.html'" role="button" title="Retour au campement">
+        <svg class="rpg-logo" width="34" height="34" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="2" width="14" height="12" fill="#5B4030"/><rect x="2" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="9" y="3" width="5" height="10" fill="#FAF8F0"/><rect x="7" y="2" width="2" height="12" fill="#8A5F3E"/><rect x="3" y="5" width="3" height="1" fill="#8FA58B"/><rect x="3" y="7" width="3" height="1" fill="#8FA58B"/><rect x="10" y="5" width="3" height="1" fill="#C97D5D"/><rect x="10" y="7" width="3" height="1" fill="#C97D5D"/><rect x="4" y="10" width="2" height="2" fill="#D9C58C"/><rect x="10" y="10" width="2" height="2" fill="#B7C5A3"/></svg>
+        <span>
+          <span class="rpg-brand-name">Benkyō</span>
+          <span class="rpg-brand-sub">Cozy Study Quest</span>
+        </span>
+      </div>
+      <div class="rpg-streak" title="Série de jours d'étude">
+        <i class="fa-solid fa-fire" aria-hidden="true"></i><span id="streak-count">0</span>j
+      </div>
+    </div>
+
+    <div class="rpg-mascot">
+      <img src="mascotte.png" alt="Mascotte de Benkyō, petite fermière au chapeau de paille">
+      <div class="rpg-bubble"><b>Calendrier</b><br>Les saisons passent… note bien tes échéances !</div>
+    </div>
+
+    <div class="rpg-hud">
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Série</div>
+        <div class="rpg-hud-value"><span id="hud-streak">0</span> j</div>
+        <div class="rpg-hud-bar"><span id="hud-streak-bar" style="width:0%"></span></div>
+      </div>
+      <div class="rpg-hud-cell">
+        <div class="rpg-hud-label">Tâches du jour</div>
+        <div class="rpg-hud-value"><span id="hud-tasks">0</span></div>
+        <div class="rpg-hud-bar"><span id="hud-tasks-bar" style="width:0%"></span></div>
+      </div>
+    </div>
+
+    <div class="rpg-nav-title">Menu du carnet</div>
+    <nav class="flex-1">
+      <button onclick="window.location.href='index.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-border-all" aria-hidden="true"></i><span>Zone de campement</span>
+      </button>
+      <button onclick="window.location.href='profil.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-user-gear" aria-hidden="true"></i><span>Mon Profil</span>
+      </button>
+      <button onclick="window.location.href='emploi-du-temps.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-clock" aria-hidden="true"></i><span>Emploi du temps</span>
+      </button>
+      <button onclick="window.location.href='calendrier.html'" class="nav-btn active" aria-current="page">
+        <i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendrier</span>
+      </button>
+      <button onclick="window.location.href='todo.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i><span>To-Do list</span>
+      </button>
+      <button onclick="window.location.href='revisions.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-brain" aria-hidden="true"></i><span>Révisions</span>
+      </button>
+      <button onclick="window.location.href='pense-bete.html'" class="nav-btn" aria-current="false">
+        <i class="fa-regular fa-note-sticky" aria-hidden="true"></i><span>Pense-bête</span>
+      </button>
+      <button onclick="window.location.href='notes-moyennes.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i><span>Notes & Moyennes</span>
+      </button>
+      <button onclick="window.location.href='flashcards.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-layer-group" aria-hidden="true"></i><span>Apprentissage</span>
+      </button>
+      <button onclick="window.location.href='pomodoro.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-stopwatch" aria-hidden="true"></i><span>Pomodoro</span>
+      </button>
+      <button onclick="window.location.href='fournitures.html'" class="nav-btn" aria-current="false">
+        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>Fournitures &amp; Achats</span>
+      </button>
+      <button onclick="window.location.href='grandes-vacances.html'" class="nav-btn nav-vacation" aria-current="false">
+        <i class="fa-solid fa-sun" aria-hidden="true"></i><span>Grandes vacances</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 md:overflow-y-auto custom-scrollbar relative">
+  <div class="rpg-parchment">
+    <div class="rpg-questbar">
+      <img src="mascotte.png" alt="">
+      <div>
+        <div class="rpg-questbar-title">Calendrier</div>
+        <div class="rpg-questbar-sub">Les saisons passent… note bien tes échéances !</div>
+      </div>
+      <span class="rpg-chip" style="margin-left:auto"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Benkyō</span>
+    </div>
+
+
+    <section id="tab-calendar" class="tab-content space-y-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white">Calendrier</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button onclick="openEventModal()" class="bg-brand-purple text-white text-xs px-3.5 py-2.5 rounded-xl font-semibold shadow-lg shadow-brand-purple/20"><i class="fa-solid fa-plus mr-1"></i> Événement</button>
+
+          <!-- Contrôles du mois et choix direct de l'année -->
+          <div class="flex items-center space-x-1 glass-panel p-1 rounded-xl border border-dark-border">
+            <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="flex flex-col items-center px-1 leading-tight">
+              <span id="calendar-month-title" class="font-semibold text-sm text-white capitalize"></span>
+              <span id="calendar-month-title-jp" class="text-[11px] text-brand-purple font-medium"></span>
+            </span>
+            
+            <!-- Sélecteur d'année rapide -->
+            <select id="calendar-year-select" onchange="changeYear(this.value)" class="bg-transparent text-brand-purple font-bold text-sm outline-none cursor-pointer pr-1">
+            </select>
+
+            <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-800 rounded-lg text-slate-300"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="glass-panel border border-dark-border rounded-3xl p-5 card-glow">
+        <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-400 text-xs pb-3 border-b border-dark-border uppercase tracking-wider">
+          <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+        </div>
+        <div id="calendar-days" class="grid grid-cols-7 gap-1.5 pt-3"></div>
+      </div>
+    </section>
+    </div>
+  </main>
+
+  <!-- Modal du jour : liste des événements -->
+  <div id="day-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <div class="flex items-start justify-between">
+        <h3 id="day-modal-title" class="text-lg font-bold text-white">Journée</h3>
+        <button type="button" onclick="closeDayModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="day-modal-list" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar"></div>
+      <button type="button" id="day-modal-add" class="w-full px-4 py-2.5 bg-brand-purple text-sm font-semibold rounded-xl">
+        <i class="fa-solid fa-plus mr-1"></i> Ajouter un événement
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal d'ajout / Édition d'événement -->
+  <div id="event-modal" class="hidden fixed inset-0 bg-dark-bg/80 z-50 flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-md space-y-4">
+      <h3 id="modal-title" class="text-lg font-bold text-white">Événement de Calendrier</h3>
+      <form onsubmit="saveCalendarEvent(event)" class="space-y-3">
+        <input type="hidden" id="cal-id" value="">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Titre de l'événement</label>
+          <input type="text" id="cal-title" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Date</label>
+          <input type="date" id="cal-date" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm" required>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Heure <span class="text-slate-600">(facultatif)</span></label>
+          <input type="time" id="cal-time" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-2">Couleur de l'événement</label>
+          <div id="cal-color-picker" class="cal-color-picker"></div>
+          <input type="hidden" id="cal-color" value="#C97D5D">
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Type d'événement</label>
+          <select id="cal-repeat" class="w-full bg-[#F4F0E6] border border-dark-border text-white rounded-xl p-2.5 text-sm">
+            <option value="none">Événement unique</option>
+            <option value="daily">Répétitif : Par jour</option>
+            <option value="weekly">Répétitif : Par semaine</option>
+            <option value="monthly">Répétitif : Par mois</option>
+            <option value="yearly">Répétitif : Par an</option>
+          </select>
+        </div>
+        <div class="flex justify-between items-center pt-2">
+          <!-- Bouton de suppression (uniquement visible lors de l'édition) -->
+          <button type="button" id="btn-delete-event" onclick="deleteCalendarEvent()" class="hidden px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold rounded-xl border border-red-500/30">
+            <i class="fa-solid fa-trash mr-1"></i> Supprimer
+          </button>
+
+          <div class="flex space-x-2 ml-auto">
+            <button type="button" onclick="closeEventModal()" class="px-4 py-2 bg-slate-800 text-sm rounded-xl">Annuler</button>
+            <button type="submit" id="btn-save-event" class="px-4 py-2 bg-brand-purple text-sm font-semibold rounded-xl">Créer</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale de confirmation générique (remplace confirm()) -->
+  <div id="generic-confirm-modal" class="hidden fixed inset-0 bg-[#F4F0E6]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
+      </div>
+      <div class="text-red-400" style="line-height:1.15;">
+        <div class="text-2xl font-black" style="font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;">注意</div>
+        <div class="text-[10px] uppercase tracking-wider text-red-400/70 italic">Chūi — Attention</div>
+      </div>
+      <h3 id="generic-confirm-title" class="text-xl font-extrabold text-white">Confirmer la suppression</h3>
+      <p id="generic-confirm-message" class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeGenericConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="pixel-deco.js" defer></script>
+  <script src="tampons.js" defer></script>
+  <script>
+    // Chargement de l'état
+    let state = {};
+    try {
+      if (typeof BenkyoStorage !== 'undefined') {
+        state = BenkyoStorage.load() || {};
+        if (BenkyoStorage.autoFlushOn) BenkyoStorage.autoFlushOn(state);
+      }
+    } catch(err) {
+      console.warn("Storage non disponible, utilisation du mode secours", err);
+    }
+
+    if (!state.events) state.events = [];
+    if (!state.streak) state.streak = { count: 0, lastLogin: '' };
+
+    let currentCalendarDate = new Date();
+
+    function saveState() {
+      try {
+        if (typeof BenkyoStorage !== 'undefined' && BenkyoStorage.saveDebounced) {
+          BenkyoStorage.saveDebounced(state);
+        } else {
+          localStorage.setItem('benkyo_state', JSON.stringify(state));
+        }
+      } catch(e){}
+    }
+
+    // -------- Modale de confirmation générique (remplace confirm()) --------
+    let _genericConfirmCallback = null;
+    function showConfirmModal(title, message, onConfirm, confirmLabel) {
+      document.getElementById('generic-confirm-title').innerText = title || 'Confirmer la suppression';
+      document.getElementById('generic-confirm-message').innerText = message || 'Cette action est définitive et ne peut pas être annulée.';
+      document.getElementById('generic-confirm-btn').innerText = confirmLabel || 'Supprimer';
+      _genericConfirmCallback = onConfirm;
+      document.getElementById('generic-confirm-modal').classList.remove('hidden');
+    }
+    function closeGenericConfirmModal() {
+      document.getElementById('generic-confirm-modal').classList.add('hidden');
+      _genericConfirmCallback = null;
+    }
+    function executeGenericConfirm() {
+      const cb = _genericConfirmCallback;
+      closeGenericConfirmModal();
+      if (cb) cb();
+    }
+
+    function updateProfileUI() {
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg && state.profile && state.profile.img) {
+        sidebarImg.src = state.profile.img;
+      }
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) {
+          state.streak.count++;
+        } else {
+          state.streak.count = 1;
+        }
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const streakElem = document.getElementById('streak-count');
+      if (streakElem) streakElem.innerText = state.streak.count || 0;
+    }
+
+    // ---- Couleurs d'événement ----
+    // Palette pastel : chaque teinte est unique et bien visible dans le sélecteur
+    const EVENT_COLORS = [
+      { name: 'Terracotta',   value: '#C97D5D' },
+      { name: 'Pêche',        value: '#F0B48A' },
+      { name: 'Abricot',      value: '#F2CD9C' },
+      { name: 'Vanille',      value: '#F2E2A8' },
+      { name: 'Tilleul',      value: '#CFDCA4' },
+      { name: 'Menthe',       value: '#A8CFB4' },
+      { name: 'Sauge',        value: '#8FA58B' },
+      { name: 'Eucalyptus',   value: '#9FC7C2' },
+      { name: 'Bleu ciel',    value: '#A6C4E0' },
+      { name: 'Bleuet',       value: '#8FA0D0' },
+      { name: 'Lavande',      value: '#BBAAD8' },
+      { name: 'Lilas',        value: '#D8B8DE' },
+      { name: 'Rose poudré',  value: '#EFB8C0' },
+      { name: 'Corail',       value: '#E98F8F' },
+      { name: 'Cacao',        value: '#B08968' },
+      { name: 'Brume',        value: '#BFB6AC' }
+    ];
+
+    function renderColorPicker(selected) {
+      const box = document.getElementById('cal-color-picker');
+      const hidden = document.getElementById('cal-color');
+      if (!box || !hidden) return;
+      const current = selected || EVENT_COLORS[0].value;
+      hidden.value = current;
+      box.innerHTML = EVENT_COLORS.map(c => `
+        <button type="button" onclick="selectEventColor('${c.value}')" title="${c.name}"
+          aria-label="${c.name}" aria-pressed="${c.value === current}"
+          data-color="${c.value}"
+          class="cal-swatch${c.value === current ? ' is-selected' : ''}"
+          style="--sw:${c.value};background-color:${c.value}"></button>
+      `).join('') + `<span class="cal-swatch-label" id="cal-color-name">${(EVENT_COLORS.find(c => c.value === current) || {}).name || ''}</span>`;
+    }
+
+    function selectEventColor(value) {
+      renderColorPicker(value);
+    }
+
+
+    function eventColor(evt) {
+      return (evt && evt.color) ? evt.color : '#C97D5D';
+    }
+
+    // Modal : Réinitialisation pour création
+    function openEventModal(presetDate) { 
+      document.getElementById('modal-title').innerText = "Créer un Événement";
+      document.getElementById('cal-id').value = "";
+      document.getElementById('cal-title').value = "";
+      document.getElementById('cal-date').value = presetDate || "";
+      document.getElementById('cal-repeat').value = "none";
+      document.getElementById('cal-time').value = "";
+      renderColorPicker('#C97D5D');
+      document.getElementById('btn-save-event').innerText = "Créer";
+      document.getElementById('btn-delete-event').classList.add('hidden');
+
+      document.getElementById('event-modal').classList.remove('hidden'); 
+    }
+
+    // ---- Modale « journée » ----
+    function pad2(n) { return String(n).padStart(2, '0'); }
+
+    function openDayModal(year, month, day) {
+      const iso = `${year}-${pad2(month + 1)}-${pad2(day)}`;
+      const dayEvents = (state.events || []).filter(e => isEventOnDate(e, year, month, day));
+
+      // Journée vide → directement le formulaire de création
+      if (dayEvents.length === 0) {
+        openEventModal(iso);
+        return;
+      }
+
+      const label = new Date(year, month, day).toLocaleDateString('fr-FR', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
+      document.getElementById('day-modal-title').innerText = label.charAt(0).toUpperCase() + label.slice(1);
+
+      document.getElementById('day-modal-list').innerHTML = dayEvents.map(evt => `
+        <div onclick="closeDayModal(); editEventModal(${evt.id})" style="border-left:4px solid ${eventColor(evt)}" class="cursor-pointer flex items-center justify-between bg-[#F4F0E6] border border-dark-border hover:border-brand-purple rounded-xl px-3 py-2.5 transition-colors">
+          <span class="text-sm text-white font-medium truncate">${evt.time ? `<span class="text-[11px] font-bold mr-1.5" style="color:${eventColor(evt)}">${evt.time}</span>` : ''}${evt.title}</span>
+          <i class="fa-solid fa-pen text-xs text-slate-500"></i>
+        </div>
+      `).join('');
+
+      document.getElementById('day-modal-add').onclick = function () {
+        closeDayModal();
+        openEventModal(iso);
+      };
+      document.getElementById('day-modal').classList.remove('hidden');
+    }
+
+    function closeDayModal() {
+      document.getElementById('day-modal').classList.add('hidden');
+    }
+
+    // Modal : Édition d'un événement existant
+    function editEventModal(eventId) {
+      const evt = state.events.find(e => e.id === eventId);
+      if (!evt) return;
+
+      document.getElementById('modal-title').innerText = "Modifier l'Événement";
+      document.getElementById('cal-id').value = evt.id;
+      document.getElementById('cal-title').value = evt.title;
+      document.getElementById('cal-date').value = evt.date;
+      document.getElementById('cal-repeat').value = evt.repeat || 'none';
+      document.getElementById('cal-time').value = evt.time || "";
+      renderColorPicker(eventColor(evt));
+      document.getElementById('btn-save-event').innerText = "Enregistrer";
+      document.getElementById('btn-delete-event').classList.remove('hidden');
+
+      document.getElementById('event-modal').classList.remove('hidden');
+    }
+    
+    function closeEventModal() { 
+      document.getElementById('event-modal').classList.add('hidden'); 
+    }
+
+    // Création OU Édition d'un événement
+    function saveCalendarEvent(e) {
+      e.preventDefault();
+      
+      const idVal = document.getElementById('cal-id').value;
+      const titleVal = document.getElementById('cal-title').value.trim();
+      const dateVal = document.getElementById('cal-date').value;
+      const repeatVal = document.getElementById('cal-repeat').value;
+      const timeVal = document.getElementById('cal-time').value || '';
+      const colorVal = document.getElementById('cal-color').value || '#C97D5D';
+
+      if (!titleVal || !dateVal) return;
+
+      if (idVal) {
+        // Mode Édition
+        const evtIndex = state.events.findIndex(e => e.id == idVal);
+        if (evtIndex !== -1) {
+          state.events[evtIndex].title = titleVal;
+          state.events[evtIndex].date = dateVal;
+          state.events[evtIndex].repeat = repeatVal;
+          state.events[evtIndex].time = timeVal;
+          state.events[evtIndex].color = colorVal;
+        }
+      } else {
+        // Mode Création
+        const newEvent = {
+          id: Date.now(),
+          title: titleVal,
+          date: dateVal,
+          repeat: repeatVal,
+          time: timeVal,
+          color: colorVal
+        };
+        state.events.push(newEvent);
+      }
+
+      saveState();
+      closeEventModal();
+      renderCalendar();
+    }
+
+    // Supprimer l'événement courant
+    function deleteCalendarEvent() {
+      const idVal = document.getElementById('cal-id').value;
+      if (!idVal) return;
+
+      const evt = state.events.find(e => e.id == idVal);
+      showConfirmModal(
+        'Supprimer cet événement ?',
+        evt ? `L'événement « ${evt.title} » sera définitivement supprimé du calendrier.` : 'Cette action est définitive et ne peut pas être annulée.',
+        () => {
+          state.events = state.events.filter(e => e.id != idVal);
+          saveState();
+          closeEventModal();
+          renderCalendar();
+        }
+      );
+    }
+
+    // Navigation des mois
+    function changeMonth(delta) {
+      currentCalendarDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + delta, 1);
+      renderCalendar();
+    }
+
+    // Changement d'année via le dropdown
+    function changeYear(newYear) {
+      currentCalendarDate.setFullYear(parseInt(newYear, 10));
+      renderCalendar();
+    }
+
+    // Vérification de la date de l'événement
+    function isEventOnDate(event, year, month, day) {
+      if (!event || !event.date) return false;
+
+      const parts = event.date.split('-');
+      if (parts.length !== 3) return false;
+      
+      const eventYear = parseInt(parts[0], 10);
+      const eventMonth = parseInt(parts[1], 10) - 1; 
+      const eventDay = parseInt(parts[2], 10);
+
+      const eventDate = new Date(eventYear, eventMonth, eventDay);
+      const targetDate = new Date(year, month, day);
+
+      if (isNaN(eventDate.getTime())) return false;
+
+      if (event.repeat === 'none') {
+        return eventYear === year && eventMonth === month && eventDay === day;
+      } else if (event.repeat === 'daily') {
+        return targetDate >= eventDate;
+      } else if (event.repeat === 'weekly') {
+        return targetDate >= eventDate && targetDate.getDay() === eventDate.getDay();
+      } else if (event.repeat === 'monthly') {
+        return targetDate >= eventDate && targetDate.getDate() === eventDay;
+      } else if (event.repeat === 'yearly') {
+        return targetDate >= eventDate && targetDate.getDate() === eventDay && targetDate.getMonth() === eventMonth;
+      }
+      return false;
+    }
+
+    // Noms modernes japonais des mois (numéro + 月), tels qu'utilisés
+    // aujourd'hui dans les calendriers japonais courants.
+    // Index 0 = janvier ... 11 = décembre.
+    const JAPANESE_MONTH_NAMES = [
+      { kanji: '1月', romaji: 'Ichigatsu' },
+      { kanji: '2月', romaji: 'Nigatsu' },
+      { kanji: '3月', romaji: 'Sangatsu' },
+      { kanji: '4月', romaji: 'Shigatsu' },
+      { kanji: '5月', romaji: 'Gogatsu' },
+      { kanji: '6月', romaji: 'Rokugatsu' },
+      { kanji: '7月', romaji: 'Shichigatsu' },
+      { kanji: '8月', romaji: 'Hachigatsu' },
+      { kanji: '9月', romaji: 'Kugatsu' },
+      { kanji: '10月', romaji: 'Jugatsu' },
+      { kanji: '11月', romaji: 'Juichigatsu' },
+      { kanji: '12月', romaji: 'Junigatsu' }
+    ];
+
+    function renderCalendar() {
+      const monthTitle = document.getElementById('calendar-month-title');
+      const yearSelect = document.getElementById('calendar-year-select');
+      const daysContainer = document.getElementById('calendar-days');
+      if (!daysContainer || !monthTitle || !yearSelect) return;
+      
+      daysContainer.innerHTML = '';
+
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+
+      // Mettre à jour le nom du mois uniquement (sans l'année)
+      const formattedMonth = currentCalendarDate.toLocaleDateString('fr-FR', { month: 'long' });
+      monthTitle.innerText = formattedMonth.charAt(0).toUpperCase() + formattedMonth.slice(1);
+      const jpMonth = JAPANESE_MONTH_NAMES[month];
+      const monthTitleJp = document.getElementById('calendar-month-title-jp');
+      if (monthTitleJp && jpMonth) monthTitleJp.innerText = `${jpMonth.kanji} · ${jpMonth.romaji}`;
+
+      // Générer dynamiquement la liste des années dans le sélecteur (ex: -5 ans à +10 ans)
+      yearSelect.innerHTML = '';
+      const startYear = year - 5;
+      const endYear = year + 10;
+      for (let y = startYear; y <= endYear; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.innerText = y;
+        option.className = "bg-[#F4F0E6] text-white";
+        if (y === year) option.selected = true;
+        yearSelect.appendChild(option);
+      }
+
+      // Index du premier jour du mois (Alignement Lundi = 0, ..., Dimanche = 6)
+      let firstDayIndex = new Date(year, month, 1).getDay();
+      firstDayIndex = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+
+      let html = '';
+
+      // Case vides de début de mois
+      for (let i = 0; i < firstDayIndex; i++) {
+        html += `<div class="h-20 bg-[#F4F0E6]/40 border border-dark-border/30 rounded-xl p-1.5 opacity-20"></div>`;
+      }
+
+      // Jours du mois
+      for (let day = 1; day <= totalDays; day++) {
+        const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+
+        const dayEvents = state.events.filter(e => isEventOnDate(e, year, month, day));
+
+        let eventsHtml = '';
+        // Les événements horodatés apparaissent en premier, dans l'ordre chronologique.
+        const sortedDayEvents = dayEvents.slice().sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+        sortedDayEvents.forEach(evt => {
+          const col = eventColor(evt);
+          const timeLabel = evt.time ? `${evt.time} · ` : '';
+          eventsHtml += `
+            <div onclick="event.stopPropagation(); editEventModal(${evt.id})" style="background:${col}33; border-color:${col}66; color:${col}" class="text-[10px] hover:brightness-125 border px-1.5 py-0.5 rounded truncate font-medium mt-1 cursor-pointer transition-all" title="Cliquer pour modifier : ${timeLabel}${evt.title}">
+              ${timeLabel}${evt.title}
+            </div>
+          `;
+        });
+
+        html += `
+          <div onclick="openDayModal(${year}, ${month}, ${day})" title="Voir la journée" class="cursor-pointer hover:border-brand-purple transition-colors h-20 bg-[#F4F0E6] border ${isToday ? 'border-brand-purple ring-1 ring-brand-purple' : 'border-dark-border'} rounded-xl p-1.5 flex flex-col justify-between overflow-hidden">
+            <div class="flex justify-between items-center">
+              <span class="text-xs ${isToday ? 'text-brand-purple font-black' : 'text-slate-400 font-bold'}">${day}</span>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+              ${eventsHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      daysContainer.innerHTML = html;
+    }
+
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if (el && state.notes && state.notes[idx]) { 
+        state.notes[idx].content = el.innerHTML; 
+        saveState(); 
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateProfileUI();
+      checkStreak();
+      renderCalendar();
+    });
+  </script>
+  <script>
+    /* HUD cozy : série + quêtes du jour, lues depuis le stockage local */
+    (function(){
+      function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+      function bar(id,p){var e=document.getElementById(id);if(e)e.style.width=Math.max(0,Math.min(100,p))+'%';}
+      try{
+        var s=JSON.parse(localStorage.getItem('benkyo_streak')||'null');
+        var c=(s&&typeof s.count==='number')?s.count:0;
+        set('streak-count',c);set('hud-streak',c);bar('hud-streak-bar',(c/30)*100);
+      }catch(e){}
+      try{
+        var t=JSON.parse(localStorage.getItem('benkyo_todos')||localStorage.getItem('benkyo_todo')||'null');
+        if(Array.isArray(t)){
+          var done=t.filter(function(x){return x&&(x.done||x.completed);}).length;
+          set('hud-tasks',done+'/'+t.length);bar('hud-tasks-bar',t.length?done/t.length*100:0);
+        }
+      }catch(e){}
+      try{
+        var p=JSON.parse(localStorage.getItem('benkyo_profile')||'null');
+        var img=document.getElementById('sidebar-profile-img');
+        if(p&&p.img&&img)img.src=p.img;
+      }catch(e){}
+    })();
+  </script>
+  <script defer src="benkyo-extras.js"></script>
+</body>
+</html>

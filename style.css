@@ -1,0 +1,1047 @@
+/* =====================================================================
+   BENKYŌ — "RPG Cozy Dashboard & Pixel Art"
+   Feuille de style complète (remplace intégralement l'ancien style.css)
+   ---------------------------------------------------------------------
+   1. Variables & palette          5. Cartes / widgets / bento
+   2. Reset & fond pixel           6. Boutons bois & cuir
+   3. Sidebar en bois              7. Formulaires
+   4. Panneau parchemin            8. Neutralisation de l'ancien thème
+   ===================================================================== */
+
+/* ------------------------------ 1. PALETTE ------------------------- */
+:root{
+  /* Fonds */
+  --cream:#F4F0E6;
+  --ivory:#FAF8F0;
+  --paper:#E9E1D0;
+  /* Bois */
+  --wood-light:#B88758;
+  --wood-mid:#8A5F3E;
+  --wood-dark:#5B4030;
+  /* Verts */
+  --sage:#8FA58B;
+  --forest:#526B4E;
+  --green-light:#B7C5A3;
+  /* Accents */
+  --terracotta:#C97D5D;
+  --peach:#E4A982;
+  --yellow-cream:#D9C58C;
+  /* Texte */
+  --ink:#3E352D;
+  --ink-soft:#6B5D4F;
+  --ink-faint:#8C7C6B;
+
+  --radius-px:0px;
+  --px:4px;                       /* unité pixel art */
+  --font-title:'Pixelify Sans','Silkscreen',ui-monospace,monospace;
+  --font-body:'Nunito','Quicksand',ui-sans-serif,sans-serif;
+
+  --shadow-pixel:0 4px 0 0 var(--wood-dark), 0 0 0 4px var(--wood-dark);
+  --shadow-card:0 0 0 4px var(--wood-mid), 0 6px 0 0 rgba(91,64,48,.45);
+  --shadow-inset:inset 0 0 0 2px rgba(255,255,255,.5);
+
+  /* compat variables de l'ancien fichier */
+  --bento-text-primary:var(--ink);
+  --bento-text-secondary:var(--ink-soft);
+  --bento-text-muted:var(--ink-faint);
+  --bento-text-faint:var(--ink-faint);
+  --bento-border:rgba(91,64,48,.28);
+}
+
+/* --------------------------- 2. RESET & FOND ------------------------ */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{background:var(--cream)}
+body{
+  font-family:var(--font-body);
+  color:var(--ink)!important;
+  background-color:var(--cream)!important;
+  background-image:
+    linear-gradient(rgba(184,135,88,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(184,135,88,.07) 1px,transparent 1px);
+  background-size:16px 16px,16px 16px;
+  -webkit-font-smoothing:antialiased;
+  font-size:15px;
+  line-height:1.5;
+}
+body::before{content:none!important}
+img{image-rendering:pixelated}
+
+h1,h2,h3,h4,h5,.pixel,.badge,button,.nav-btn span,.subtab-btn{font-family:var(--font-title)}
+h1,h2,h3,h4{color:var(--ink)!important;letter-spacing:.01em}
+h1{font-size:1.9rem;line-height:1.15}
+a{color:var(--forest)}
+
+::selection{background:var(--yellow-cream);color:var(--ink)}
+
+/* barres de défilement */
+.custom-scrollbar::-webkit-scrollbar,body ::-webkit-scrollbar{width:12px;height:12px}
+.custom-scrollbar::-webkit-scrollbar-track,body ::-webkit-scrollbar-track{background:var(--paper)}
+.custom-scrollbar::-webkit-scrollbar-thumb,body ::-webkit-scrollbar-thumb{
+  background:var(--wood-light);border:3px solid var(--paper);border-radius:0;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover{background:var(--wood-mid)}
+
+/* Bordure pixel réutilisable (coins biseautés) */
+.pixel-frame{
+  position:relative;background:var(--ivory);
+  border:4px solid var(--wood-mid);
+  box-shadow:0 6px 0 0 rgba(91,64,48,.35),var(--shadow-inset);
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);
+}
+
+/* ------------------------- 3. SIDEBAR EN BOIS ----------------------- */
+aside{
+  background:
+    repeating-linear-gradient(180deg,rgba(0,0,0,.06) 0 2px,transparent 2px 22px),
+    linear-gradient(90deg,var(--wood-mid),var(--wood-light) 60%,var(--wood-mid))!important;
+  border:none!important;
+  border-right:6px solid var(--wood-dark)!important;
+  box-shadow:inset -4px 0 0 rgba(91,64,48,.35), 4px 0 0 rgba(0,0,0,.08);
+  color:var(--cream);
+  backdrop-filter:none!important;
+}
+.rpg-brand{
+  display:flex;align-items:center;gap:10px;padding:14px;
+  border-bottom:4px solid var(--wood-dark);
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.06));
+}
+.rpg-brand-plate{
+  display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;
+  background:var(--ivory);color:var(--ink);
+  border:3px solid var(--wood-dark);padding:6px 10px;
+  box-shadow:0 4px 0 0 var(--wood-dark);
+}
+.rpg-brand-plate:active{transform:translateY(2px);box-shadow:0 2px 0 0 var(--wood-dark)}
+.rpg-brand-plate img{width:34px;height:34px}
+.rpg-brand-name{font-family:var(--font-title);font-size:1.35rem;color:var(--terracotta);line-height:1}
+.rpg-brand-sub{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+.rpg-streak{
+  display:flex;align-items:center;gap:6px;font-family:var(--font-title);font-size:.85rem;
+  background:var(--yellow-cream);color:var(--ink);
+  border:3px solid var(--wood-dark);padding:4px 8px;box-shadow:0 3px 0 0 var(--wood-dark);
+}
+.rpg-streak i{color:var(--terracotta)}
+
+/* Bloc mascotte */
+.rpg-mascot{
+  margin:12px;padding:10px;
+  background:var(--ivory);border:4px solid var(--wood-dark);
+  box-shadow:0 5px 0 0 rgba(91,64,48,.5),var(--shadow-inset);
+  display:flex;gap:8px;align-items:flex-end;
+}
+.rpg-mascot img{
+  width:74px;height:auto;flex-shrink:0;
+  filter:drop-shadow(0 2px 0 rgba(91,64,48,.25));
+  animation:mascot-bob 3.4s steps(4,end) infinite;
+}
+@keyframes mascot-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.rpg-bubble{
+  position:relative;background:var(--cream);color:var(--ink);
+  border:3px solid var(--wood-mid);padding:7px 8px;font-size:.72rem;line-height:1.35;
+  box-shadow:0 3px 0 0 rgba(91,64,48,.3);
+}
+.rpg-bubble::after{
+  content:"";position:absolute;left:-9px;bottom:10px;width:0;height:0;
+  border:5px solid transparent;border-right-color:var(--wood-mid);
+}
+.rpg-bubble b{font-family:var(--font-title);color:var(--forest)}
+
+/* HUD de la sidebar */
+.rpg-hud{margin:0 12px 10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rpg-hud-cell{
+  background:var(--paper);border:3px solid var(--wood-dark);padding:6px 8px;
+  box-shadow:0 3px 0 0 rgba(91,64,48,.4);
+}
+.rpg-hud-label{font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint)}
+.rpg-hud-value{font-family:var(--font-title);font-size:1rem;color:var(--forest)}
+.rpg-hud-bar{height:8px;background:var(--wood-dark);margin-top:4px;padding:2px}
+.rpg-hud-bar>span{display:block;height:100%;background:var(--green-light)}
+
+.rpg-nav-title{
+  font-family:var(--font-title);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cream);opacity:.85;margin:4px 16px 6px;
+}
+nav{padding:0 12px 16px!important}
+
+/* Boutons de navigation = plaques de bois */
+.nav-btn{
+  width:100%;display:flex!important;align-items:center;gap:10px;
+  font-family:var(--font-title)!important;font-size:.9rem!important;font-weight:400!important;
+  text-align:left;margin-bottom:8px;padding:8px 10px!important;
+  background:linear-gradient(180deg,#c9986a,var(--wood-light))!important;
+  color:var(--ink)!important;border:3px solid var(--wood-dark)!important;border-radius:0!important;
+  box-shadow:0 4px 0 0 var(--wood-dark),inset 0 2px 0 rgba(255,255,255,.35)!important;
+  cursor:pointer;transition:transform .06s steps(2,end),background .15s linear;
+}
+.nav-btn i{
+  width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--ivory);border:2px solid var(--wood-dark);color:var(--forest)!important;font-size:.72rem;
+}
+.nav-btn:hover{background:linear-gradient(180deg,#d6a678,#c1925f)!important;color:var(--ink)!important}
+.nav-btn:active{transform:translateY(3px);box-shadow:0 1px 0 0 var(--wood-dark)!important}
+.nav-btn.active,.nav-btn.is-active{
+  background:linear-gradient(180deg,var(--green-light),var(--sage))!important;
+  color:var(--ink)!important;border-color:var(--forest)!important;
+  box-shadow:0 4px 0 0 var(--forest),inset 0 2px 0 rgba(255,255,255,.4)!important;
+}
+.nav-btn.active i{border-color:var(--forest);color:var(--forest)!important}
+.nav-btn.nav-vacation{
+  background:linear-gradient(180deg,var(--peach),var(--terracotta))!important;
+  border-color:#94533a!important;box-shadow:0 4px 0 0 #94533a,inset 0 2px 0 rgba(255,255,255,.35)!important;
+  color:var(--ink)!important;
+}
+.nav-btn span{color:inherit!important;font-weight:400!important}
+
+/* ------------------------ 4. PANNEAU PARCHEMIN ---------------------- */
+main{
+  background:transparent!important;padding:18px!important;
+}
+.rpg-parchment{
+  background:
+    radial-gradient(circle at 20% 10%,rgba(184,135,88,.10),transparent 45%),
+    radial-gradient(circle at 85% 80%,rgba(143,165,139,.12),transparent 45%),
+    var(--ivory);
+  border:5px solid var(--wood-mid);
+  box-shadow:0 8px 0 0 rgba(91,64,48,.35),inset 0 0 0 3px var(--paper);
+  padding:20px;
+  clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px);
+}
+.rpg-questbar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--paper);border:4px solid var(--wood-dark);padding:10px 14px;margin-bottom:18px;
+  box-shadow:0 5px 0 0 rgba(91,64,48,.35);
+}
+.rpg-questbar img{width:54px;height:auto}
+.rpg-questbar-title{font-family:var(--font-title);font-size:1.05rem;color:var(--ink)}
+.rpg-questbar-sub{font-size:.78rem;color:var(--ink-soft)}
+.rpg-chip{
+  font-family:var(--font-title);font-size:.72rem;background:var(--yellow-cream);color:var(--ink);
+  border:3px solid var(--wood-dark);padding:3px 8px;box-shadow:0 3px 0 0 rgba(91,64,48,.4);
+}
+
+/* ---------------------- 5. CARTES / WIDGETS / BENTO ----------------- */
+.glass-panel,.bento-vivid,.tp-card,.tp-notebook{
+  background:var(--ivory)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  border:4px solid var(--wood-mid)!important;border-radius:0!important;
+  box-shadow:0 6px 0 0 rgba(91,64,48,.32),inset 0 0 0 2px rgba(255,255,255,.6)!important;
+  color:var(--ink)!important;
+}
+.bento-vivid{background:linear-gradient(180deg,var(--paper),var(--cream))!important}
+.bento-vivid::after{content:none!important}
+.bento-vivid-blue{background:linear-gradient(180deg,var(--green-light),var(--sage))!important;border-color:var(--forest)!important}
+.bento-vivid-orange{background:linear-gradient(180deg,var(--peach),var(--terracotta))!important;border-color:#94533a!important}
+.bento-vivid-yellow{background:linear-gradient(180deg,#efe0b4,var(--yellow-cream))!important;border-color:var(--wood-mid)!important}
+.bento-vivid *,.bento-vivid-blue *,.bento-vivid-orange *,.bento-vivid-yellow *{color:var(--ink)!important}
+.bento-sub,.bento-vivid .bento-sub,.bento-vivid-yellow .bento-sub{color:var(--ink-soft)!important}
+.bento-num{font-family:var(--font-title)!important;color:var(--terracotta)!important;text-shadow:2px 2px 0 rgba(91,64,48,.18)}
+.rounded-3xl,.rounded-2xl,.rounded-xl,.rounded-lg,.rounded-md{border-radius:0!important}
+.rounded-full{border-radius:999px!important}
+.card-glow{transition:transform .08s steps(2,end),box-shadow .12s linear}
+.card-glow:hover{transform:translateY(-3px);box-shadow:0 9px 0 0 rgba(91,64,48,.32),inset 0 0 0 2px rgba(255,255,255,.6)!important;border-color:var(--forest)!important}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--font-title);font-size:.72rem;
+  background:var(--paper);color:var(--ink);border:3px solid var(--wood-dark);
+  padding:3px 8px;border-radius:0;box-shadow:0 3px 0 0 rgba(91,64,48,.35);
+}
+.badge-verified{background:var(--green-light)!important;color:var(--ink)!important;border-color:var(--forest)!important}
+.badge-verified i{color:var(--forest)!important}
+.badge-star{background:var(--yellow-cream)!important;color:var(--ink)!important}
+.badge-star i{color:var(--terracotta)!important}
+
+.bento-progress-track,.read-progress-track{
+  background:var(--wood-dark)!important;border-radius:0!important;padding:2px;
+}
+.bento-progress-fill,.read-progress-fill{
+  background:linear-gradient(90deg,var(--sage),var(--forest))!important;border-radius:0!important;
+}
+.bento-avatar-stack{display:flex;align-items:center}
+.bento-avatar-stack>*{margin-left:-8px;border:3px solid var(--ivory)}
+.bento-avatar-stack>*:first-child{margin-left:0}
+
+.subtab-btn{
+  font-family:var(--font-title);color:var(--ink-soft)!important;background:var(--paper)!important;
+  border:3px solid var(--wood-mid)!important;border-radius:0!important;padding:5px 10px!important;
+  box-shadow:0 3px 0 0 rgba(91,64,48,.3);
+}
+.subtab-btn:hover{color:var(--ink)!important;background:var(--cream)!important}
+.subtab-btn.is-active,.subtab-btn.is-active-emerald{
+  background:var(--sage)!important;color:var(--ink)!important;border-color:var(--forest)!important;
+}
+
+/* ---------------------- 6. BOUTONS BOIS & CUIR ---------------------- */
+button:not(.nav-btn):not(.subtab-btn):not(.rpg-plain):not(.hl-swatch):not(.cal-swatch),
+a.rpg-btn,.tp-btn{
+  font-family:var(--font-title);
+  background:linear-gradient(180deg,#c9986a,var(--wood-light))!important;
+  color:var(--ink)!important;
+  border:3px solid var(--wood-dark)!important;border-radius:0!important;
+  box-shadow:0 4px 0 0 var(--wood-dark),inset 0 2px 0 rgba(255,255,255,.35)!important;
+  transition:transform .06s steps(2,end),filter .15s linear;
+  cursor:pointer;
+}
+button:not(.nav-btn):not(.subtab-btn):not(.rpg-plain):not(.hl-swatch):not(.cal-swatch):hover,.tp-btn:hover{filter:brightness(1.06)}
+button:not(.nav-btn):not(.subtab-btn):not(.rpg-plain):not(.hl-swatch):not(.cal-swatch):active,.tp-btn:active{
+  transform:translateY(2px);box-shadow:0 2px 0 0 var(--wood-dark),inset 0 2px 0 rgba(255,255,255,.3)!important;
+}
+button.rpg-leaf,.tp-btn-primary{
+  background:linear-gradient(180deg,var(--green-light),var(--sage))!important;
+  border-color:var(--forest)!important;box-shadow:0 4px 0 0 var(--forest),inset 0 2px 0 rgba(255,255,255,.4)!important;
+}
+.tp-btn-ghost{background:var(--paper)!important;border-color:var(--wood-mid)!important;box-shadow:0 3px 0 0 rgba(91,64,48,.4)!important}
+button i,.tp-btn i{color:inherit!important}
+
+/* ---------------------------- 7. FORMULAIRES ------------------------ */
+input,textarea,select,select.bento-select{
+  font-family:var(--font-body)!important;
+  background:var(--ivory)!important;color:var(--ink)!important;
+  border:3px solid var(--wood-mid)!important;border-radius:0!important;
+  box-shadow:inset 0 2px 0 rgba(91,64,48,.12)!important;
+  padding:8px 10px;
+}
+input::placeholder,textarea::placeholder{color:var(--ink-faint)!important}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--forest)!important;box-shadow:0 0 0 3px rgba(143,165,139,.45)!important}
+select option{background:var(--ivory);color:var(--ink)}
+input[type=checkbox],input[type=radio]{accent-color:var(--forest)}
+label{color:var(--ink-soft)}
+table{color:var(--ink)}
+th{font-family:var(--font-title);color:var(--ink)!important;background:var(--paper)!important}
+td,th{border-color:rgba(91,64,48,.25)!important}
+hr,.divide-y>*+*{border-color:rgba(91,64,48,.25)!important}
+
+/* --------------- 8. NEUTRALISATION DE L'ANCIEN THÈME SOMBRE --------- */
+/* Textes */
+.text-white,.text-slate-100,.text-slate-200,.text-slate-300{color:var(--ink)!important}
+.text-slate-400,.text-slate-500,.text-slate-600,.text-white\/80,.text-white\/60{color:var(--ink-soft)!important}
+.text-slate-900,.text-dark-bg{color:var(--ink)!important}
+.hover\:text-white:hover{color:var(--ink)!important}
+.text-brand-purple,.text-brand-pink,.text-brand-blue,.text-brand-cyan{color:var(--terracotta)!important}
+.text-emerald-400,.text-emerald-300,.text-emerald-500,.text-brand-green\/70{color:var(--forest)!important}
+.text-amber-400,.text-amber-500,.text-amber-300,.text-amber-300\/90,.text-amber-500\/30{color:var(--wood-mid)!important}
+.text-red-400,.text-red-300,.text-red-400\/60,.text-red-400\/70{color:#b0503c!important}
+.hover\:text-brand-purple:hover,.hover\:text-brand-blue:hover,.hover\:text-brand-cyan:hover{color:var(--forest)!important}
+.hover\:text-amber-300:hover,.hover\:text-red-300:hover,.hover\:text-red-400:hover{color:var(--terracotta)!important}
+
+/* Fonds sombres → papier */
+.bg-\[\#0a0e17\],.bg-\[\#0a0e17\]\/40,.bg-\[\#0a0e17\]\/80,.bg-\[\#0a0e17\]\/90,
+.bg-\[\#05070c\],.bg-\[\#05070c\]\/85,.bg-\[\#05070c\]\/95,.bg-\[\#05070ce6\],
+.bg-\[\#131927\],.bg-\[\#1c1a17\],.bg-dark-bg\/80,.bg-dark-bg\/85,.bg-dark-bg\/90,.bg-dark-bg\/95,
+.bg-dark-card,.bg-dark-border,.bg-slate-800,.bg-slate-800\/60,.bg-slate-800\/80,.bg-slate-900\/60,.bg-slate-700,
+.bg-black,.bg-black\/20,.bg-black\/30,.bg-black\/60,.bg-black\/70{
+  background-color:var(--paper)!important;background-image:none!important;
+}
+.hover\:bg-dark-card:hover,.hover\:bg-slate-700:hover,.hover\:bg-slate-800:hover,.hover\:bg-black\/80:hover{background-color:var(--cream)!important}
+.bg-white,.bg-white\/95,.bg-white\/90,.bg-white\/15,.bg-white\/10,.bg-white\/5{background-color:var(--ivory)!important}
+.hover\:bg-white:hover,.hover\:bg-white\/90:hover,.hover\:bg-white\/10:hover{background-color:var(--cream)!important}
+.bg-brand-purple,.bg-brand-pink,.bg-brand-blue,.bg-brand-cyan{background-color:var(--terracotta)!important}
+.bg-brand-purple\/10,.bg-brand-purple\/20,.bg-brand-pink\/20,.bg-brand-blue\/20,
+.bg-brand-cyan\/10,.bg-brand-cyan\/15,.bg-brand-cyan\/20,.before\:bg-brand-purple\/20::before{background-color:rgba(201,125,93,.18)!important}
+.bg-brand-green,.bg-emerald-500{background-color:var(--sage)!important}
+.bg-emerald-500\/10,.bg-emerald-500\/20{background-color:rgba(143,165,139,.25)!important}
+.bg-amber-500,.bg-yellow-200,.bg-\[\#c1272d\]{background-color:var(--yellow-cream)!important}
+.bg-amber-500\/10,.bg-amber-500\/20,.bg-\[\#c1272d\]\/15{background-color:rgba(217,197,140,.35)!important}
+.bg-red-500,.bg-red-500\/40{background-color:var(--terracotta)!important}
+.bg-red-500\/10,.bg-red-500\/15,.bg-red-500\/20{background-color:rgba(201,125,93,.2)!important}
+.bg-blue-200,.bg-green-200,.bg-pink-200,.bg-\[\#e7e0d4\],.bg-\[\#f4efe5\],.bg-\[\#fdf9f3\]{background-color:var(--paper)!important}
+.hover\:bg-brand-purple\/20:hover,.hover\:bg-brand-purple\/30:hover,.hover\:bg-brand-purple\/80:hover,
+.hover\:bg-brand-blue\/30:hover,.hover\:bg-brand-blue\/80:hover,.hover\:bg-brand-cyan\/30:hover,
+.hover\:bg-brand-cyan\/80:hover,.hover\:bg-brand-pink\/30:hover,.hover\:bg-brand-pink\/80:hover,
+.hover\:bg-brand-green\/80:hover,.hover\:bg-emerald-500\/10:hover,.hover\:bg-emerald-500\/30:hover,
+.hover\:bg-emerald-600:hover,.hover\:bg-amber-500\/30:hover,.hover\:bg-amber-600:hover,
+.hover\:bg-red-500\/20:hover,.hover\:bg-red-500\/25:hover,.hover\:bg-red-500\/30:hover,
+.hover\:bg-red-600:hover,.hover\:bg-\[\#c1272d\]\/25:hover{filter:brightness(1.05)}
+
+/* Dégradés Tailwind → tons chaleureux */
+.bg-gradient-to-r,.bg-gradient-to-tr{background-image:linear-gradient(90deg,var(--sage),var(--green-light))!important}
+.from-brand-purple,.from-brand-pink,.from-amber-400,.from-amber-500,.from-brand-purple\/10,.from-amber-500\/10,
+.to-brand-blue,.to-brand-cyan,.to-brand-pink,.to-brand-purple,.to-brand-cyan\/10,.to-brand-purple\/10{--tw-gradient-from:initial;--tw-gradient-to:initial}
+
+/* Bordures */
+.border-dark-border,.border-dark-border\/30,.border-slate-700,.border-slate-500,
+.border-white\/5,.border-white\/10,.border-white\/20,.border-white\/30,
+.border-\[\#0a0e17\],.border-\[\#e3dccd\]{border-color:rgba(91,64,48,.3)!important}
+.border-brand-purple,.border-brand-purple\/20,.border-brand-purple\/30,.border-brand-purple\/40,.border-brand-purple\/50,
+.border-brand-blue\/30,.border-brand-cyan\/20,.border-brand-cyan\/30,.border-brand-cyan\/40,.border-brand-cyan\/50,
+.border-brand-cyan\/60,.border-brand-pink\/30,.border-\[\#c1272d\]\/30,.border-\[\#c1272d\]\/40,
+.border-red-500\/20,.border-red-500\/25,.border-red-500\/30{border-color:var(--terracotta)!important}
+.border-emerald-500,.border-emerald-500\/25,.border-emerald-500\/30,.border-emerald-500\/40,.border-emerald-500\/50{border-color:var(--forest)!important}
+.border-amber-500\/20,.border-amber-500\/25,.border-amber-500\/30{border-color:var(--wood-mid)!important}
+.focus\:border-brand-cyan:focus,.focus\:border-brand-purple:focus,.focus\:border-emerald-400:focus,.focus\:border-red-500\/50:focus{border-color:var(--forest)!important}
+.ring-white,.ring-brand-purple{--tw-ring-color:var(--sage)!important}
+.ring-offset-\[\#0a0e17\]{--tw-ring-offset-color:var(--ivory)!important}
+.focus\:ring-brand-purple:focus{--tw-ring-color:rgba(143,165,139,.5)!important}
+
+/* Ombres néon → ombres pixel */
+.shadow-lg,.shadow-md,.shadow-xl,.shadow-2xl,.shadow-inner,
+.shadow-amber-500\/30,.shadow-brand-blue\/20,.shadow-brand-cyan\/20,.shadow-brand-green\/30,
+.shadow-brand-pink\/20,.shadow-brand-pink\/30,.shadow-brand-purple\/20,.shadow-brand-purple\/30,
+.shadow-emerald-500\/10{box-shadow:0 4px 0 0 rgba(91,64,48,.3)!important}
+
+/* Tampons / hanko */
+.hanko-stamp{filter:none}
+.tp-badge{background:var(--paper)!important;border:3px solid var(--wood-dark)!important;border-radius:0!important;color:var(--ink)!important}
+.tp-day{border:3px solid var(--wood-mid)!important;border-radius:0!important;background:var(--ivory)!important;color:var(--ink)!important}
+.tp-modal{background:rgba(62,53,45,.55)!important}
+.tp-modal-box{background:var(--ivory)!important;border:5px solid var(--wood-mid)!important;border-radius:0!important;box-shadow:0 8px 0 0 rgba(91,64,48,.4)!important}
+
+/* Impression */
+@media print{
+  aside,.rpg-questbar{display:none!important}
+  .rpg-parchment{border:none;box-shadow:none;clip-path:none}
+  body{background:#fff!important}
+}
+
+/* Responsive */
+@media (max-width:768px){
+  body{overflow:auto!important;display:block!important}
+  aside{border-right:none!important;border-bottom:6px solid var(--wood-dark)!important;width:100%!important}
+  .rpg-hud{grid-template-columns:1fr 1fr}
+  main{padding:12px!important}
+  .rpg-parchment{padding:12px}
+  h1{font-size:1.4rem}
+}
+
+/* ---------------- 9. STRUCTURE DE L'ÉCRAN (indépendante de Tailwind) --- */
+.rpg-body{display:flex;flex-direction:column;min-height:100%}
+.rpg-body>aside{width:100%;flex:0 0 auto}
+.rpg-body>main{flex:1 1 auto;min-width:0}
+@media (min-width:769px){
+  .rpg-body{flex-direction:row;height:100%;overflow:hidden}
+  .rpg-body>aside{width:288px!important;max-width:288px;height:100%;overflow-y:auto}
+  .rpg-body>main{height:100%;overflow-y:auto}
+}
+
+/* =====================================================================
+   9. CORRECTIONS — suppression des fonds noirs & finitions cozy
+   ---------------------------------------------------------------------
+   Le fichier tailwind.css compilé associe encore d'anciennes couleurs
+   sombres aux classes utilitaires utilisées dans les pages
+   (bg-[#F4F0E6], bg-[#E9E1D0], bg-dark-*, bg-slate-*, bg-black…).
+   On les ramène ici sur la palette papier/bois du site.
+   ===================================================================== */
+
+/* --- 9.1 Fonds sombres résiduels -> papier --- */
+.bg-\[\#F4F0E6\],
+.bg-\[\#F4F0E6\]\/40,
+.bg-\[\#F4F0E6\]\/80,
+.bg-\[\#F4F0E6\]\/90,
+.bg-\[\#FAF8F0\],
+[class*="bg-dark-bg"],
+[class*="bg-dark-card"],
+[class*="bg-dark-border"],
+[class*="bg-slate-7"],
+[class*="bg-slate-8"],
+[class*="bg-slate-9"],
+[class*="bg-gray-7"],
+[class*="bg-gray-8"],
+[class*="bg-gray-9"],
+[class*="bg-zinc-8"],
+[class*="bg-zinc-9"],
+[class*="bg-neutral-8"],
+[class*="bg-neutral-9"],
+[class*="bg-\[\#0"],
+[class*="bg-[#0"],
+[class*="bg-[#1"],
+[class*="bg-[#2"]{
+  background-color:var(--ivory)!important;
+  background-image:none!important;
+}
+.bg-\[\#E9E1D0\],
+.bg-\[\#E9E1D0\]\/85,
+.bg-\[\#E9E1D0\]\/95,
+.bg-\[\#e9e1d0\]{
+  background-color:var(--paper)!important;background-image:none!important;
+}
+[class*="bg-black"]{background-color:var(--paper)!important;background-image:none!important}
+
+/* Voiles de fenêtres modales : brun translucide au lieu du noir */
+.fixed.inset-0[class*="bg-black"],
+.fixed.inset-0[class*="bg-dark-bg"],
+.fixed.inset-0[class*="bg-[#0"],
+.fixed.inset-0[class*="bg-[#1"],
+[class*="backdrop-blur"].fixed.inset-0{
+  background-color:rgba(62,53,45,.55)!important;
+}
+
+/* Textes clairs devenus illisibles sur papier */
+.text-white,.text-slate-100,.text-slate-200,.text-slate-300,.text-\[\#F4F0E6\],.text-\[\#FAF8F0\]{color:var(--ink)!important}
+.placeholder-slate-500::placeholder{color:var(--ink-faint)!important}
+
+/* --- 9.2 Sous-onglets du profil : plus de bulle blanche arrondie --- */
+.tp-subtabs{
+  background:transparent!important;border:none!important;box-shadow:none!important;
+  border-radius:0!important;padding:0!important;gap:8px!important;
+}
+.tp-subtab{border-radius:0!important}
+
+/* --- 9.3 Cartes du carnet / tampons / moral : style pixel --- */
+.tp-card,.tp-inner,.tp-notebook,.tp-shop-item,.tp-day,.tp-mood-btn,.tp-badge,.tp-history li{
+  border-radius:0!important;
+}
+.tp-card{background:var(--ivory)!important;border:4px solid var(--wood-mid)!important}
+.tp-inner{background:var(--paper)!important;border:3px solid var(--wood-mid)!important;box-shadow:none!important}
+.tp-shop-item,.tp-shop-item.is-owned{background:var(--paper)!important;border:3px solid var(--wood-mid)!important}
+.tp-title{
+  font-family:var(--font-title)!important;color:var(--ink)!important;
+  font-weight:400!important;letter-spacing:.01em;
+}
+.tp-sub{color:var(--ink-soft)!important}
+#tp-manual-input{
+  border-radius:0!important;border:3px solid var(--wood-mid)!important;
+  background:var(--ivory)!important;color:var(--ink)!important;box-shadow:inset 0 2px 0 rgba(91,64,48,.12)!important;
+}
+
+/* --- 9.4 Moral du jour : les boutons ne débordent plus du cadre --- */
+.tp-mood-list{
+  background:transparent!important;border:none!important;padding:0!important;
+  display:flex!important;flex-wrap:wrap!important;gap:8px!important;align-items:stretch;
+}
+.tp-mood-btn{
+  background:var(--paper)!important;color:var(--ink)!important;
+  border:3px solid var(--wood-mid)!important;box-shadow:0 3px 0 0 rgba(91,64,48,.3)!important;
+  max-width:100%;box-sizing:border-box;
+}
+.tp-mood-btn.is-active{border-color:var(--forest)!important;box-shadow:0 3px 0 0 var(--forest)!important}
+.tp-mood-swatch{border-radius:0!important;border:2px solid var(--wood-dark)}
+
+/* --- 9.5 Pastilles de couleur (surlignage, texte, branches) --- */
+.hl-swatch{
+  width:18px!important;height:18px!important;padding:0!important;
+  border:3px solid var(--wood-dark)!important;border-radius:0!important;
+  background-image:none!important;box-shadow:none!important;
+  display:inline-block;flex-shrink:0;cursor:pointer;
+}
+.hl-swatch:hover{filter:brightness(1.05)}
+.hl-yellow{background-color:#EFE0B4!important}
+.hl-green{background-color:#C7DAB4!important}
+.hl-blue{background-color:#AFC8DD!important}
+.hl-pink{background-color:#F0C1B3!important}
+.hl-orange{background-color:#E4A982!important}
+.hl-purple{background-color:#C9B7D6!important}
+.hl-ink{background-color:#3E352D!important}
+.hl-white{background-color:var(--ivory)!important}
+.hl-none{background-color:var(--ivory)!important;position:relative}
+.hl-none i{color:var(--ink-soft)!important}
+
+/* --- 9.6 Divers --- */
+.rounded-full{border-radius:999px!important}
+.tp-day.is-today{border-color:var(--forest)!important}
+
+/* =====================================================================
+   Extras cozy : niveau d'aventure, ambiance sonore, bulle de la mascotte
+   ===================================================================== */
+
+/* --- Niveau d'aventure (Mon Profil) --- */
+.adv-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#F0C1B3;color:#5B4030;border:2px solid #D89C86;
+  border-radius:999px;padding:6px 14px;font-size:12px;font-weight:800;
+  font-family:'Nunito',sans-serif;box-shadow:0 2px 0 #D89C86;
+}
+.adv-title-card{
+  text-align:center;padding:18px 16px;border-radius:20px;
+  background:linear-gradient(135deg,#FAF8F0,#F0E4D2);
+  border:2px solid #D9C58C;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6);
+}
+.adv-title-fr{font-family:'Quicksand',sans-serif;font-size:22px;font-weight:800;color:#5B4030;letter-spacing:.3px}
+.adv-title-jp{margin-top:4px;font-size:14px;font-weight:700;color:#8A5F3E;letter-spacing:2px}
+.adv-bar{height:12px;border-radius:999px;background:#E3D8C6;border:2px solid #C9B79A;overflow:hidden}
+.adv-bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#B7C5A3,#8FA58B);transition:width .4s ease}
+.adv-stat{background:#FAF8F0;border:2px solid #E3D8C6;border-radius:16px;padding:10px 8px}
+.adv-stat b{display:block;font-size:18px;font-weight:900;color:#5B4030;line-height:1.1}
+.adv-stat span{display:block;font-size:10px;color:#8C7C6B;margin-top:2px}
+.adv-ladder{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.adv-ladder li{
+  display:grid;grid-template-columns:20px 1fr auto auto;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:14px;background:#FAF8F0;border:2px solid #EDE3D2;
+  font-size:12px;color:#8C7C6B;
+}
+.adv-ladder li.is-done{background:#EFF3E8;border-color:#C7DAB4;color:#5B4030}
+.adv-ladder li.is-current{background:#FDEDE7;border-color:#E4A982;color:#5B4030;font-weight:800;box-shadow:0 2px 0 #E4A982}
+.adv-ladder-fr{font-weight:700}
+.adv-ladder-jp{font-size:11px;opacity:.75}
+.adv-ladder-xp{font-size:10px;opacity:.7;white-space:nowrap}
+
+/* --- Ambiance sonore de la Zone de campement --- */
+.amb-panel{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.amb-btn{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  background:#FAF8F0;color:#5B4030;border:2px solid #D9C58C;border-radius:16px;
+  padding:10px 16px;font-size:13px;font-weight:800;font-family:'Nunito',sans-serif;
+  box-shadow:0 3px 0 #D9C58C;transition:transform .12s ease,background .2s ease;
+}
+.amb-btn:hover{transform:translateY(-1px);background:#FFFFFF}
+.amb-btn.is-playing{background:#C7DAB4;border-color:#8FA58B;box-shadow:0 3px 0 #8FA58B}
+.amb-volume{accent-color:#C97D5D}
+
+/* --- Bulle de dialogue de la mascotte (Zone de campement) --- */
+.camp-mascot{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.camp-mascot>img{width:86px;height:86px;object-fit:contain;image-rendering:pixelated;flex-shrink:0}
+.camp-bubble{
+  position:relative;cursor:pointer;flex:1;min-width:220px;
+  background:#FAF8F0;border:2px solid #D89C86;border-radius:18px;padding:12px 16px;
+  box-shadow:0 3px 0 #D89C86;
+}
+.camp-bubble::before{
+  content:"";position:absolute;left:-9px;bottom:16px;width:14px;height:14px;
+  background:#FAF8F0;border-left:2px solid #D89C86;border-bottom:2px solid #D89C86;
+  transform:rotate(45deg);
+}
+.camp-bubble-name{display:block;font-size:11px;font-weight:800;color:#C97D5D;letter-spacing:.4px}
+.camp-bubble-name em{font-style:normal;color:#8A5F3E;opacity:.85}
+.camp-bubble-text{display:block;margin-top:3px;font-size:13.5px;font-weight:600;color:#5B4030;line-height:1.45}
+
+/* =====================================================================
+   ZONE DE CAMPEMENT — nouvelle mise en page "quiet place"
+   (remplace intégralement l'ancien layout du camp de base)
+   ===================================================================== */
+.camp-hello{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.camp-hello-text h1{font-family:var(--font-title);font-size:clamp(24px,3vw,34px);line-height:1.15;margin:0;color:var(--ink)!important;letter-spacing:.5px}
+.camp-hello-sub{margin:6px 0 0;font-size:13px;color:var(--ink-soft)!important;display:flex;align-items:center;gap:8px}
+.camp-inline-sprite{width:26px;height:26px;image-rendering:pixelated}
+.camp-hello-side{display:flex;align-items:center;gap:10px}
+.camp-chip{font-family:var(--font-title);font-size:13px;background:var(--ivory);border:2px solid rgba(91,64,48,.25);border-radius:12px;padding:7px 12px;color:var(--ink-soft)!important}
+.camp-focus-btn{font-family:var(--font-title);font-size:14px;background:var(--terracotta);color:#FFF8F2!important;border:0;border-radius:14px;padding:10px 18px;cursor:pointer;box-shadow:0 4px 0 0 #9E5B3F;transition:transform .12s ease}
+.camp-focus-btn:hover{transform:translateY(-2px)}
+.camp-focus-btn:active{transform:translateY(2px);box-shadow:0 1px 0 0 #9E5B3F}
+
+.camp-scene{position:relative;overflow:hidden;border-radius:22px;border:2px solid rgba(91,64,48,.22);background:linear-gradient(180deg,#DCEAE4 0%,#EDF2E4 55%,#F4F0E6 100%);padding:26px 24px;margin-bottom:20px;display:flex;align-items:center;gap:18px;min-height:170px}
+.camp-scene-sky{position:absolute;inset:0;background-image:radial-gradient(circle at 18% 26%,#FFFFFF 0 26px,transparent 27px),radial-gradient(circle at 26% 30%,#FFFFFF 0 18px,transparent 19px),radial-gradient(circle at 78% 20%,#FFFFFF 0 22px,transparent 23px);opacity:.6;pointer-events:none}
+.camp-scene-mascot{position:relative;width:110px;height:auto;image-rendering:pixelated;filter:drop-shadow(0 6px 0 rgba(91,64,48,.18))}
+.camp-scene-bubble{position:relative}
+.camp-scene-food{position:absolute;right:18px;bottom:12px;display:flex;gap:10px;align-items:flex-end;opacity:.95}
+.camp-scene-food img{width:46px;height:46px;image-rendering:pixelated}
+@media(max-width:640px){.camp-scene-food{display:none}}
+
+.camp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+@media(max-width:1100px){.camp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.camp-grid{grid-template-columns:1fr}}
+.camp-col{display:flex;flex-direction:column;gap:18px}
+
+.camp-card{background:var(--ivory);border:2px solid rgba(91,64,48,.2);border-radius:20px;padding:16px 16px 18px;box-shadow:0 5px 0 0 rgba(91,64,48,.12);display:flex;flex-direction:column;gap:12px}
+.camp-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.camp-card-head h2{font-family:var(--font-title);font-size:15px;margin:0;color:var(--ink)!important;display:flex;align-items:center;gap:8px;letter-spacing:.4px}
+.camp-card-sprite{width:26px;height:26px;image-rendering:pixelated}
+.camp-card-note{font-size:11px;color:var(--ink-faint)!important;font-weight:600}
+.camp-kicker{font-family:var(--font-title);font-size:13px;color:var(--terracotta)!important;display:block}
+.camp-card-body{display:flex;flex-direction:column;gap:8px;font-size:12px}
+.camp-scroll{max-height:190px;overflow-y:auto}
+.camp-scroll-lg{max-height:250px}
+.camp-reminder-grid{display:grid;grid-template-columns:1fr;gap:10px}
+
+.camp-inline-form{display:flex;gap:8px;flex-wrap:wrap}
+.camp-input{flex:1 1 120px;min-width:0;background:#FFFDF7;border:2px solid rgba(91,64,48,.22);border-radius:12px;padding:9px 11px;font-size:12px;font-family:var(--font-body);color:var(--ink)!important}
+.camp-input:focus{outline:none;border-color:var(--sage)}
+.camp-input-date{flex:0 1 140px}
+.camp-btn-solid{font-family:var(--font-title);font-size:13px;background:var(--sage);color:#FFFDF7!important;border:0;border-radius:12px;padding:9px 14px;cursor:pointer;box-shadow:0 3px 0 0 var(--forest);display:inline-flex;align-items:center;gap:8px}
+.camp-btn-solid:active{transform:translateY(2px);box-shadow:0 1px 0 0 var(--forest)}
+.camp-btn-sm{padding:9px 12px}
+.camp-btn-ghost{font-family:var(--font-title);font-size:12px;background:transparent;border:2px dashed rgba(91,64,48,.28);border-radius:12px;padding:8px 12px;color:var(--ink-soft)!important;cursor:pointer}
+.camp-btn-ghost:hover{border-style:solid;background:#FFFDF7}
+.camp-link{background:none;border:0;font-size:11px;font-weight:700;color:var(--terracotta)!important;cursor:pointer}
+
+.camp-progress{height:10px;border-radius:99px;background:rgba(91,64,48,.14);overflow:hidden}
+.camp-progress>span{display:block;height:100%;background:var(--sage);border-radius:99px;transition:width .35s ease}
+.camp-progress-amber>span{background:var(--peach)}
+.camp-card-streak{flex-direction:row;align-items:center;justify-content:space-between}
+.camp-card-streak>div:first-child{flex:1}
+.camp-streak-num{font-family:var(--font-title);font-size:44px;line-height:1;color:var(--terracotta)!important}
+
+.camp-alert{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:linear-gradient(135deg,#F0C1B3,#E4A982);border:2px solid rgba(91,64,48,.22);border-radius:20px;padding:14px 16px;margin-bottom:18px}
+.camp-alert-left{display:flex;align-items:center;gap:12px}
+.camp-alert-sprite{width:42px;height:42px;image-rendering:pixelated}
+.camp-alert p{margin:0;font-family:var(--font-title);font-size:14px;color:var(--ink)!important}
+.camp-alert .camp-alert-sub{font-family:var(--font-body);font-size:12px;color:var(--ink-soft)!important}
+.camp-amb{margin:0}
+.camp-volume{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-faint)!important}
+.camp-volume input{flex:1}
+/* Mascotte du bandeau : pas de cadre hérité de l'ancien thème */
+.camp-scene-mascot{background:#FFFDF7!important;border:2px solid rgba(91,64,48,.2)!important;border-radius:18px!important;padding:6px!important;box-shadow:0 4px 0 0 rgba(91,64,48,.12)!important;width:120px}
+.camp-card img,.camp-scene img,.camp-alert img{background:transparent!important;border:0!important;box-shadow:none!important}
+
+/* =====================================================================
+   9. CARNET "Mon profil" — cahier à spirale avec étiquettes latérales
+   ===================================================================== */
+.nb-section{max-width:1100px;margin:0 auto}
+.nb-shell{display:flex;align-items:flex-start;gap:0;position:relative}
+.nb-tabs{display:flex;flex-direction:column;gap:10px;padding-top:46px;margin-right:-12px;z-index:3}
+.nb-tab{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-title);font-size:.78rem;letter-spacing:.02em;
+  padding:11px 16px 11px 13px;min-width:150px;cursor:pointer;
+  color:var(--wood-dark);
+  background:linear-gradient(180deg,#F3E6D2,#E7D2B4);
+  border:3px solid var(--wood-mid);border-right:none;
+  border-radius:10px 0 0 10px;
+  box-shadow:-3px 3px 0 0 rgba(91,64,48,.35);
+  transition:transform .12s ease,background .12s ease,color .12s ease;
+}
+.nb-tab i{font-size:.85rem;opacity:.8}
+.nb-tab:hover{transform:translateX(-4px)}
+.nb-tab.is-active{
+  background:linear-gradient(180deg,#FCF7EC,#F6E9D6);
+  color:var(--terracotta);transform:translateX(-8px);
+  box-shadow:-4px 4px 0 0 rgba(91,64,48,.45);
+}
+.nb-book{
+  flex:1;min-width:0;position:relative;
+  background:linear-gradient(180deg,#8A5F3E,#6B472F);
+  border:4px solid var(--wood-dark);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 10px 0 0 rgba(91,64,48,.35),0 20px 40px -20px rgba(62,53,45,.6);
+}
+.nb-corner{position:absolute;width:26px;height:26px;border:4px solid var(--yellow-cream);opacity:.8}
+.nb-corner-tl{top:6px;left:6px;border-right:none;border-bottom:none;border-radius:8px 0 0 0}
+.nb-corner-br{bottom:6px;right:6px;border-left:none;border-top:none;border-radius:0 0 8px 0}
+.nb-paper{
+  position:relative;background:var(--ivory);
+  border:2px solid rgba(91,64,48,.35);border-radius:8px;
+  background-image:linear-gradient(rgba(184,135,88,.10) 1px,transparent 1px);
+  background-size:100% 28px;
+  overflow:hidden;
+}
+.nb-rings{
+  position:absolute;left:0;top:0;bottom:0;width:46px;
+  background:
+    repeating-linear-gradient(180deg,transparent 0 12px,rgba(91,64,48,.85) 12px 16px,transparent 16px 46px);
+  border-right:2px dashed rgba(201,125,93,.5);
+  background-color:#F1E6D4;
+}
+.nb-rings::after{
+  content:"";position:absolute;left:17px;top:0;bottom:0;width:12px;
+  background:repeating-linear-gradient(180deg,transparent 0 14px,#FAF8F0 14px 24px,transparent 24px 46px);
+  border-radius:6px;
+}
+.nb-page{padding:26px 26px 30px 66px;min-height:520px}
+.nb-page-head{display:flex;align-items:center;gap:14px;justify-content:center;text-align:center;margin-bottom:22px}
+.nb-title{font-family:var(--font-title);font-size:1.9rem;color:var(--wood-dark);margin:0}
+.nb-sub{font-size:.85rem;color:var(--ink-soft);margin:4px 0 0}
+.nb-head-sprite{width:52px;height:auto;image-rendering:pixelated;flex-shrink:0}
+.nb-footer-sprites{display:flex;justify-content:center;gap:22px;margin-top:26px;opacity:.9}
+.nb-footer-sprites img{width:46px;height:auto;image-rendering:pixelated}
+.nb-embed{border:2px solid rgba(91,64,48,.3);border-radius:10px;overflow:hidden;background:var(--cream)}
+.nb-embed iframe{display:block;width:100%;height:78vh;min-height:560px;border:0}
+@media (max-width:860px){
+  .nb-shell{flex-direction:column}
+  .nb-tabs{flex-direction:row;overflow-x:auto;width:100%;padding:0 0 6px;margin:0 0 -6px;gap:8px}
+  .nb-tab{min-width:auto;white-space:nowrap;border-radius:10px 10px 0 0;border-right:3px solid var(--wood-mid);border-bottom:none;box-shadow:0 -3px 0 0 rgba(91,64,48,.3)}
+  .nb-tab:hover,.nb-tab.is-active{transform:translateY(-4px)}
+  .nb-page{padding:20px 16px 24px 56px}
+  .nb-page-head{flex-wrap:wrap}
+}
+
+/* Tampon "À tamponner" : la case ne déborde plus */
+.hanko-box{flex-wrap:wrap}
+.hanko-slot{width:8.5rem;height:8.5rem}
+.hanko-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.7rem 1rem;font-size:.8rem;line-height:1.25;text-align:center;
+  white-space:normal;overflow-wrap:anywhere;
+  max-width:100%;flex:1 1 220px;min-width:0;
+}
+@media (min-width:640px){.hanko-btn{flex:0 1 260px}}
+#hanko-ghost{padding:.5rem;overflow:hidden}
+
+/* Décor pixel art (nourriture) */
+.px-deco{position:fixed;pointer-events:none;z-index:1;image-rendering:pixelated;opacity:.85;user-select:none}
+.px-deco img{display:block;image-rendering:pixelated}
+.px-ribbon{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin:26px auto 6px;opacity:.95}
+.px-ribbon img{width:44px;height:auto;image-rendering:pixelated;animation:pxFloat 4s ease-in-out infinite}
+.px-ribbon img:nth-child(2n){animation-delay:.6s}
+.px-ribbon img:nth-child(3n){animation-delay:1.2s}
+@keyframes pxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* Mode "embarqué" : calendrier affiché à l'intérieur du carnet Mon profil */
+body.embed-mode{background:transparent!important;display:block!important;overflow:auto!important;height:auto!important}
+body.embed-mode > aside{display:none!important}
+body.embed-mode main{overflow:visible!important;height:auto!important}
+body.embed-mode .rpg-questbar{display:none}
+body.embed-mode .rpg-parchment{border:none!important;box-shadow:none!important;padding:8px!important;background:transparent!important}
+
+/* =====================================================================
+   10. Sélecteur de couleurs du calendrier
+   ===================================================================== */
+.cal-color-picker{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+.cal-swatch{
+  width:30px;height:30px;border-radius:9px;cursor:pointer;
+  background:var(--sw)!important;background-color:var(--sw)!important;
+  border:2px solid rgba(91,64,48,.35)!important;border-radius:9px!important;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.10), 0 2px 0 rgba(91,64,48,.18)!important;
+  transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;
+}
+.cal-swatch:hover{transform:translateY(-2px) scale(1.06)}
+.cal-swatch.is-selected{
+  border-color:var(--wood-dark)!important;
+  transform:scale(1.12);
+  box-shadow:0 0 0 3px var(--ivory),0 0 0 5px var(--wood-dark)!important;
+}
+.cal-swatch.is-selected::after{
+  content:"✓";display:block;text-align:center;line-height:26px;
+  font-size:.8rem;font-weight:700;color:rgba(62,53,45,.75)
+}
+.cal-swatch-label{
+  flex-basis:100%;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-soft);margin-top:2px
+}
+
+/* =====================================================================
+   11. Carnet — finitions visuelles
+   ===================================================================== */
+.nb-book{
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 3px,transparent 3px 8px),
+    linear-gradient(180deg,#9C6C48,#6B472F);
+}
+.nb-book::before{
+  content:"";position:absolute;inset:8px;border-radius:10px;
+  border:2px solid rgba(242,226,168,.28);pointer-events:none
+}
+.nb-paper{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.5), 0 2px 10px rgba(62,53,45,.18);
+  background-image:
+    linear-gradient(rgba(184,135,88,.09) 1px,transparent 1px),
+    radial-gradient(circle at 12% 8%, rgba(201,125,93,.06), transparent 55%),
+    radial-gradient(circle at 88% 92%, rgba(143,165,139,.07), transparent 55%);
+  background-size:100% 28px,100% 100%,100% 100%;
+}
+.nb-paper::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 60px rgba(139,102,70,.12);
+}
+/* Reliure : anneaux ronds au lieu de traits */
+.nb-rings{
+  width:52px;background-color:#F0E4D0;background-image:none;
+  border-right:2px solid rgba(201,125,93,.35);
+  box-shadow:inset -8px 0 14px -10px rgba(91,64,48,.5);
+}
+.nb-rings::before{
+  content:"";position:absolute;left:14px;top:0;bottom:0;width:24px;
+  background-image:radial-gradient(circle at 50% 50%,#FBF7EE 0 5px,#C9A57F 5px 8px,transparent 8px);
+  background-size:24px 46px;background-repeat:repeat-y;
+  filter:drop-shadow(0 1px 0 rgba(91,64,48,.35));
+}
+.nb-rings::after{
+  content:"";position:absolute;left:38px;top:0;bottom:0;width:10px;
+  background:linear-gradient(90deg,rgba(91,64,48,.16),transparent);
+}
+.nb-page{padding:30px 30px 34px 74px}
+.nb-title{
+  font-size:2rem;
+  text-shadow:2px 2px 0 rgba(242,226,168,.7);
+}
+.nb-title::after{
+  content:"";display:block;width:78px;height:4px;margin:8px auto 0;border-radius:3px;
+  background:repeating-linear-gradient(90deg,var(--terracotta) 0 8px,transparent 8px 14px);
+  opacity:.7;
+}
+.nb-head-sprite{width:58px;filter:drop-shadow(2px 3px 0 rgba(91,64,48,.18))}
+/* Étiquettes : plus « papier », avec une encoche cousue */
+.nb-tab{
+  position:relative;font-size:.8rem;padding:12px 18px 12px 14px;
+  border-radius:12px 0 0 12px;
+}
+.nb-tab::before{
+  content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;
+  border-left:2px dashed rgba(91,64,48,.35);
+}
+.nb-tab.is-active{
+  background:linear-gradient(180deg,#FEFBF3,#F7EAD6);
+  font-weight:700;
+}
+.nb-tab.is-active::after{
+  content:"";position:absolute;right:-3px;top:0;bottom:0;width:6px;background:#FEFBF3;
+}
+
+/* =====================================================================
+   12. Carnet "Mon profil" — vraie double page (feuillets gauche / droite)
+   Le contenu ne traverse plus la reliure : chaque bloc vit sur une page,
+   et un pager permet de tourner les feuillets quand tout ne rentre pas.
+   ===================================================================== */
+.nb-section{max-width:1040px}
+.nb-book{padding:12px;border-radius:16px}
+.nb-paper{
+  position:relative;
+  border-radius:10px;
+  background-color:var(--ivory);
+  background-image:
+    linear-gradient(rgba(184,135,88,.09) 1px,transparent 1px),
+    linear-gradient(90deg,
+      rgba(91,64,48,.10) 0%, rgba(91,64,48,0) 6%,
+      rgba(91,64,48,0) 44%, rgba(91,64,48,.16) 50%,
+      rgba(91,64,48,0) 56%, rgba(91,64,48,0) 94%,
+      rgba(91,64,48,.10) 100%);
+  background-size:100% 26px,100% 100%;
+}
+/* Reliure centrale */
+.nb-rings{
+  left:50%;transform:translateX(-50%);
+  width:44px;
+  background-color:transparent;
+  border-right:none;
+  border-left:2px solid rgba(201,125,93,.28);
+  box-shadow:none;
+  z-index:2;
+}
+.nb-rings::before{left:50%;margin-left:-11px;width:22px;background-size:22px 40px}
+.nb-rings::after{
+  content:"";left:0;right:0;width:auto;
+  background:linear-gradient(90deg,rgba(91,64,48,.10),rgba(91,64,48,0) 38%,rgba(91,64,48,0) 62%,rgba(91,64,48,.10));
+}
+.nb-rings + .nb-page{position:relative;z-index:1}
+
+.nb-page{padding:22px 26px 26px;min-height:auto;font-size:.94em}
+.nb-page-head{margin-bottom:18px}
+.nb-title{font-size:1.5rem}
+.nb-title::after{width:60px;height:3px;margin-top:6px}
+.nb-head-sprite{width:44px}
+.nb-footer-sprites{margin-top:18px;gap:16px}
+.nb-footer-sprites img{width:34px}
+
+/* Les feuillets : une colonne sur mobile, deux pages sur grand écran */
+.tp-pane{display:grid;grid-template-columns:1fr;gap:22px}
+.tp-pane[hidden]{display:none}
+.nb-sheet{min-width:0}
+.nb-sheet[hidden]{display:none}
+.nb-sheet > * + *{margin-top:16px}
+
+@media (min-width:1000px){
+  .nb-page{padding:26px 30px 28px}
+  .tp-pane{
+    grid-template-columns:1fr 1fr;
+    column-gap:72px;
+    align-items:start;
+  }
+}
+/* Sous 1000px : une seule page, la reliure revient à gauche */
+@media (max-width:999px){
+  .nb-rings{left:0;transform:none;border-left:none;border-right:2px solid rgba(201,125,93,.35)}
+  .nb-rings::before{left:12px;margin-left:0}
+  .nb-rings::after{display:none}
+  .nb-page{padding:22px 20px 26px 60px}
+  .nb-paper{background-image:linear-gradient(rgba(184,135,88,.09) 1px,transparent 1px)}
+}
+
+/* Pager du carnet */
+.nb-pager{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-top:22px;padding-top:14px;
+  border-top:2px dashed rgba(201,125,93,.35);
+}
+.nb-pager[hidden]{display:none}
+.nb-pager-btn{
+  width:34px;height:34px;border-radius:10px;cursor:pointer;
+  font-size:1.1rem;line-height:1;
+  color:var(--wood-dark);
+  background:linear-gradient(180deg,#FCF7EC,#F0DFC6);
+  border:2px solid var(--wood-mid);
+  box-shadow:0 3px 0 0 rgba(91,64,48,.3);
+  transition:transform .12s ease,opacity .12s ease;
+}
+.nb-pager-btn:hover:not(:disabled){transform:translateY(-2px)}
+.nb-pager-btn:disabled{opacity:.35;cursor:not-allowed}
+.nb-pager-label{
+  font-family:var(--font-title);font-size:.78rem;letter-spacing:.03em;
+  color:var(--ink-soft);
+}
+
+/* Lisibilité dans les pages étroites du carnet */
+.nb-sheet .tp-notebook-head{flex-wrap:wrap;gap:8px}
+.nb-sheet .tp-title{font-size:1.05rem;line-height:1.3}
+@media (min-width:1000px){
+  .nb-sheet .grid.md\:grid-cols-4,
+  .nb-sheet .grid.md\:grid-cols-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.nb-sheet .tp-notebook .tp-notebook-head{flex-wrap:nowrap;gap:6px}
+.nb-sheet .tp-notebook .tp-month{font-size:.8rem;text-align:center}
+.nb-pager{position:relative;z-index:3}
+.nb-pager-label{background:var(--ivory);padding:2px 10px;border-radius:8px}
+.nb-sheet .tp-shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+
+/* =====================================================================
+   Décor pixel art — plantes, bocaux & petites potions
+   ===================================================================== */
+.px-corner{
+  position:fixed;pointer-events:none;z-index:2;
+  image-rendering:pixelated;opacity:.9;
+  filter:drop-shadow(2px 3px 0 rgba(91,64,48,.12));
+  animation:pxFloat 6s ease-in-out infinite;
+}
+.px-corner img{display:block;width:100%;height:auto;image-rendering:pixelated}
+.px-corner-tl{top:46%;left:12px;width:46px}
+.px-corner-bl{bottom:24px;left:18px;width:42px;animation-delay:1.4s}
+.px-corner-tr{top:62%;right:10px;width:42px;animation-delay:.7s}
+.px-corner-br{bottom:26px;right:14px;width:50px;animation-delay:2.1s}
+@media (max-width:1400px){.px-corner-tr,.px-corner-br{display:none}}
+@media (max-width:1100px){.px-corner{display:none}}
+
+/* Petite frise de plantes sous les titres de section */
+.px-shelf{
+  display:flex;align-items:flex-end;justify-content:center;gap:14px;
+  margin:14px auto 2px;opacity:.95;flex-wrap:wrap;
+}
+.px-shelf img{width:34px;height:auto;image-rendering:pixelated;animation:pxFloat 5s ease-in-out infinite}
+.px-shelf img:nth-child(2n){animation-delay:.5s}
+.px-shelf img:nth-child(3n){animation-delay:1s}
+.px-inline{width:26px;height:auto;image-rendering:pixelated;vertical-align:-6px}
+
+/* =====================================================================
+   Carnet de tampons — feuillet pleine largeur & cases agrandies
+   ===================================================================== */
+@media (min-width:1000px){
+  .tp-pane .nb-sheet.nb-sheet--wide{grid-column:1 / -1}
+}
+.nb-sheet--wide .tp-notebook{padding:22px}
+.nb-sheet--wide .tp-grid{gap:12px}
+.nb-sheet--wide .tp-notebook .tp-month{font-size:1rem}
+.nb-sheet--wide .tp-notebook .tp-notebook-head{gap:12px}
+.nb-sheet--wide .tp-dow{font-size:.72rem}
+
+/* Page pleine largeur du carnet : la reliure revient à gauche pour ne pas
+   couper le calendrier des tampons. */
+@media (min-width:1000px){
+  .nb-book.is-wide-page .nb-rings{
+    left:0;transform:none;
+    border-left:none;border-right:2px solid rgba(201,125,93,.35);
+  }
+  .nb-book.is-wide-page .nb-rings::before{left:12px;margin-left:0}
+  .nb-book.is-wide-page .nb-rings::after{display:none}
+  .nb-book.is-wide-page .nb-page{padding:26px 30px 28px 70px}
+  .nb-book.is-wide-page .nb-paper{background-image:linear-gradient(rgba(184,135,88,.09) 1px,transparent 1px)}
+}
+
+/* =====================================================================
+   Mon moral — un seul feuillet (humeur du jour + calendrier)
+   ===================================================================== */
+/* Humeur du jour au-dessus, calendrier en grand en dessous */
+.nb-moral-layout{display:flex;flex-direction:column;gap:20px}
+.nb-moral-layout > div{min-width:0;width:100%}
+.nb-moral-layout .tp-mood-list{display:flex;flex-wrap:wrap;gap:10px}
+.nb-moral-layout #tp-mood-cal-root .tp-notebook{padding:20px}
+.nb-moral-layout #tp-mood-cal-root .tp-grid{gap:10px}
+.nb-moral-layout #tp-mood-cal-root .tp-day{min-height:74px}
+
+/* =====================================================================
+   Décor pixel art — enrichissement (frises, guirlandes, coins)
+   ===================================================================== */
+.px-frieze{display:flex;align-items:flex-end;justify-content:center;gap:20px;flex-wrap:wrap;margin:2px auto 16px;opacity:.95}
+.px-frieze img{width:38px;height:auto;image-rendering:pixelated;animation:pxFloat 5.5s ease-in-out infinite}
+.px-frieze img:nth-child(2n){animation-delay:.4s}
+.px-frieze img:nth-child(3n){animation-delay:.9s}
+.px-divider{display:flex;align-items:center;justify-content:center;gap:16px;margin:18px auto;opacity:.85}
+.px-divider img{width:28px;height:auto;image-rendering:pixelated;animation:pxFloat 6s ease-in-out infinite}
+.px-title-sprite{width:26px;height:auto;image-rendering:pixelated;vertical-align:-5px;margin-right:8px;
+  animation:pxFloat 5s ease-in-out infinite}
+.px-scatter{position:absolute;pointer-events:none;z-index:0;image-rendering:pixelated;opacity:.5;
+  animation:pxFloat 7s ease-in-out infinite}
+.px-scatter img{display:block;width:100%;height:auto;image-rendering:pixelated}
+@media (max-width:1100px){.px-scatter{display:none}}
+/* on décale les sprites fixes pour ne jamais empiéter sur le menu de gauche */
+.px-corner-tl{left:304px}
+.px-corner-bl{left:308px}
+.px-corner-ml{position:fixed;top:26%;left:302px;width:40px}
+.px-corner-mr{position:fixed;top:30%;right:12px;width:38px}
+@media (max-width:1400px){.px-corner-mr{display:none}}
+@media (max-width:1100px){.px-corner-ml{display:none}}
