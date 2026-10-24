@@ -1,0 +1,151 @@
+/* =========================================================================
+   Session de travail > sous-onglet « Session de travail immersive »
+   Reprend les variables du thème (--bento-*) pour rester cohérent avec le reste du site.
+   ========================================================================= */
+
+.imm-page-title {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--bento-text-primary, #10131c);
+  margin: 0 0 .25rem;
+}
+.imm-page-title i { color: rgb(232 142 178); font-size: 1.15rem; }
+
+.imm-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .imm-layout { grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); }
+}
+.imm-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
+
+.imm-card { padding: 1.5rem; border-radius: 1.5rem; }
+.imm-card h2, .imm-card h3 {
+  display: flex; align-items: center; gap: .5rem;
+  font-weight: 800; color: var(--bento-text-primary, #10131c);
+}
+.imm-card h2 { font-size: 1.1rem; margin: 0 0 .25rem; }
+.imm-card h3 { font-size: .95rem; margin: 0 0 .6rem; }
+.imm-hint { font-size: .75rem; color: var(--bento-text-muted, #5b6478); margin: 0 0 .75rem; line-height: 1.45; }
+.imm-block + .imm-block { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--bento-border, rgba(15,23,42,.08)); }
+
+/* --- Lecteur vidéo --- */
+.imm-url-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
+.imm-url-row input { flex: 1 1 14rem; min-width: 0; }
+.imm-error {
+  font-size: .75rem; color: #b91c1c;
+  background: rgba(239, 68, 68, .1); border: 1px solid rgba(239, 68, 68, .3);
+  border-radius: .75rem; padding: .5rem .75rem; margin-bottom: .75rem;
+}
+.imm-error.hidden { display: none; }
+.imm-player-wrap {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: 1rem; overflow: hidden;
+  background: #0b0f19; border: 1px solid var(--bento-border, rgba(15,23,42,.08));
+}
+.imm-player-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.imm-player-empty {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: .5rem; padding: 1rem;
+  text-align: center; color: #94a3b8; font-size: .8rem;
+}
+.imm-player-empty i { font-size: 2rem; color: rgba(232, 142, 178, .8); }
+
+/* --- Chronomètre de session --- */
+.imm-timer-card { text-align: center; }
+.imm-timer-status {
+  display: inline-block; padding: .2rem .8rem; border-radius: 999px;
+  font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  background: rgba(232, 142, 178, .2); color: var(--bento-pink-text, #be185d);
+}
+.imm-timer-status.is-running { background: rgba(16, 185, 129, .15); color: #047857; }
+.imm-timer-status.is-paused  { background: rgba(245, 158, 11, .18); color: #b45309; }
+.imm-timer {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 900; letter-spacing: -.02em; line-height: 1.1;
+  font-size: clamp(2.6rem, 8vw, 4.2rem);
+  color: var(--bento-text-primary, #10131c); margin: .6rem 0 1rem;
+}
+.imm-actions { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; }
+.imm-note { font-size: .72rem; color: var(--bento-text-muted, #5b6478); margin-top: .75rem; }
+
+/* --- Pastilles (boisson, humeur, difficultés) --- */
+.imm-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+.imm-chip {
+  cursor: pointer; user-select: none; font-size: .75rem; font-weight: 600;
+  padding: .35rem .7rem; border-radius: 999px;
+  background: var(--bento-inner-bg, #f0f2f8); color: var(--bento-text-secondary, #454c5c);
+  border: 1px solid var(--bento-border, rgba(15,23,42,.08));
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.imm-chip:hover { background: var(--bento-inner-bg-hover, #e7eaf3); transform: translateY(-1px); }
+.imm-chip.is-on {
+  background: rgba(232, 142, 178, .2); border-color: rgba(232, 142, 178, .65);
+  color: var(--bento-pink-text, #be185d);
+}
+
+.imm-moods { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
+.imm-mood {
+  cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: .15rem;
+  padding: .5rem .2rem; border-radius: .9rem; font-size: .62rem; font-weight: 700;
+  background: var(--bento-inner-bg, #f0f2f8); color: var(--bento-text-secondary, #454c5c);
+  border: 1px solid var(--bento-border, rgba(15,23,42,.08));
+  transition: transform .15s ease, background .15s ease;
+}
+.imm-mood .imm-emoji { font-size: 1.5rem; line-height: 1; }
+.imm-mood:hover { transform: translateY(-2px); }
+.imm-mood.is-on { background: rgba(232, 142, 178, .2); border-color: rgba(232, 142, 178, .65); color: var(--bento-pink-text, #be185d); }
+
+/* --- Objectifs --- */
+.imm-goal-add { display: flex; gap: .5rem; }
+.imm-goal-add input { flex: 1; min-width: 0; }
+.imm-goals { list-style: none; margin: .75rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
+.imm-goal {
+  display: flex; align-items: center; gap: .6rem; padding: .5rem .7rem;
+  background: var(--bento-inner-bg, #f0f2f8); border-radius: .8rem; font-size: .82rem;
+  color: var(--bento-text-primary, #10131c);
+}
+.imm-goal input[type="checkbox"] { width: 1rem; height: 1rem; accent-color: rgb(232 142 178); flex-shrink: 0; cursor: pointer; }
+.imm-goal span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.imm-goal.is-done span { text-decoration: line-through; opacity: .6; }
+.imm-goal button { background: none; border: 0; cursor: pointer; color: var(--bento-text-faint, #767f96); padding: .2rem .35rem; }
+.imm-goal button:hover { color: #dc2626; }
+.imm-empty { font-size: .78rem; color: var(--bento-text-muted, #5b6478); padding: .5rem 0; }
+
+/* --- Modale de bilan --- */
+.imm-modal-panel { width: 100%; max-width: 34rem; max-height: 90vh; overflow-y: auto; padding: 1.5rem; border-radius: 1.5rem; }
+.imm-modal-panel h3.imm-modal-title { font-size: 1.25rem; font-weight: 800; color: var(--bento-text-primary, #10131c); margin: 0 0 .25rem; display: flex; align-items: center; gap: .5rem; }
+.imm-field { margin-top: 1rem; }
+.imm-field > label, .imm-label { display: block; font-size: .75rem; font-weight: 700; color: var(--bento-text-secondary, #454c5c); margin-bottom: .35rem; }
+.imm-field textarea { width: 100%; min-height: 4.5rem; resize: vertical; }
+.imm-conc { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .35rem; }
+.imm-conc .imm-chip { text-align: center; padding: .45rem .2rem; font-size: .66rem; border-radius: .8rem; }
+.imm-check { display: flex; align-items: center; gap: .5rem; font-size: .78rem; color: var(--bento-text-secondary, #454c5c); }
+.imm-check input { accent-color: rgb(232 142 178); width: 1rem; height: 1rem; }
+.imm-modal-actions { display: flex; gap: .6rem; flex-wrap: wrap; justify-content: flex-end; margin-top: 1.25rem; }
+
+/* --- Historique --- */
+.imm-history { display: flex; flex-direction: column; gap: .6rem; max-height: 32rem; overflow-y: auto; }
+.imm-entry { background: var(--bento-inner-bg, #f0f2f8); border-radius: 1rem; padding: .8rem 1rem; font-size: .8rem; color: var(--bento-text-secondary, #454c5c); }
+.imm-entry-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.imm-entry-title { font-weight: 800; color: var(--bento-text-primary, #10131c); }
+.imm-entry-meta { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+.imm-tag { font-size: .68rem; font-weight: 600; padding: .15rem .55rem; border-radius: 999px; background: rgba(232, 142, 178, .16); color: var(--bento-pink-text, #be185d); }
+.imm-tag.is-warn { background: rgba(245, 158, 11, .16); color: #b45309; }
+.imm-entry p { margin: .45rem 0 0; line-height: 1.45; overflow-wrap: anywhere; }
+.imm-entry p strong { color: var(--bento-text-primary, #10131c); }
+.imm-entry button.imm-del { background: none; border: 0; cursor: pointer; color: var(--bento-text-faint, #767f96); padding: .2rem .4rem; }
+.imm-entry button.imm-del:hover { color: #dc2626; }
+
+/* Barre de sous-onglets : défile horizontalement sur petit écran au lieu de déborder */
+.imm-tabbar { overflow-x: auto; scrollbar-width: thin; }
+.imm-tabbar > button { flex-shrink: 0; white-space: nowrap; }
+
+/* Fond plus opaque pour la modale de bilan (lisibilité du formulaire) */
+.imm-modal-panel { background: var(--bento-card-bg-strong, rgba(255,255,255,.92)) !important; }
