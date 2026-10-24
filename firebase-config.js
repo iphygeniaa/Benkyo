@@ -12,7 +12,7 @@
 window.BENKYO_FIREBASE_CONFIG = {
   apiKey: "AIzaSyDEPq5-O-7WkJvqj64gOmX-yEJ-WHCY0_0",
   authDomain: "benkyo-44e0f.firebaseapp.com",
-  databaseURL: ""https://benkyo-44e0f-default-rtdb.europe-west1.firebasedatabase.app",
+  databaseURL: "https://benkyo-44e0f-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "benkyo-44e0f",
   storageBucket: "benkyo-44e0f.firebasestorage.app",
   messagingSenderId: "1055036172423",
