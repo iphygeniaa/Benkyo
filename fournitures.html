@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0a0e17] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Fournitures &amp; Achats</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#c1272d">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@500;600;700;800&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="sakura.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 4px; }
+
+    @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(12px); } }
+    #app-toast.toast-show { display: flex; animation: toastIn 0.25s ease-out forwards; }
+    #app-toast.toast-hide { animation: toastOut 0.25s ease-in forwards; }
+
+    /* Styles spécifiques pour Fournitures & Achats */
+    .sp-store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--bento-border, rgba(15, 23, 42, 0.08));
+      color: var(--ink-soft);
+      font-size: 0.76rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .sp-store-badge:hover {
+      background: #fff;
+      color: var(--rose);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px -4px rgba(200, 70, 125, 0.25);
+    }
+    .sp-cat-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid var(--bento-border, rgba(15, 23, 42, 0.08));
+      font-size: 0.8rem;
+    }
+    .sp-cat-stat strong {
+      color: var(--ink);
+    }
+    .sp-price-pill {
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <link rel="stylesheet" href="pages.css">
+</head>
+<body class="pg h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
+
+  <!-- Toast de notification stylé -->
+  <div id="app-toast" class="hidden fixed bottom-6 right-6 z-[80] glass-panel border border-emerald-500/30 rounded-2xl px-5 py-4 flex items-center gap-3 shadow-2xl shadow-emerald-500/10 max-w-sm">
+    <div id="app-toast-icon-wrap" class="w-9 h-9 shrink-0 rounded-full bg-emerald-500/20 flex items-center justify-center">
+      <i id="app-toast-icon" class="fa-solid fa-check text-emerald-400"></i>
+    </div>
+    <p id="app-toast-message" class="text-sm text-white font-medium"></p>
+  </div>
+
+  <!-- Modale de confirmation générique (remplace confirm()) -->
+  <div id="generic-confirm-modal" class="hidden pg-modal">
+    <div class="pg-sheet pg-confirm" role="alertdialog" aria-modal="true" aria-labelledby="generic-confirm-title">
+      <div class="pg-seal" lang="ja">買</div>
+      <h3 id="generic-confirm-title" class="pg-title">Supprimer cet article ?</h3>
+      <p id="generic-confirm-message">Cette fourniture sera définitivement retirée de votre liste d'achats.</p>
+      <div class="pg-actions">
+        <button onclick="closeGenericConfirmModal()" class="pg-btn">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="pg-btn danger-fill">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation : onglet Menu (retour à l'accueil, d'où partent toutes les pages) -->
+  <a href="index.html" class="bk-menu-tab" aria-label="Menu — retour à l'accueil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+    <span>Menu</span>
+  </a>
+
+  <!-- Éléments masqués conservés pour la compatibilité des scripts existants -->
+  <div hidden data-legacy-stubs>
+    <div><div><span id="streak-count">0</span></div></div>
+    <img id="sidebar-profile-img" alt="">
+  </div>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+    <section class="tab-content pg-shell">
+
+      <!-- En-tête Bento Sakura -->
+      <header class="pg-card cal-top">
+        <div class="cal-month">
+          <div class="cal-kanji" lang="ja" aria-hidden="true">買</div>
+          <div class="cal-month-txt">
+            <p class="pg-eyebrow">文房具 · Fournitures &amp; Achats</p>
+            <h1 class="pg-title">Fournitures &amp; Achats</h1>
+          </div>
+        </div>
+        <div class="cal-tools">
+          <div class="td-stat" title="Total de toutes les fournitures estimées">
+            <i class="fa-solid fa-coins text-amber-500"></i>
+            <span>Budget : <strong id="supplies-total" style="color:var(--rose)">0,00 €</strong></span>
+          </div>
+          <div class="td-stat" title="Nombre d'articles restant à acquérir">
+            <i class="fa-solid fa-cart-shopping text-brand-purple"></i>
+            <span id="supplies-remaining">0 article restant</span>
+          </div>
+          <button type="button" onclick="exportSuppliesList()" class="pg-btn sm" title="Copier la liste au format texte">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i> Copier
+          </button>
+        </div>
+      </header>
+
+      <!-- Grille principale Bento (2 colonnes) -->
+      <div class="td-grid">
+
+        <!-- Colonne Principale : Ajout + Recherche + Liste d'articles -->
+        <div class="td-main">
+
+          <!-- Carte d'ajout Bento -->
+          <div class="pg-card td-add">
+            <div class="flex items-center justify-between">
+              <h2 class="pg-title text-base font-bold flex items-center gap-2">
+                <i class="fa-solid fa-cart-plus" style="color:var(--rose)"></i>
+                <span>Ajouter un article ou une fourniture</span>
+              </h2>
+              <span class="text-xs text-slate-500 font-semibold">Toute l'année 🛒</span>
+            </div>
+
+            <form onsubmit="addSupplyItem(event)" class="space-y-3">
+              <div class="td-add-top">
+                <input type="text" id="supply-input" placeholder="Ex: Cahier 24x32 96p grands carreaux, Surligneurs pastel..." class="pg-input" required autocomplete="off">
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div>
+                  <label class="pg-label" for="supply-cat-input">Catégorie</label>
+                  <select id="supply-cat-input" class="pg-select">
+                    <option value="Papeterie">✏️ Papeterie &amp; Écriture</option>
+                    <option value="Livres">📚 Livres &amp; Manuels</option>
+                    <option value="Tech">💻 Informatique &amp; Matériel</option>
+                    <option value="Organisation">🎒 Rentrée &amp; Organisation</option>
+                    <option value="Arts">🎨 Arts &amp; Dessin</option>
+                    <option value="Divers">📦 Autre fourniture</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="pg-label" for="supply-price-input">Prix estimé (€)</label>
+                  <input type="number" id="supply-price-input" placeholder="Ex: 4.50" min="0" step="0.01" class="pg-input">
+                </div>
+                <div>
+                  <label class="pg-label" for="supply-link-input">Lien article (optionnel)</label>
+                  <input type="url" id="supply-link-input" placeholder="https://..." class="pg-input">
+                </div>
+              </div>
+
+              <div class="flex justify-end pt-1">
+                <button type="submit" class="pg-btn primary">
+                  <i class="fa-solid fa-plus mr-1"></i> Ajouter à ma liste
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Filtres, Recherche et Tri -->
+          <div class="pg-card td-sort">
+            <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+              <input type="text" id="supply-search-input" oninput="onSearchSupplies(this.value)" placeholder="Filtrer par nom..." class="bg-transparent border-none text-xs text-slate-800 placeholder-slate-400 outline-none w-full font-medium">
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button type="button" onclick="setSuppliesFilter('all')" id="sp-filter-all" class="pg-chip-btn accent">Tous</button>
+              <button type="button" onclick="setSuppliesFilter('todo')" id="sp-filter-todo" class="pg-chip-btn">À acheter</button>
+              <button type="button" onclick="setSuppliesFilter('done')" id="sp-filter-done" class="pg-chip-btn">Achetés</button>
+            </div>
+          </div>
+
+          <!-- Liste des fournitures -->
+          <ul id="supplies-list" class="td-list"></ul>
+
+          <!-- État vide -->
+          <div id="supplies-empty" class="hidden pg-card td-empty">
+            <div class="big">🛒</div>
+            <h3 class="font-bold text-base mt-2" style="color:var(--ink)">Aucune fourniture pour l'instant</h3>
+            <p>Ajoute tes articles ci-dessus pour planifier tes achats et garder un œil sur ton budget d'études.</p>
+          </div>
+
+        </div>
+
+        <!-- Colonne Latérale : Bilan Budget + Catégories + Boutiques -->
+        <aside class="td-side space-y-4">
+
+          <!-- Bilan & Progression de la liste -->
+          <div class="pg-card td-progress">
+            <div class="td-ring" id="supplies-ring" role="img" aria-label="Progression des achats">
+              <svg viewBox="0 0 64 64">
+                <circle class="track" cx="32" cy="32" r="26"></circle>
+                <circle id="supplies-ring-bar" class="bar" cx="32" cy="32" r="26" stroke-dasharray="163.36" stroke-dashoffset="163.36"></circle>
+              </svg>
+              <b id="supplies-ring-txt">0%</b>
+            </div>
+            <div class="td-progress-info">
+              <strong id="supplies-stat-headline">Achats en cours</strong>
+              <div class="text-xs text-slate-500 font-semibold mt-0.5" id="supplies-stat-sub">0 sur 0 article acheté</div>
+              <div class="td-stats mt-2">
+                <span class="td-stat"><i class="fa-solid fa-check text-emerald-500"></i> <span id="supplies-bought-count">0 acheté</span></span>
+                <span class="td-stat"><i class="fa-solid fa-hourglass-half text-amber-500"></i> <span id="supplies-todo-count">0 restant</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Répartition du budget -->
+          <div class="pg-card space-y-3">
+            <h3 class="font-bold text-sm flex items-center justify-between" style="color:var(--ink)">
+              <span class="flex items-center gap-2"><i class="fa-solid fa-chart-pie" style="color:var(--rose)"></i> Répartition budgétaire</span>
+              <span class="text-xs text-slate-500 font-medium" id="supplies-budget-count">0 article</span>
+            </h3>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center p-2.5 rounded-xl bg-white/70 border border-slate-200/60">
+                <span class="text-slate-600 font-medium flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Dépensé (acheté)</span>
+                <span id="supplies-spent-amount" class="sp-price-pill font-bold text-emerald-600">0,00 €</span>
+              </div>
+              <div class="flex justify-between items-center p-2.5 rounded-xl bg-white/70 border border-slate-200/60">
+                <span class="text-slate-600 font-medium flex items-center gap-1.5"><i class="fa-solid fa-clock text-amber-500"></i> Reste à régler</span>
+                <span id="supplies-left-amount" class="sp-price-pill font-bold text-amber-600">0,00 €</span>
+              </div>
+            </div>
+
+            <div id="supplies-category-breakdown" class="space-y-1.5 pt-2 border-t border-slate-200/50">
+              <!-- Rempli dynamiquement -->
+            </div>
+          </div>
+
+          <!-- Boutiques & Enseignes utiles pour les étudiants -->
+          <div class="pg-card space-y-3">
+            <h3 class="font-bold text-sm flex items-center gap-2" style="color:var(--ink)">
+              <i class="fa-solid fa-store" style="color:var(--rose)"></i>
+              <span>Où acheter tes fournitures ?</span>
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Compare les prix et vérifie les stocks de manuels et fournitures scolaires sur ces boutiques :
+            </p>
+            <div class="flex flex-wrap gap-1.5">
+              <a href="https://www.bureau-vallee.fr" target="_blank" rel="noopener noreferrer" class="sp-store-badge">
+                <i class="fa-solid fa-paperclip text-brand-purple"></i> Bureau Vallée
+              </a>
+              <a href="https://www.fnac.com" target="_blank" rel="noopener noreferrer" class="sp-store-badge">
+                <i class="fa-solid fa-book text-amber-500"></i> Fnac
+              </a>
+              <a href="https://www.cultura.com" target="_blank" rel="noopener noreferrer" class="sp-store-badge">
+                <i class="fa-solid fa-palette text-rose-500"></i> Cultura
+              </a>
+              <a href="https://www.gibert.com" target="_blank" rel="noopener noreferrer" class="sp-store-badge">
+                <i class="fa-solid fa-graduation-cap text-sky-500"></i> Gibert Joseph
+              </a>
+              <a href="https://www.amazon.fr" target="_blank" rel="noopener noreferrer" class="sp-store-badge">
+                <i class="fa-solid fa-box text-emerald-500"></i> Amazon
+              </a>
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script src="tampons.js" defer></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let currentFilter = 'all'; // 'all' | 'todo' | 'done'
+    let searchQuery = '';
+    let pendingDeleteIdx = null;
+
+    function saveState() {
+      BenkyoStorage.saveDebounced(state);
+    }
+
+    function updateProfileUI() {
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if (sidebarImg && state.profile && state.profile.img) sidebarImg.src = state.profile.img;
+    }
+
+    function checkStreak() {
+      const streakEl = document.getElementById('streak-count');
+      if (streakEl && state.streak) streakEl.innerText = state.streak.count || 0;
+    }
+
+    function ensureSupplies() {
+      if (!state.vacation) state.vacation = BenkyoStorage.defaultState().vacation;
+      if (!Array.isArray(state.vacation.supplies)) state.vacation.supplies = [];
+      return state.vacation.supplies;
+    }
+
+    // Déduit intelligemment une catégorie pour les fournitures créées avant la refonte
+    function getCategoryForItem(item) {
+      if (item.category) return item.category;
+      const t = (item.text || '').toLowerCase();
+      if (/cahier|stylo|crayon|surligneur|feutre|feuille|copie|gomme|taille-crayon|tipex|blanco|correcteur|règle|équerre|compas/.test(t)) {
+        return 'Papeterie';
+      }
+      if (/livre|manuel|dico|dictionnaire|roman|annale|revue|anthologie/.test(t)) {
+        return 'Livres';
+      }
+      if (/calculatrice|ti-|casio|clé usb|usb|ordinateur|pc|tablette|chargeur|souris|écouteur|casque/.test(t)) {
+        return 'Tech';
+      }
+      if (/sac|sac à dos|sacoche|classeur|trousse|trieur|pochette|chemise|chemises|porte-vue|lutin/.test(t)) {
+        return 'Organisation';
+      }
+      if (/peinture|pinceau|dessin|gouache|acrylique|canson|toile|fusain/.test(t)) {
+        return 'Arts';
+      }
+      return 'Divers';
+    }
+
+    function getCategoryBadge(cat) {
+      switch (cat) {
+        case 'Papeterie':
+          return '<span class="td-tag" style="background:rgba(200,70,125,0.12); color:#be185d;">✏️ Papeterie</span>';
+        case 'Livres':
+          return '<span class="td-tag" style="background:rgba(217,119,6,0.12); color:#b45309;">📚 Livres</span>';
+        case 'Tech':
+          return '<span class="td-tag" style="background:rgba(124,58,237,0.12); color:#7c3aed;">💻 Tech</span>';
+        case 'Organisation':
+          return '<span class="td-tag" style="background:rgba(14,165,233,0.12); color:#0284c7;">🎒 Organisation</span>';
+        case 'Arts':
+          return '<span class="td-tag" style="background:rgba(236,72,153,0.12); color:#db2777;">🎨 Arts</span>';
+        default:
+          return '<span class="td-tag" style="background:rgba(15,23,42,0.08); color:#5b6478;">📦 Autre</span>';
+      }
+    }
+
+    function renderSupplies() {
+      const allSupplies = ensureSupplies();
+      const list = document.getElementById('supplies-list');
+      const empty = document.getElementById('supplies-empty');
+
+      // Filtrage
+      let filtered = allSupplies.map((item, idx) => ({ ...item, originalIdx: idx }));
+
+      if (currentFilter === 'todo') {
+        filtered = filtered.filter(i => !i.done);
+      } else if (currentFilter === 'done') {
+        filtered = filtered.filter(i => i.done);
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(i => (i.text || '').toLowerCase().includes(q) || getCategoryForItem(i).toLowerCase().includes(q));
+      }
+
+      // Rendu HTML des cartes
+      list.innerHTML = filtered.map(item => {
+        const cat = getCategoryForItem(item);
+        const catBadge = getCategoryBadge(cat);
+        const priceBadge = item.price
+          ? `<span class="td-tag dur font-bold" style="background:#fff; border:1px solid rgba(200,70,125,0.2); color:#be185d;">${Number(item.price).toFixed(2).replace('.', ',')} €</span>`
+          : '';
+        const linkBtn = item.link
+          ? `<a href="${item.link}" target="_blank" rel="noopener noreferrer" class="td-act" title="Voir l'article en boutique" aria-label="Voir l'article"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>`
+          : '';
+
+        return `
+          <li class="td-item ${item.done ? 'done' : 'p2'}">
+            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleSupply(${item.originalIdx})" class="td-check" aria-label="Marquer comme acheté">
+            <div class="td-body">
+              <span class="td-name">${escapeHtml(item.text)}</span>
+              <div class="td-tags">
+                ${catBadge}
+                ${priceBadge}
+              </div>
+            </div>
+            <div class="td-acts">
+              ${linkBtn}
+              <button type="button" onclick="openDeleteConfirm(${item.originalIdx})" class="td-act del" title="Supprimer cet article" aria-label="Supprimer">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </li>
+        `;
+      }).join('');
+
+      if (empty) empty.classList.toggle('hidden', filtered.length > 0);
+
+      // Statistiques globales
+      const total = allSupplies.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
+      const doneItems = allSupplies.filter(i => i.done);
+      const todoItems = allSupplies.filter(i => !i.done);
+      const spentTotal = doneItems.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
+      const leftTotal = todoItems.reduce((sum, i) => sum + (Number(i.price) || 0), 0);
+
+      const totalEl = document.getElementById('supplies-total');
+      const remainingEl = document.getElementById('supplies-remaining');
+      const spentEl = document.getElementById('supplies-spent-amount');
+      const leftEl = document.getElementById('supplies-left-amount');
+      const budgetCountEl = document.getElementById('supplies-budget-count');
+      const boughtCountEl = document.getElementById('supplies-bought-count');
+      const todoCountEl = document.getElementById('supplies-todo-count');
+      const statSubEl = document.getElementById('supplies-stat-sub');
+      const statHeadlineEl = document.getElementById('supplies-stat-headline');
+
+      if (totalEl) totalEl.innerText = total.toFixed(2).replace('.', ',') + ' €';
+      if (remainingEl) remainingEl.innerText = todoItems.length + (todoItems.length > 1 ? ' articles restants' : ' article restant');
+      if (spentEl) spentEl.innerText = spentTotal.toFixed(2).replace('.', ',') + ' €';
+      if (leftEl) leftEl.innerText = leftTotal.toFixed(2).replace('.', ',') + ' €';
+      if (budgetCountEl) budgetCountEl.innerText = allSupplies.length + (allSupplies.length > 1 ? ' articles' : ' article');
+      if (boughtCountEl) boughtCountEl.innerText = doneItems.length + ' acheté' + (doneItems.length > 1 ? 's' : '');
+      if (todoCountEl) todoCountEl.innerText = todoItems.length + ' restant' + (todoItems.length > 1 ? 's' : '');
+      if (statSubEl) statSubEl.innerText = `${doneItems.length} sur ${allSupplies.length} article${allSupplies.length > 1 ? 's' : ''} acheté${allSupplies.length > 1 ? 's' : ''}`;
+
+      // Anneau de progression
+      const percent = allSupplies.length > 0 ? Math.round((doneItems.length / allSupplies.length) * 100) : 0;
+      const ringTxt = document.getElementById('supplies-ring-txt');
+      const ringBar = document.getElementById('supplies-ring-bar');
+      if (ringTxt) ringTxt.innerText = percent + '%';
+      if (ringBar) {
+        const circ = 2 * Math.PI * 26; // ~163.36
+        const offset = circ - (percent / 100) * circ;
+        ringBar.style.strokeDashoffset = offset;
+      }
+
+      if (statHeadlineEl) {
+        if (allSupplies.length === 0) statHeadlineEl.innerText = 'Liste prête';
+        else if (percent === 100) statHeadlineEl.innerText = 'Tout est prêt ! 🎉';
+        else if (percent >= 50) statHeadlineEl.innerText = 'Bien avancé ! 💪';
+        else statHeadlineEl.innerText = 'Achats en cours 🛒';
+      }
+
+      // Répartition par catégorie
+      renderCategoryBreakdown(allSupplies);
+    }
+
+    function renderCategoryBreakdown(allSupplies) {
+      const container = document.getElementById('supplies-category-breakdown');
+      if (!container) return;
+
+      if (allSupplies.length === 0) {
+        container.innerHTML = '<p class="text-[11px] text-slate-400 italic text-center py-2">Aucune donnée à analyser</p>';
+        return;
+      }
+
+      const map = {};
+      allSupplies.forEach(item => {
+        const cat = getCategoryForItem(item);
+        if (!map[cat]) map[cat] = { count: 0, total: 0 };
+        map[cat].count++;
+        map[cat].total += (Number(item.price) || 0);
+      });
+
+      const icons = {
+        Papeterie: '✏️',
+        Livres: '📚',
+        Tech: '💻',
+        Organisation: '🎒',
+        Arts: '🎨',
+        Divers: '📦'
+      };
+
+      const keys = Object.keys(map).sort((a, b) => map[b].count - map[a].count);
+      container.innerHTML = keys.map(k => `
+        <div class="sp-cat-stat">
+          <span class="flex items-center gap-1.5"><small>${icons[k] || '📦'}</small> <strong>${k}</strong></span>
+          <span class="text-slate-500 font-medium">${map[k].count} art. · <span class="sp-price-pill font-bold" style="color:var(--rose)">${map[k].total.toFixed(2).replace('.', ',')} €</span></span>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, function(m) {
+        switch (m) {
+          case '&': return '&amp;';
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '"': return '&quot;';
+          case "'": return '&#39;';
+        }
+      });
+    }
+
+    function toggleSupply(idx) {
+      const supplies = ensureSupplies();
+      if (!supplies[idx]) return;
+      supplies[idx].done = !supplies[idx].done;
+      saveState();
+      renderSupplies();
+      if (supplies[idx].done) {
+        showToast(`Article "${supplies[idx].text}" marqué comme acheté !`);
+      }
+    }
+
+    function openDeleteConfirm(idx) {
+      const supplies = ensureSupplies();
+      if (!supplies[idx]) return;
+      pendingDeleteIdx = idx;
+      const modal = document.getElementById('generic-confirm-modal');
+      const msg = document.getElementById('generic-confirm-message');
+      if (msg) msg.innerText = `L'article "${supplies[idx].text}" sera définitivement retiré de votre liste.`;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeGenericConfirmModal() {
+      pendingDeleteIdx = null;
+      const modal = document.getElementById('generic-confirm-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function executeGenericConfirm() {
+      if (pendingDeleteIdx !== null) {
+        const supplies = ensureSupplies();
+        const removed = supplies.splice(pendingDeleteIdx, 1);
+        pendingDeleteIdx = null;
+        saveState();
+        renderSupplies();
+        closeGenericConfirmModal();
+        if (removed && removed[0]) {
+          showToast(`"${removed[0].text}" a été supprimé.`);
+        }
+      }
+    }
+
+    function addSupplyItem(e) {
+      e.preventDefault();
+      const input = document.getElementById('supply-input');
+      const catInput = document.getElementById('supply-cat-input');
+      const priceInput = document.getElementById('supply-price-input');
+      const linkInput = document.getElementById('supply-link-input');
+
+      const text = input.value.trim();
+      if (!text) return;
+
+      const category = catInput ? catInput.value : 'Papeterie';
+      const price = priceInput && priceInput.value !== '' ? parseFloat(priceInput.value) : null;
+      const link = linkInput && linkInput.value.trim() ? linkInput.value.trim() : null;
+
+      ensureSupplies().unshift({
+        text: text,
+        category: category,
+        done: false,
+        price: price,
+        link: link
+      });
+
+      input.value = '';
+      if (priceInput) priceInput.value = '';
+      if (linkInput) linkInput.value = '';
+
+      saveState();
+      renderSupplies();
+      showToast(`Fourniture "${text}" ajoutée avec succès !`);
+    }
+
+    function setSuppliesFilter(type) {
+      currentFilter = type;
+      ['all', 'todo', 'done'].forEach(t => {
+        const btn = document.getElementById('sp-filter-' + t);
+        if (btn) {
+          btn.classList.toggle('accent', t === type);
+        }
+      });
+      renderSupplies();
+    }
+
+    function onSearchSupplies(val) {
+      searchQuery = val;
+      renderSupplies();
+    }
+
+    function exportSuppliesList() {
+      const supplies = ensureSupplies();
+      if (!supplies.length) {
+        showToast("La liste est vide.");
+        return;
+      }
+      let txt = "📋 LISTE DE FOURNITURES & ACHATS (Benkyō)\n\n";
+      let total = 0;
+      supplies.forEach((item, i) => {
+        const cat = getCategoryForItem(item);
+        const status = item.done ? '[X] Acheté' : '[ ] À acheter';
+        const price = item.price ? ` — ${Number(item.price).toFixed(2)} €` : '';
+        total += (Number(item.price) || 0);
+        txt += `${i + 1}. ${status} | ${item.text} (${cat})${price}\n`;
+        if (item.link) txt += `   Lien : ${item.link}\n`;
+      });
+      txt += `\nTotal estimé : ${total.toFixed(2)} €\n`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(() => {
+          showToast("Liste copiée dans le presse-papier !");
+        }).catch(() => {
+          showToast("Copie impossible.");
+        });
+      } else {
+        alert(txt);
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById('app-toast');
+      const msgEl = document.getElementById('app-toast-message');
+      if (!toast || !msgEl) return;
+      if (toastTimer) clearTimeout(toastTimer);
+      msgEl.innerText = message;
+      toast.classList.remove('hidden', 'toast-hide');
+      toast.classList.add('toast-show');
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('toast-show');
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.classList.add('hidden'), 250);
+      }, 2500);
+    }
+
+    function benkyoInitPage() {
+      try { updateProfileUI(); } catch (e) {}
+      try { checkStreak(); } catch (e) {}
+      try { renderSupplies(); } catch (e) {}
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', benkyoInitPage);
+    } else {
+      benkyoInitPage();
+    }
+  </script>
+</body>
+</html>
