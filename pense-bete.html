@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0a0e17] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Application d'Études</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#c1272d">
+  <meta name="theme-color" content="#0a0e17">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="sakura.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.85)}</style>
+  <style>
+    /* Custom scrollbar optimizations */
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0a0e17; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    /* Optimized rendering performance with GPU acceleration */
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25);
+      contain: content;
+    }
+
+    .card-glow { 
+      transition: border-color 0.2s ease, transform 0.2s ease; 
+    }
+    .card-glow:hover { 
+      border-color: rgba(232, 142, 178, 0.4); 
+      transform: translateY(-2px); 
+    }
+    
+    .card-flip { perspective: 1000px; }
+    .card-inner { transition: transform 0.4s ease; transform-style: preserve-3d; }
+    .card-flipped { transform: rotateY(180deg); }
+    .card-front, .card-back { backface-visibility: hidden; position: absolute; inset: 0; }
+    .card-back { transform: rotateY(180deg); }
+
+    .tab-content.hidden { display: none; }
+
+    @keyframes welcomeFade {
+      0% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 0; transform: scale(0.95); visibility: hidden; }
+    }
+    .welcome-overlay { animation: welcomeFade 2.5s forwards ease-in-out; }
+  </style>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <link rel="stylesheet" href="pense-bete.css">
+</head>
+<body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
+
+<!-- Navigation : onglet Menu (retour à l'accueil, d'où partent toutes les pages) -->
+  <a href="index.html" class="bk-menu-tab" aria-label="Menu — retour à l'accueil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+    <span>Menu</span>
+  </a>
+  <!-- Éléments masqués conservés pour la compatibilité des scripts existants (ancienne sidebar supprimée) -->
+  <div hidden data-legacy-stubs><div><div><span id="streak-count">0</span></div></div><img id="sidebar-profile-img" alt=""></div>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+    <section id="tab-notes" class="tab-content pb-page">
+      <div class="pb-head">
+        <div>
+          <h1>Pense-bête 📝</h1>
+          <p id="pb-count">Tes petites notes à garder sous la main.</p>
+        </div>
+        <button type="button" onclick="addNote()" class="pb-add"><i class="fa-solid fa-plus"></i> Nouvelle note</button>
+      </div>
+      <div id="notes-container" class="pb-grid"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+  <script src="tampons.js" defer></script>
+  <script>
+    let state = BenkyoStorage.load();
+    BenkyoStorage.autoFlushOn(state);
+
+    let copiedTimetableItem = null;
+    let selectedLatinStars = 0;
+    let editLatinStarsCount = 0;
+    let lofiAudio = null;
+    let statsChartInstance = null;
+    let noteDebounceTimer = null;
+
+    function saveState() {
+      BenkyoStorage.save(state);
+    }
+
+    function updateProfileUI() {
+      const wName = document.getElementById('welcome-name');
+      if(wName) wName.innerText = state.profile.firstname;
+      const dTitle = document.getElementById('dash-main-title');
+      if(dTitle) dTitle.innerText = `Tableau de bord de ${state.profile.firstname} 🚀`;
+      
+      const pFirstname = document.getElementById('profile-firstname');
+      if(pFirstname) pFirstname.value = state.profile.firstname;
+      const pGender = document.getElementById('profile-gender');
+      if(pGender) pGender.value = state.profile.gender;
+      const pLevel = document.getElementById('profile-level');
+      if(pLevel) pLevel.value = state.profile.level;
+      
+      const pPreview = document.getElementById('profile-img-preview');
+      if(pPreview) pPreview.src = state.profile.img;
+      const sidebarImg = document.getElementById('sidebar-profile-img');
+      if(sidebarImg) sidebarImg.src = state.profile.img;
+    }
+
+    function updateProfileName(val) {
+      state.profile.firstname = val || "Étudiant";
+      saveState();
+      updateProfileUI();
+    }
+
+    function saveProfileData() {
+      state.profile.gender = document.getElementById('profile-gender').value;
+      state.profile.level = document.getElementById('profile-level').value;
+      saveState();
+    }
+
+    function updateProfileImgFromUrl(url) {
+      if(url) {
+        state.profile.img = url;
+        saveState();
+        updateProfileUI();
+      }
+    }
+
+    function uploadProfileImg(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          state.profile.img = evt.target.result;
+          saveState();
+          updateProfileUI();
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (state.streak.lastLogin !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (state.streak.lastLogin === yesterday.toDateString()) state.streak.count++;
+        else state.streak.count = 1;
+        state.streak.lastLogin = today;
+        saveState();
+      }
+      const sCount = document.getElementById('streak-count');
+      if(sCount) sCount.innerText = state.streak.count;
+      const dStreak = document.getElementById('dash-streak-count');
+      if(dStreak) dStreak.innerText = state.streak.count;
+    }
+
+    const PB_PAPERS = [
+      ['jaune', '#fff3b8', 'Jaune'], ['rose', '#ffdbe8', 'Rose'], ['vert', '#d9f5d8', 'Vert'],
+      ['bleu', '#d6e8ff', 'Bleu'], ['lavande', '#e6dcff', 'Lavande'], ['blanc', '#fffdf9', 'Blanc']
+    ];
+    const PB_INK = '#2b2433';
+    const pbEsc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    function renderNotes() {
+      const container = document.getElementById('notes-container');
+      if(!container) return;
+      const count = document.getElementById('pb-count');
+      if (count) count.textContent = state.notes.length
+        ? state.notes.length + (state.notes.length > 1 ? ' notes' : ' note') + ' · tes petites notes à garder sous la main.'
+        : 'Tes petites notes à garder sous la main.';
+      if (!state.notes.length) {
+        container.innerHTML = `<div class="pb-empty"><div class="em">🗒️</div><b>Aucune note pour l'instant</b><span>Clique sur « Nouvelle note » pour coller ton premier post-it.</span></div>`;
+        return;
+      }
+      container.innerHTML = state.notes.map((n, idx) => {
+        // L'ancienne couleur par défaut (gris clair) est illisible sur le papier pastel : on la remplace.
+        const ink = (!n.color || n.color.toLowerCase() === '#e2e8f0') ? PB_INK : n.color;
+        const bg = PB_PAPERS.some(p => p[0] === n.bg) ? n.bg : PB_PAPERS[idx % PB_PAPERS.length][0];
+        return `
+        <div class="pb-note" data-bg="${bg}" id="note-card-${idx}">
+          <div class="pb-top">
+            <input type="text" value="${pbEsc(n.title)}" onchange="state.notes[${idx}].title=this.value; saveState();" placeholder="Titre…" aria-label="Titre de la note" class="pb-title">
+            <button type="button" onclick="deleteNote(${idx})" class="pb-del" title="Supprimer la note" aria-label="Supprimer la note"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="pb-tools">
+            <button type="button" onclick="formatNoteText(${idx}, 'bold')" class="pb-fmt" style="font-weight:800" title="Gras">B</button>
+            <button type="button" onclick="formatNoteText(${idx}, 'italic')" class="pb-fmt" style="font-style:italic" title="Italique">I</button>
+            <button type="button" onclick="formatNoteText(${idx}, 'underline')" class="pb-fmt" style="text-decoration:underline" title="Souligné">U</button>
+            <span class="pb-sep"></span>
+            <button type="button" onclick="highlightNoteText(${idx}, '#fef08a')" class="pb-hl" style="background:#fef08a" title="Surligner en jaune (recliquer pour retirer)" aria-label="Surligner en jaune"></button>
+            <button type="button" onclick="highlightNoteText(${idx}, '#bbf7d0')" class="pb-hl" style="background:#bbf7d0" title="Surligner en vert" aria-label="Surligner en vert"></button>
+            <button type="button" onclick="highlightNoteText(${idx}, '#bfdbfe')" class="pb-hl" style="background:#bfdbfe" title="Surligner en bleu" aria-label="Surligner en bleu"></button>
+            <button type="button" onclick="highlightNoteText(${idx}, '#fbcfe8')" class="pb-hl" style="background:#fbcfe8" title="Surligner en rose" aria-label="Surligner en rose"></button>
+            <button type="button" onclick="removeHighlightNoteText(${idx})" class="pb-hl none" title="Retirer le surlignage" aria-label="Retirer le surlignage"><i class="fa-solid fa-xmark"></i></button>
+            <span class="pb-sep"></span>
+            <input type="color" value="${ink}" onchange="changeNoteTextColor(${idx}, this.value)" title="Couleur du texte sélectionné" aria-label="Couleur du texte" class="pb-ink">
+            <select onchange="changeNoteFont(${idx}, this.value)" class="pb-font" aria-label="Police">
+              ${[['sans-serif','Sans-serif'],['serif','Serif'],['monospace','Monospace'],['cursive','Cursive']].map(f => `<option value="${f[0]}"${(n.font || 'sans-serif') === f[0] ? ' selected' : ''}>${f[1]}</option>`).join('')}
+            </select>
+          </div>
+
+          <div id="note-body-${idx}" contenteditable="true" data-placeholder="Écris ta note ici…" oninput="debouncedSaveNote(${idx})" class="pb-body custom-scrollbar" style="font-family: ${n.font || 'sans-serif'}; color: ${ink}">${n.content || ''}</div>
+
+          <div class="pb-foot">
+            <small>Couleur du papier</small>
+            ${PB_PAPERS.map(p => `<button type="button" class="pb-paper${p[0] === bg ? ' is-on' : ''}" style="background:${p[1]}" onclick="setNoteBg(${idx}, '${p[0]}')" title="${p[2]}" aria-label="Papier ${p[2]}"></button>`).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function setNoteBg(idx, key) {
+      state.notes[idx].bg = key;
+      saveState();
+      const card = document.getElementById('note-card-' + idx);
+      if (!card) return;
+      card.dataset.bg = key;
+      card.querySelectorAll('.pb-paper').forEach((b, i) => b.classList.toggle('is-on', PB_PAPERS[i][0] === key));
+    }
+
+    function addNote() {
+      state.notes.push({ title: '', content: '', font: 'sans-serif', color: PB_INK, bg: PB_PAPERS[state.notes.length % PB_PAPERS.length][0] });
+      saveState(); renderNotes();
+      const cards = document.querySelectorAll('.pb-title');
+      if (cards.length) cards[cards.length - 1].focus();
+    }
+    function deleteNote(idx) {
+      const n = state.notes[idx];
+      const filled = n && ((n.title || '').trim() || (n.content || '').replace(/<[^>]*>|&nbsp;/g, '').trim());
+      if (filled && !confirm('Supprimer cette note ?')) return;
+      state.notes.splice(idx, 1); saveState(); renderNotes();
+    }
+
+    /* Debounced saving prevents lag while typing in contenteditable notes */
+    function debouncedSaveNote(idx) {
+      clearTimeout(noteDebounceTimer);
+      noteDebounceTimer = setTimeout(() => {
+        saveNoteContent(idx);
+      }, 300);
+    }
+
+    function saveNoteContent(idx) {
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) { state.notes[idx].content = el.innerHTML; saveState(); }
+    }
+    function formatNoteText(idx, cmd) {
+      document.execCommand(cmd, false, null);
+      saveNoteContent(idx);
+    }
+    // Normalise une couleur (hex ou rgb) en chaîne rgb() comparable
+    function normalizeColorString(c) {
+      if (!c) return null;
+      const probe = document.createElement('div');
+      probe.style.color = c;
+      document.body.appendChild(probe);
+      const rgb = getComputedStyle(probe).color;
+      document.body.removeChild(probe);
+      return rgb;
+    }
+
+    // Surligne le texte sélectionné. Si la sélection porte déjà cette
+    // même couleur de surlignage, on la retire (toggle "désurligner").
+    function highlightNoteText(idx, color) {
+      const currentValue = document.queryCommandValue('hiliteColor') || document.queryCommandValue('backColor');
+      const currentNormalized = normalizeColorString(currentValue);
+      const targetNormalized = normalizeColorString(color);
+      if (currentNormalized && currentNormalized === targetNormalized) {
+        removeHighlightNoteText(idx);
+        return;
+      }
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('hiliteColor', false, color);
+      saveNoteContent(idx);
+    }
+
+    // Retire complètement le surlignage sur la sélection courante
+    function removeHighlightNoteText(idx) {
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('hiliteColor', false, 'transparent');
+      saveNoteContent(idx);
+    }
+    function changeNoteTextColor(idx, color) {
+      document.execCommand('foreColor', false, color);
+      saveNoteContent(idx);
+    }
+    function changeNoteFont(idx, font) {
+      state.notes[idx].font = font;
+      const el = document.getElementById(`note-body-${idx}`);
+      if(el) el.style.fontFamily = font;
+      saveState();
+    }
+
+    /* Lazy-loaded initialization prevents lag on startup */
+    function benkyoInitPage() {
+      try { updateProfileUI(); } catch(e) {}
+      try { checkStreak(); } catch(e) {}
+      try { renderNotes(); } catch(e) {}
+    }
+    // DOMContentLoaded plutôt que window.onload : voir explication dans les
+    // autres pages — "load" peut ne jamais se déclencher si une ressource
+    // externe est lente/bloquée, laissant la page à moitié vide.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', benkyoInitPage);
+    } else {
+      benkyoInitPage();
+    }
+  </script>
+  <script src="menu-nav.js"></script>
+</body>
+</html>
