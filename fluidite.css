@@ -1,0 +1,67 @@
+/* ==========================================================================
+   fluidite.css — petits réglages de fluidité et de confort, chargé EN DERNIER
+   (après heure.css et fete.css). Rien ici ne change l'apparence sur ordinateur.
+   ========================================================================== */
+
+/* 1. Flou de fond allégé sur téléphone / tablette.
+      Le flou d'arrière-plan (backdrop-filter) est l'effet le plus coûteux à
+      dessiner : sur mobile, chaque carte « verre » refait le calcul à chaque
+      défilement. Un rayon de 10 px reste très proche visuellement mais coûte
+      bien moins cher. La liste ci-dessous reprend, une à une, les règles de
+      style.css / pages.css / home.css… dont le flou dépassait 10 px. */
+@media (max-width: 820px), (hover: none) and (pointer: coarse) {
+  .ft-panel { -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); }
+  .ft-stage { -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); }
+  .glass { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .results { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .pg-card { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .pr-narrow .tp-card { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .pz-dial { -webkit-backdrop-filter: blur(10px) saturate(1.4); backdrop-filter: blur(10px) saturate(1.4); }
+  .glass-panel { -webkit-backdrop-filter: blur(10px) saturate(140%) !important; backdrop-filter: blur(10px) saturate(140%) !important; }
+  aside.bk-legacy-sidebar { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .bk-menu-tab { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .glass-panel, .bg-dark-card, .bg-white:not(.bg-white\/90):not(.bg-white\/95) { -webkit-backdrop-filter: blur(10px) saturate(1.5) !important; backdrop-filter: blur(10px) saturate(1.5) !important; }
+  .bk-menu-panel { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .sv-hero { -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); }
+  .tr-hero { -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); }
+  .tr-card { -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); }
+  .tr-arena { -webkit-backdrop-filter: blur(10px) saturate(150%); backdrop-filter: blur(10px) saturate(150%); }
+  .tr-clock-card { -webkit-backdrop-filter: blur(10px) saturate(1.4); backdrop-filter: blur(10px) saturate(1.4); }
+  .tr-history-card { -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%); }
+  .fc-modal-sheet { -webkit-backdrop-filter: blur(10px) saturate(1.6); backdrop-filter: blur(10px) saturate(1.6); }
+  .nt-kpi-card { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .nt-table-wrap { -webkit-backdrop-filter: blur(10px) saturate(1.5); backdrop-filter: blur(10px) saturate(1.5); }
+  .nt-modal-sheet { -webkit-backdrop-filter: blur(10px) saturate(1.6); backdrop-filter: blur(10px) saturate(1.6); }
+}
+
+/* 2. Touches tactiles : pas de délai ni de zoom au double-tap sur les boutons */
+a, button, summary, label, select, input, textarea,
+[role="button"], [role="tab"], [onclick] {
+  touch-action: manipulation;
+}
+
+/* 3. Focus clavier visible sur les boutons et liens (spécificité nulle :
+      tout style de focus déjà défini par le site reste prioritaire). */
+:where(a[href], button, summary, [role="button"], [role="tab"]):focus-visible {
+  outline: 2px solid #c1272d;
+  outline-offset: 2px;
+}
+
+/* 4. Décors animés en pause quand on ne touche à rien (cf. fluidite.js).
+      Lucioles du soir et décor de fête : ils s'estompent doucement, puis se
+      figent ; ils reviennent au premier geste. Le point qui pulse sur le billet
+      de train flottant se fige aussi. */
+.tod-fireflies, .fete-decor { transition: opacity 1.2s ease; }
+html.benkyo-idle .tod-fireflies,
+html.benkyo-idle .fete-decor { opacity: 0; }
+html.benkyo-idle .tod-fly,
+html.benkyo-idle .fete-decor *,
+html.benkyo-idle .fete-decor *::before,
+html.benkyo-idle .bk-tt-pulse { animation-play-state: paused; }
+
+/* 5. Onglet « Focus train » (Session de travail) : la grande carte du voyage
+      recouvre presque tout l'écran et floute ce qu'il y a derrière ; les lucioles
+      et le décor de fête y sont donc à peine visibles, mais les redessiner à
+      chaque image coûte très cher. On les masque seulement sur cet onglet. */
+html:has(#pomo-subtab-focus-train:not(.hidden)) .tod-fireflies,
+html:has(#pomo-subtab-focus-train:not(.hidden)) .fete-decor { visibility: hidden; }

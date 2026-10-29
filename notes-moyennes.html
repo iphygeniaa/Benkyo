@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Benkyō - Application d'Études</title>
+  <meta name="description" content="Résultats et moyennes de Benkyō : suis tes notes par matière, par période et par coefficient.">
+  <title>Résultats &amp; moyennes — Benkyō</title>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -14,7 +15,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@500;600;700;800&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="sakura.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
@@ -176,6 +176,8 @@
   <script src="heure.js"></script>
   <!-- Ambiances des jours de fête (31/10, 24-25/12, 31/12, 1/1) : après heure.css / heure.js -->
   <link rel="stylesheet" href="fete.css">
+  <link rel="stylesheet" href="fluidite.css">
+  <script src="fluidite.js" defer></script>
   <script src="fete.js"></script>
 </head>
 <body class="pg h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
@@ -278,13 +280,13 @@
           <span>Filtres</span>
         </div>
         <div class="flex flex-wrap items-center gap-2.5 flex-1 justify-end">
-          <select id="grade-period-filter" onchange="renderGrades()" class="pg-select !h-10 text-xs sm:text-sm !w-auto min-w-[160px]">
+          <select id="grade-period-filter" onchange="renderGrades()" class="pg-select !h-10 text-xs sm:text-sm !w-auto min-w-[160px]" aria-label="Filtrer par période">
             <option value="ALL">Toutes les périodes</option>
           </select>
-          <select id="grade-subject-filter" onchange="renderGrades()" class="pg-select !h-10 text-xs sm:text-sm !w-auto min-w-[160px]">
+          <select id="grade-subject-filter" onchange="renderGrades()" class="pg-select !h-10 text-xs sm:text-sm !w-auto min-w-[160px]" aria-label="Filtrer par matière">
             <option value="ALL">Toutes les matières</option>
           </select>
-          <select id="grade-sort-filter" onchange="renderGrades()" class="pg-select !h-10 text-xs sm:text-sm !w-auto min-w-[180px]">
+          <select id="grade-sort-filter" onchange="renderGrades()" class="pg-select !h-10 text-xs sm:text-sm !w-auto min-w-[180px]" aria-label="Trier les notes">
             <option value="newest">Plus récente ➔ Plus ancienne</option>
             <option value="oldest">Plus ancienne ➔ Plus récente</option>
             <option value="subject">Trier par Matière</option>
@@ -321,7 +323,7 @@
     <div class="nt-modal-sheet space-y-4">
       <div class="flex items-center justify-between pb-2 border-b border-rose-100/60">
         <h3 id="grade-modal-title" class="pg-title text-base font-bold text-slate-800">Ajouter une Note</h3>
-        <button onclick="closeGradeModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeGradeModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form onsubmit="saveGrade(event)" class="space-y-3">
         <input type="hidden" id="grade-edit-id">
@@ -341,11 +343,11 @@
               <label class="pg-label mb-0">Type</label>
               <button type="button" onclick="openEvalTypeModal()" class="text-[10px] text-rose-600 font-bold hover:underline">+ Créer</button>
             </div>
-            <select id="grade-type" class="pg-select"></select>
+            <select id="grade-type" class="pg-select" aria-label="Type d'évaluation"></select>
           </div>
           <div>
             <label class="pg-label">Période</label>
-            <select id="grade-period" class="pg-select"></select>
+            <select id="grade-period" class="pg-select" aria-label="Période"></select>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2.5">
@@ -355,7 +357,7 @@
           </div>
           <div>
             <label class="pg-label">Coefficient</label>
-            <input type="number" step="0.5" min="0.5" id="grade-coeff" value="1" class="pg-input" required>
+            <input type="number" step="0.5" min="0.5" id="grade-coeff" value="1" class="pg-input" required aria-label="Coefficient">
           </div>
         </div>
         <div>
@@ -375,7 +377,7 @@
     <div class="nt-modal-sheet space-y-4 !max-w-lg">
       <div class="flex justify-between items-center pb-2 border-b border-rose-100/60">
         <h3 class="pg-title text-base font-bold text-slate-800">Ajout Rapide de Plusieurs Notes 🚀</h3>
-        <button onclick="closeBulkGradeModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeBulkGradeModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <p class="text-xs text-slate-600">Entrez une note par ligne au format suivant :<br>
@@ -386,11 +388,11 @@
       <div class="grid grid-cols-2 gap-2.5">
         <div>
           <label class="pg-label">Type par défaut</label>
-          <select id="bulk-grade-type" class="pg-select"></select>
+          <select id="bulk-grade-type" class="pg-select" aria-label="Type par défaut"></select>
         </div>
         <div>
           <label class="pg-label">Période par défaut</label>
-          <select id="bulk-grade-period" class="pg-select"></select>
+          <select id="bulk-grade-period" class="pg-select" aria-label="Période par défaut"></select>
         </div>
       </div>
 
@@ -449,7 +451,7 @@
         </div>
       </div>
       <form onsubmit="submitGenericInput(event)" class="space-y-4">
-        <input id="generic-input-field" type="text" class="pg-input" placeholder="">
+        <input id="generic-input-field" type="text" class="pg-input" placeholder="" aria-label="Nouvel élément">
         <div class="flex justify-end gap-2">
           <button type="button" onclick="closeGenericInputModal()" class="pg-btn sm">Annuler</button>
           <button type="submit" class="pg-btn primary sm">Valider</button>
@@ -463,13 +465,13 @@
     <div class="nt-modal-sheet space-y-4 !max-w-md max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-rose-100/60 pb-3 shrink-0">
         <h3 class="pg-title text-base font-bold text-slate-900"><i class="fa-solid fa-scale-balanced text-rose-600 mr-2"></i>Coefficients par matière</h3>
-        <button onclick="closeSubjectCoeffModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeSubjectCoeffModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p class="text-xs text-slate-600 -mt-2">Utilisés pour pondérer la moyenne générale entre matières (ex : Mathématiques coeff 5, Sport coeff 1). Une matière sans coefficient défini compte pour 1.</p>
       <div class="flex gap-2 shrink-0">
         <input type="text" id="new-subject-name" placeholder="Nom de la matière" class="pg-input flex-1 !h-10 text-xs sm:text-sm">
         <input type="number" id="new-subject-coeff" min="0" step="0.5" value="1" placeholder="Coeff" class="pg-input w-20 !h-10 text-xs sm:text-sm text-center">
-        <button onclick="addSubjectCoeff()" class="pg-btn primary sm !h-10 px-3"><i class="fa-solid fa-plus"></i></button>
+        <button onclick="addSubjectCoeff()" class="pg-btn primary sm !h-10 px-3" aria-label="Ajouter la matière"><i class="fa-solid fa-plus"></i></button>
       </div>
       <div id="subject-coeff-list" class="overflow-y-auto custom-scrollbar flex-1 space-y-1.5"></div>
     </div>
@@ -480,7 +482,7 @@
     <div class="nt-modal-sheet space-y-4 !max-w-md max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-rose-100/60 pb-3 shrink-0">
         <h3 class="pg-title text-base font-bold text-slate-900"><i class="fa-solid fa-gear text-rose-600 mr-2"></i>Gérer périodes &amp; types</h3>
-        <button onclick="closeManagePeriodsTypesModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeManagePeriodsTypesModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="overflow-y-auto custom-scrollbar flex-1 space-y-5">
         <div>

@@ -76,9 +76,9 @@
 .pz-url input{flex:1;min-width:0;padding:9px 12px;border-radius:12px;border:1px solid var(--pz-line);background:rgba(255,255,255,.8);font-size:.74rem}
 
 /* ---------- STATISTIQUES ---------- */
-.pz-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.pz-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 26px -16px rgba(30,41,59,.35);backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%)}
 .pz-head h2{margin:0;font-size:1.4rem;font-weight:800;color:var(--pz-ink)}
-.pz-head p{margin:2px 0 0;font-size:.78rem;color:var(--pz-mut)}
+.pz-head p{margin:2px 0 0;font-size:.82rem;color:#4a5368}
 .pz-nav{display:flex;align-items:center;gap:8px}
 .pz-nav .pz-round{width:36px;height:36px;font-size:.75rem}
 .pz-nav .pz-round:disabled{opacity:.35;cursor:not-allowed}
@@ -89,10 +89,10 @@
 @media(max-width:1000px){.pz-top{grid-template-columns:1fr}}
 .pz-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:700px){.pz-kpis{grid-template-columns:repeat(2,1fr)}}
-.pz-kpi{padding:16px 16px 14px;border-radius:22px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);box-shadow:var(--bento-shadow)}
+.pz-kpi{padding:16px 16px 14px;border-radius:22px;background:rgba(255,255,255,.84);border:1px solid rgba(255,255,255,.9);box-shadow:var(--bento-shadow)}
 .pz-kpi i{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;font-size:.85rem;margin-bottom:10px}
 .pz-kpi .v{font:800 1.45rem/1.1 'Plus Jakarta Sans',sans-serif;color:var(--pz-ink)}
-.pz-kpi .l{font-size:.7rem;font-weight:600;color:var(--pz-mut);margin-top:3px}
+.pz-kpi .l{font-size:.8rem;font-weight:700;color:#414a5e;margin-top:3px}
 .pz-kpi .d{font-size:.68rem;font-weight:800;margin-top:4px}
 .pz-up{color:#0f766e}.pz-down{color:#be185d}
 .k1 i{background:#fde4ee;color:#c8467d}.k2 i{background:#e5f6f2;color:#0f766e}.k3 i{background:#fff0d9;color:#d97706}
@@ -104,8 +104,8 @@
 .pz-goal-ring circle{fill:none;stroke-width:10;stroke-linecap:round}
 .pz-goal-ring b{position:absolute;inset:0;display:grid;place-items:center;font:800 1.15rem 'Plus Jakarta Sans',sans-serif;color:var(--pz-ink)}
 .pz-goal h3{margin:0 0 4px;font-size:.92rem;font-weight:800;color:var(--pz-ink)}
-.pz-goal p{margin:0 0 8px;font-size:.72rem;color:var(--pz-mut)}
-.pz-goal label{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--pz-mut)}
+.pz-goal p{margin:0 0 8px;font-size:.78rem;color:#414a5e}
+.pz-goal label{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:#414a5e}
 .pz-goal input{width:62px;text-align:center;padding:5px;border-radius:10px;border:1px solid var(--pz-line);background:rgba(255,255,255,.85);font-weight:800;color:var(--pz-ink)}
 
 .pz-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}

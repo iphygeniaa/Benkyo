@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session de travail - Benkyō</title>
+  <meta name="description" content="Session de travail de Benkyō : minuteur Pomodoro, session immersive, Focus train, entraînement et statistiques d'études.">
+  <title>Session de travail — Benkyō</title>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -14,8 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script defer src="sakura.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.8)}</style>
@@ -62,6 +62,8 @@
   <script src="heure.js"></script>
   <!-- Ambiances des jours de fête (31/10, 24-25/12, 31/12, 1/1) : après heure.css / heure.js -->
   <link rel="stylesheet" href="fete.css">
+  <link rel="stylesheet" href="fluidite.css">
+  <script src="fluidite.js" defer></script>
   <script src="fete.js"></script>
 </head>
 <body class="h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
@@ -133,11 +135,11 @@
                 <button type="button" class="pz-chip" onclick="pzPreset(90,15,30)">90 · 15 · 30</button>
               </div>
               <div class="pz-step"><div><b>Travail</b><small>minutes</small></div>
-                <div class="pz-num"><button type="button" onclick="pzStep('pomo-work-input',-5)">−</button><input type="number" id="pomo-work-input" value="25" min="1" onchange="if(!isRunning) resetPomodoro()"><button type="button" onclick="pzStep('pomo-work-input',5)">+</button></div></div>
+                <div class="pz-num"><button type="button" onclick="pzStep('pomo-work-input',-5)">−</button><input type="number" id="pomo-work-input" value="25" min="1" onchange="if(!isRunning) resetPomodoro()" aria-label="Durée de travail (minutes)"><button type="button" onclick="pzStep('pomo-work-input',5)">+</button></div></div>
               <div class="pz-step"><div><b>Pause</b><small>minutes</small></div>
-                <div class="pz-num"><button type="button" onclick="pzStep('pomo-break-input',-1)">−</button><input type="number" id="pomo-break-input" value="5" min="1"><button type="button" onclick="pzStep('pomo-break-input',1)">+</button></div></div>
+                <div class="pz-num"><button type="button" onclick="pzStep('pomo-break-input',-1)">−</button><input type="number" id="pomo-break-input" value="5" min="1" aria-label="Durée de pause (minutes)"><button type="button" onclick="pzStep('pomo-break-input',1)">+</button></div></div>
               <div class="pz-step"><div><b>Pause longue</b><small>toutes les 4 sessions</small></div>
-                <div class="pz-num"><button type="button" onclick="pzStep('pomo-longbreak-input',-5)">−</button><input type="number" id="pomo-longbreak-input" value="15" min="1"><button type="button" onclick="pzStep('pomo-longbreak-input',5)">+</button></div></div>
+                <div class="pz-num"><button type="button" onclick="pzStep('pomo-longbreak-input',-5)">−</button><input type="number" id="pomo-longbreak-input" value="15" min="1" aria-label="Durée de pause longue (minutes)"><button type="button" onclick="pzStep('pomo-longbreak-input',5)">+</button></div></div>
             </div>
 
             <div class="glass-panel pz-card">
@@ -150,7 +152,7 @@
               </div>
               <div id="pomo-video-container" class="hidden relative w-full rounded-xl overflow-hidden mt-2 bg-black">
                 <video id="pomo-video-player" class="w-full h-36 object-cover rounded-xl" loop></video>
-                <button onclick="toggleCustomVideo()" id="pomo-video-btn" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg border border-white/20"><i class="fa-solid fa-pause"></i></button>
+                <button onclick="toggleCustomVideo()" id="pomo-video-btn" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg border border-white/20" aria-label="Lecture / pause de l'ambiance"><i class="fa-solid fa-pause"></i></button>
               </div>
               <div id="pomo-media-nowplaying" class="hidden items-center justify-between gap-2 bg-emerald-500/10 border border-emerald-500/25 rounded-xl px-3 py-2 mt-2">
                 <span id="pomo-media-nowplaying-label" class="text-[11px] text-emerald-400 font-semibold truncate flex items-center gap-1.5"><i class="fa-solid fa-play"></i><span id="pomo-media-filename" class="truncate"></span></span>
@@ -336,7 +338,7 @@
               </label>
 
               <!-- Hidden input pour compatibilité JS continue -->
-              <input type="number" id="training-hours-input" value="2" min="0.25" step="0.25" class="hidden">
+              <input type="number" id="training-hours-input" value="2" min="0.25" step="0.25" class="hidden" aria-label="Durée de l'épreuve (heures)">
 
               <div class="tr-duration-box">
                 <div class="tr-duration-row">
@@ -470,7 +472,7 @@
             <!-- Mini lecteur vidéo MP4 perso -->
             <div id="training-video-container" class="hidden relative w-full max-w-sm rounded-2xl overflow-hidden bg-black shadow-lg">
               <video id="training-video-player" class="w-full h-36 object-cover rounded-2xl" loop></video>
-              <button onclick="toggleTrainingCustomVideo()" id="training-video-btn" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg border border-white/20">
+              <button onclick="toggleTrainingCustomVideo()" id="training-video-btn" class="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white text-xs px-3 py-1.5 rounded-lg border border-white/20" aria-label="Lecture / pause de l'ambiance">
                 <i class="fa-solid fa-pause"></i>
               </button>
             </div>
@@ -1255,7 +1257,7 @@
     <div class="glass-panel border border-dark-border rounded-3xl p-6 w-full max-w-sm space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-extrabold text-white flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400"></i>Meilleures semaines</h3>
-        <button onclick="closeStatsLeaderboard()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeStatsLeaderboard()" class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="stats-leaderboard-list" class="space-y-2 max-h-96 overflow-y-auto custom-scrollbar"></div>
     </div>

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Benkyō - Application d'Études</title>
+  <meta name="description" content="Apprentissage dans Benkyō : flashcards façon Anki, textes à trous et citations pour mémoriser durablement.">
+  <title>Apprentissage — Benkyō</title>
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -14,8 +15,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@500;600;700;800&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script defer src="sakura.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
@@ -162,6 +161,8 @@
   <script src="heure.js"></script>
   <!-- Ambiances des jours de fête (31/10, 24-25/12, 31/12, 1/1) : après heure.css / heure.js -->
   <link rel="stylesheet" href="fete.css">
+  <link rel="stylesheet" href="fluidite.css">
+  <script src="fluidite.js" defer></script>
   <script src="fete.js"></script>
 </head>
 <body class="pg h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
@@ -287,11 +288,11 @@
             <span>成績 · Mes résultats d'apprentissage</span>
           </h3>
           <div class="flex flex-wrap items-center gap-2">
-            <select id="jgrade-sort" onchange="renderJapaneseGrades()" class="pg-select !h-9 text-xs !w-auto">
+            <select id="jgrade-sort" onchange="renderJapaneseGrades()" class="pg-select !h-9 text-xs !w-auto" aria-label="Trier les résultats">
               <option value="date">Trier par date</option>
               <option value="subject">Trier par matière</option>
             </select>
-            <select id="jgrade-period" onchange="renderJapaneseGrades()" class="pg-select !h-9 text-xs !w-auto">
+            <select id="jgrade-period" onchange="renderJapaneseGrades()" class="pg-select !h-9 text-xs !w-auto" aria-label="Période des résultats">
               <option value="week">Cette semaine</option>
               <option value="month">Ce mois</option>
               <option value="year">Cette année</option>
@@ -306,7 +307,7 @@
 
       <div id="flashcard-study-view" class="hidden pg-modal">
         <div class="fc-modal-sheet !max-w-2xl flex flex-col space-y-5 relative">
-          <button onclick="closeStudyView()" class="absolute top-4 right-4 text-slate-400 hover:text-rose-600 text-xl transition"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="closeStudyView()" class="absolute top-4 right-4 text-slate-400 hover:text-rose-600 text-xl transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
           
           <div class="flex justify-between items-center border-b border-rose-100/60 pb-3">
             <h3 class="pg-title text-lg font-bold text-slate-800" id="study-deck-title">Mode Flashcards</h3>
@@ -361,7 +362,7 @@
     <div class="fc-modal-sheet space-y-4">
       <div class="flex justify-between items-center border-b border-rose-100/60 pb-3">
         <h3 id="card-modal-title" class="pg-title text-base font-bold text-slate-800"><i class="fa-solid fa-layer-group text-rose-500 mr-2"></i>Ajouter une carte</h3>
-        <button onclick="closeCardModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeCardModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form onsubmit="saveCardModal(event)" class="space-y-4">
         <div>
@@ -388,7 +389,7 @@
           <h3 class="pg-title text-base font-bold text-slate-800"><i class="fa-solid fa-sliders text-rose-500 mr-2"></i>Gérer les cartes</h3>
           <p id="manage-cards-deck-title" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
         </div>
-        <button onclick="closeManageCardsModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeManageCardsModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="manage-cards-list" class="space-y-2 overflow-y-auto custom-scrollbar flex-1 min-h-[100px]"></div>
       <button onclick="openCardModal(currentManagingDeckIdx)" class="shrink-0 pg-btn primary sm w-full"><i class="fa-solid fa-plus mr-1"></i> Ajouter une carte</button>
@@ -433,7 +434,7 @@
         </div>
       </div>
       <form onsubmit="submitGenericInput(event)" class="space-y-4">
-        <input id="generic-input-field" type="text" class="pg-input" placeholder="">
+        <input id="generic-input-field" type="text" class="pg-input" placeholder="" aria-label="Nouvel élément">
         <div class="flex justify-end gap-2">
           <button type="button" onclick="closeGenericInputModal()" class="pg-btn sm">Annuler</button>
           <button type="submit" class="pg-btn primary sm">Valider</button>
@@ -449,7 +450,7 @@
     <div class="fc-modal-sheet space-y-4">
       <div class="flex justify-between items-center border-b border-rose-100/60 pb-3">
         <h3 class="pg-title text-base font-bold text-slate-800"><i class="fa-solid fa-pen-ruler text-rose-500 mr-2"></i>Question à trous</h3>
-        <button onclick="closeBlankQuestionModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeBlankQuestionModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="space-y-2">
         <label class="pg-label">Texte de la question</label>
@@ -475,7 +476,7 @@
           <h3 class="pg-title text-base font-bold text-slate-800"><i class="fa-solid fa-list-check text-rose-500 mr-2"></i>Questions du chapitre</h3>
           <p id="blank-manage-questions-title" class="text-xs text-slate-500 mt-0.5 font-medium"></p>
         </div>
-        <button onclick="closeBlankManageQuestionsModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeBlankManageQuestionsModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="blank-manage-questions-list" class="space-y-2 overflow-y-auto custom-scrollbar flex-1 min-h-[100px]"></div>
       <button onclick="openBlankQuestionModal(currentBlankCourseId, currentBlankChapterId)" class="shrink-0 pg-btn primary sm w-full"><i class="fa-solid fa-plus mr-1"></i> Ajouter une question</button>
@@ -487,7 +488,7 @@
     <div class="fc-modal-sheet space-y-4 !max-w-md">
       <div class="flex justify-between items-center border-b border-rose-100/60 pb-3">
         <h3 class="pg-title text-base font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-rose-500 mr-2"></i>Que voulez-vous réviser ?</h3>
-        <button onclick="closeBlankReviewSetupModal()" class="text-slate-400 hover:text-rose-600 text-lg transition"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeBlankReviewSetupModal()" class="text-slate-400 hover:text-rose-600 text-lg transition" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p id="blank-review-setup-course" class="text-xs text-slate-500 font-semibold"></p>
       <label class="flex items-center gap-2 bg-white/80 border border-pink-100 rounded-2xl p-3 cursor-pointer shadow-sm">

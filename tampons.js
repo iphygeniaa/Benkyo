@@ -156,7 +156,16 @@
     ['kanazawa', 'Kanazawa', '金沢', '#b8860b', 'square'], ['toyama', 'Toyama', '富山', '#0f8ea8', 'circle'],
     ['nagano', 'Nagano', '長野', '#5aa9e6', 'flower'], ['niigata', 'Niigata', '新潟', '#2c7a6b', 'scallop'],
     ['sendai', 'Sendai', '仙台', '#7b4bd1', 'square'], ['morioka', 'Morioka', '盛岡', '#8e7cc3', 'circle'],
-    ['aomori', 'Aomori', '青森', '#d9484b', 'flower'], ['hakodate', 'Hakodate', '函館', '#1f2a52', 'scallop']
+    ['aomori', 'Aomori', '青森', '#d9484b', 'flower'], ['hakodate', 'Hakodate', '函館', '#1f2a52', 'scallop'],
+    ['sapporo', 'Sapporo', '札幌', '#2f6fb5', 'flower'], ['otaru', 'Otaru', '小樽', '#1f4e79', 'scallop'],
+    ['asahikawa', 'Asahikawa', '旭川', '#5b8db8', 'circle'], ['noboribetsu', 'Noboribetsu', '登別', '#c0392b', 'square'],
+    ['akita', 'Akita', '秋田', '#b8341f', 'circle'], ['hirosaki', 'Hirosaki', '弘前', '#e0709a', 'flower'],
+    ['nikko', 'Nikko', '日光', '#b8860b', 'scallop'], ['hakone', 'Hakone', '箱根', '#2e9bb5', 'square'],
+    ['matsumoto', 'Matsumoto', '松本', '#1f2a52', 'circle'], ['takayama', 'Takayama', '高山', '#8b5a2b', 'square'],
+    ['hamamatsu', 'Hamamatsu', '浜松', '#2f7d5d', 'flower'], ['kurashiki', 'Kurashiki', '倉敷', '#7b4bd1', 'scallop'],
+    ['matsue', 'Matsue', '松江', '#3b8fa8', 'circle'], ['takamatsu', 'Takamatsu', '高松', '#4f9a52', 'square'],
+    ['matsuyama', 'Matsuyama', '松山', '#e08a2e', 'flower'], ['nagasaki', 'Nagasaki', '長崎', '#c1272d', 'scallop'],
+    ['beppu', 'Beppu', '別府', '#d9552b', 'circle']
   ].map(function (c, i) {
     return {
       id: 'city-' + c[0], city: c[0], name: c[1], jp: c[2], kanji: c[2], ink: c[3], shape: c[4], cost: 0,

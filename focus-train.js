@@ -8,6 +8,23 @@
   // Villes proposées (ordre alphabétique dans les listes). Les coordonnées et les lignes
   // utilisées pour tracer le trajet sur la carte sont dans focus-train-voyage.js.
   var cities = [
+    { id: 'akita', name: 'Akita', japanese: '秋田' },
+    { id: 'asahikawa', name: 'Asahikawa', japanese: '旭川' },
+    { id: 'beppu', name: 'Beppu', japanese: '別府' },
+    { id: 'hakone', name: 'Hakone', japanese: '箱根' },
+    { id: 'hamamatsu', name: 'Hamamatsu', japanese: '浜松' },
+    { id: 'hirosaki', name: 'Hirosaki', japanese: '弘前' },
+    { id: 'kurashiki', name: 'Kurashiki', japanese: '倉敷' },
+    { id: 'matsue', name: 'Matsue', japanese: '松江' },
+    { id: 'matsumoto', name: 'Matsumoto', japanese: '松本' },
+    { id: 'matsuyama', name: 'Matsuyama', japanese: '松山' },
+    { id: 'nagasaki', name: 'Nagasaki', japanese: '長崎' },
+    { id: 'nikko', name: 'Nikko', japanese: '日光' },
+    { id: 'noboribetsu', name: 'Noboribetsu', japanese: '登別' },
+    { id: 'otaru', name: 'Otaru', japanese: '小樽' },
+    { id: 'sapporo', name: 'Sapporo', japanese: '札幌' },
+    { id: 'takamatsu', name: 'Takamatsu', japanese: '高松' },
+    { id: 'takayama', name: 'Takayama', japanese: '高山' },
     { id: 'aomori', name: 'Aomori', japanese: '青森' },
     { id: 'fukuoka', name: 'Fukuoka', japanese: '福岡' },
     { id: 'hakodate', name: 'Hakodate', japanese: '函館' },
@@ -86,7 +103,40 @@
     { from: 'tokyo', to: 'niigata', train: 'Toki', type: SHIN, minutes: 100 },
     // Côte de Shōnan
     { from: 'tokyo', to: 'kamakura', train: 'Yokosuka Line', type: 'JR · direct', minutes: 55 },
-    { from: 'yokohama', to: 'kamakura', train: 'Yokosuka Line', type: 'JR · direct', minutes: 25 }
+    { from: 'yokohama', to: 'kamakura', train: 'Yokosuka Line', type: 'JR · direct', minutes: 25 },
+    // Hokkaidō (hors Shinkansen : pas encore de ligne à grande vitesse jusqu'à Sapporo)
+    { from: 'hakodate', to: 'sapporo', train: 'Hokuto', type: 'Limited Express · direct', minutes: 220 },
+    { from: 'hakodate', to: 'noboribetsu', train: 'Hokuto', type: 'Limited Express · direct', minutes: 150 },
+    { from: 'noboribetsu', to: 'sapporo', train: 'Hokuto', type: 'Limited Express · direct', minutes: 75 },
+    { from: 'sapporo', to: 'otaru', train: 'Rapid Airport', type: 'JR · Rapid · direct', minutes: 33 },
+    { from: 'sapporo', to: 'asahikawa', train: 'Kamui', type: 'Limited Express · direct', minutes: 85 },
+    // Tōhoku : Akita Shinkansen (Komachi) et ligne Ōu
+    { from: 'tokyo', to: 'akita', train: 'Komachi', type: SHIN, minutes: 225 },
+    { from: 'sendai', to: 'akita', train: 'Komachi', type: SHIN, minutes: 140 },
+    { from: 'morioka', to: 'akita', train: 'Komachi', type: SHIN, minutes: 90 },
+    { from: 'aomori', to: 'hirosaki', train: 'Tsugaru', type: 'Limited Express · direct', minutes: 40 },
+    // Kantō : Nikkō et Hakone
+    { from: 'tokyo', to: 'nikko', train: 'Nikkō Line', type: 'JR · direct', minutes: 120 },
+    { from: 'tokyo', to: 'hakone', train: 'Romancecar', type: 'Odakyū Limited Express · direct', minutes: 100 },
+    // Chūbu : Alpes japonaises, Hida, Tōkaidō
+    { from: 'tokyo', to: 'matsumoto', train: 'Azusa', type: 'Limited Express · direct', minutes: 170 },
+    { from: 'nagoya', to: 'matsumoto', train: 'Shinano', type: 'Limited Express · direct', minutes: 125 },
+    { from: 'nagano', to: 'matsumoto', train: 'Shinano', type: 'Limited Express · direct', minutes: 50 },
+    { from: 'nagoya', to: 'takayama', train: 'Hida', type: 'Limited Express · direct', minutes: 140 },
+    { from: 'toyama', to: 'takayama', train: 'Hida', type: 'Limited Express · direct', minutes: 90 },
+    { from: 'tokyo', to: 'hamamatsu', train: 'Hikari', type: SHIN, minutes: 95 },
+    { from: 'nagoya', to: 'hamamatsu', train: 'Hikari', type: SHIN, minutes: 40 },
+    // Chūgoku : Kurashiki et Matsue (San'in)
+    { from: 'okayama', to: 'kurashiki', train: 'Sanyō Line', type: 'JR · direct', minutes: 16 },
+    { from: 'okayama', to: 'matsue', train: 'Yakumo', type: 'Limited Express · direct', minutes: 155 },
+    { from: 'kurashiki', to: 'matsue', train: 'Yakumo', type: 'Limited Express · direct', minutes: 140 },
+    // Shikoku (par le pont Seto-Ōhashi)
+    { from: 'okayama', to: 'takamatsu', train: 'Marine Liner', type: 'JR · Rapid · direct', minutes: 55 },
+    { from: 'okayama', to: 'matsuyama', train: 'Shiokaze', type: 'Limited Express · direct', minutes: 165 },
+    { from: 'takamatsu', to: 'matsuyama', train: 'Ishizuchi', type: 'Limited Express · direct', minutes: 150 },
+    // Kyūshū : Nagasaki et Beppu
+    { from: 'fukuoka', to: 'nagasaki', train: 'Kamome', type: 'Limited Express · direct', minutes: 125 },
+    { from: 'fukuoka', to: 'beppu', train: 'Sonic', type: 'Limited Express · direct', minutes: 125 }
   ];
 
   // Collator FR : les villes restent triées par ordre alphabétique dans les listes déroulantes.
@@ -218,15 +268,16 @@
       var data = JSON.parse(localStorage.getItem(TRANSFER_KEY) || 'null');
       if (!data || data.base !== base || !Array.isArray(data.legs)) return [];
       var ends = base.split('>');
-      var visited = [ends[0], ends[1]];
+      var visited = [];
+      addTravelled(visited, ends[0], ends[1]);
       var previous = ends[1];
       var legs = [];
       for (var i = 0; i < data.legs.length && legs.length < MAX_TRANSFERS; i += 1) {
         var leg = data.legs[i];
-        if (!leg || visited.indexOf(leg.to) !== -1 || !findRoute(previous, leg.to, leg.train)) break;
+        if (!leg || !isSensibleTransfer(previous, leg.to, visited) || !findRoute(previous, leg.to, leg.train)) break;
         var pause = Number(leg.breakMinutes);
         legs.push({ to: leg.to, train: leg.train, breakMinutes: BREAK_CHOICES.indexOf(pause) !== -1 ? pause : 15 });
-        visited.push(leg.to);
+        addTravelled(visited, previous, leg.to);
         previous = leg.to;
       }
       return legs;
@@ -239,12 +290,37 @@
     try { localStorage.setItem(TRANSFER_KEY, JSON.stringify({ base: base, legs: legs })); } catch (error) { /* ignoré */ }
   }
 
+  // Villes traversées par un trajet (départ, gares-villes intermédiaires, arrivée). Le tracé vient de
+  // focus-train-voyage.js (chargé après ce fichier) ; sans lui, on ne connaît que les deux extrémités.
+  function cityPath(a, b) {
+    var stats = window.FocusTrainStats;
+    if (stats && typeof stats.path === 'function') {
+      try { var path = stats.path(a, b); if (path && path.length) return path; } catch (error) { /* ignoré */ }
+    }
+    return [a, b];
+  }
+
+  function addTravelled(visited, a, b) {
+    cityPath(a, b).forEach(function (id) { if (visited.indexOf(id) === -1) visited.push(id); });
+  }
+
+  // Une correspondance a du sens si elle mène quelque part de nouveau : ni une ville déjà traversée
+  // (Tokyo → Kobe passe déjà par Osaka), ni un trajet qui repasserait par une ville déjà traversée.
+  function isSensibleTransfer(from, to, visited) {
+    if (visited.indexOf(to) !== -1) return false;
+    var path = cityPath(from, to);
+    for (var i = 1; i < path.length - 1; i += 1) {
+      if (visited.indexOf(path[i]) !== -1) return false;
+    }
+    return true;
+  }
+
   // Trajets possibles depuis une ville (sans revenir sur ses pas).
   function transferOptions(city, visited) {
     var options = [];
     routes.forEach(function (route) {
       var other = route.from === city ? route.to : route.to === city ? route.from : null;
-      if (!other || visited.indexOf(other) !== -1 || !getCity(other)) return;
+      if (!other || !getCity(other) || !isSensibleTransfer(city, other, visited)) return;
       options.push({ to: other, train: route.train, type: route.type, minutes: route.minutes });
     });
     options.sort(function (a, b) { return getCity(a.to).name.localeCompare(getCity(b.to).name, 'fr') || a.minutes - b.minutes; });
@@ -359,6 +435,22 @@
     });
     origin.value = journey && getCity(journey.from) ? journey.from : 'tokyo';
     destination.value = journey && getCity(journey.to) ? journey.to : 'kyoto';
+
+    // Gare de départ sans liaison directe avec la destination mémorisée (ex. après une arrivée dans une autre ville) :
+    // on propose la destination préférée si elle est desservie, sinon le départ le plus court depuis cette gare.
+    function hasDirectRoute(a, b) {
+      return routes.some(function (r) { return (r.from === a && r.to === b) || (r.from === b && r.to === a); });
+    }
+    function ensureDestinationFrom(station) {
+      if (hasDirectRoute(station, destination.value)) return;
+      var best = null;
+      routes.forEach(function (r) {
+        var other = r.from === station ? r.to : r.to === station ? r.from : null;
+        if (other && getCity(other) && (!best || r.minutes < best.minutes)) best = { id: other, minutes: r.minutes };
+      });
+      if (best) destination.value = best.id;
+    }
+    ensureDestinationFrom(origin.value);
 
     function routeMatches(saved, route) {
       return Boolean(saved && route && saved.from === route.from && saved.to === route.to &&
@@ -953,8 +1045,13 @@
     }
 
     function transferVisited(upTo, legs) {
-      var visited = [selectedRoute.from, selectedRoute.to];
-      for (var i = 0; i < upTo; i += 1) visited.push(legs[i].to);
+      var visited = [];
+      addTravelled(visited, selectedRoute.from, selectedRoute.to);
+      var previous = selectedRoute.to;
+      for (var i = 0; i < upTo; i += 1) {
+        addTravelled(visited, previous, legs[i].to);
+        previous = legs[i].to;
+      }
       return visited;
     }
 
@@ -1056,6 +1153,13 @@
       if (target && !target.disabled) target.focus();
       if (journey && routeMatches(journey, selectedRoute)) showTicket();
     }
+
+    // focus-train-voyage.js se charge après ce fichier : une fois ses tracés connus, on revérifie les correspondances.
+    window.addEventListener('focustrain:ready', function () {
+      if (!selectedRoute) return;
+      renderTransfers();
+      if (journey && routeMatches(journey, selectedRoute)) showTicket();
+    });
 
     if (transferAdd) {
       transferAdd.addEventListener('click', function () {
@@ -1188,8 +1292,14 @@
       window.dispatchEvent(new CustomEvent('ft:board'));
     });
     // Le module de voyage prévient quand le billet a été utilisé ou abandonné.
-    window.addEventListener('ft:journey-changed', function () {
+    window.addEventListener('ft:journey-changed', function (event) {
       journey = readSavedJourney();
+      // Arrivée dans une nouvelle ville : « Cette gare » devient la gare d'arrivée du dernier voyage.
+      if (event && event.detail && event.detail.arrived && journey && getCity(journey.from)) {
+        origin.value = journey.from;
+        if (getCity(journey.to)) destination.value = journey.to;
+        ensureDestinationFrom(origin.value);
+      }
       selectedCoach = null;
       selectedSeat = null;
       resetTearVisuals();
@@ -1224,7 +1334,11 @@
     var TRAIN_JP = {
       'Nozomi': 'のぞみ', 'Hikari': 'ひかり', 'Hayabusa': 'はやぶさ', 'Kagayaki': 'かがやき', 'Sakura': 'さくら',
       'Mizuho': 'みずほ', 'Toki': 'とき', 'Special Rapid': '特別快速', 'Tōkaidō Line': '東海道線',
-      'Yokosuka Line': '横須賀線', 'Miyakoji Rapid': 'みやこじ快速', 'Yamatoji Rapid': 'やまとじ快速'
+      'Yokosuka Line': '横須賀線', 'Miyakoji Rapid': 'みやこじ快速', 'Yamatoji Rapid': 'やまとじ快速',
+      'Hokuto': '北斗', 'Rapid Airport': '快速エアポート', 'Kamui': 'カムイ', 'Komachi': 'こまち', 'Tsugaru': 'つがる',
+      'Nikkō Line': '日光線', 'Romancecar': 'ロマンスカー', 'Azusa': 'あずさ', 'Shinano': 'しなの', 'Hida': 'ひだ',
+      'Sanyō Line': '山陽線', 'Yakumo': 'やくも', 'Marine Liner': 'マリンライナー', 'Shiokaze': 'しおかぜ', 'Ishizuchi': 'いしづち',
+      'Kamome': 'かもめ', 'Sonic': 'ソニック'
     };
 
     function esc(text) {
@@ -1348,7 +1462,15 @@
       html += '</ul>' +
           '<p class="ft-jr-foot">* Heure d’arrivée si tu pars maintenant. Durées indicatives, pas d’horaires en direct.</p>' +
         '</div>';
+      // Le tableau est reconstruit à chaque sélection : on garde la position de défilement de la liste,
+      // sauf quand l'étendue ou le filtre change (nouvelle liste, on repart du haut).
+      var oldRows = tray.querySelector('.ft-jr-rows');
+      var keepScroll = oldRows && !animate ? oldRows.scrollTop : 0;
       tray.innerHTML = html;
+      if (keepScroll) {
+        var newRows = tray.querySelector('.ft-jr-rows');
+        if (newRows) newRows.scrollTop = keepScroll;
+      }
       fitVia();
     }
 

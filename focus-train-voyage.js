@@ -38,7 +38,24 @@
     sendai: { name: 'Sendai', jp: '仙台', lon: 140.87, lat: 38.26 },
     morioka: { name: 'Morioka', jp: '盛岡', lon: 141.14, lat: 39.70 },
     aomori: { name: 'Aomori', jp: '青森', lon: 140.69, lat: 40.83 },
-    hakodate: { name: 'Hakodate', jp: '函館', lon: 140.65, lat: 41.90 }
+    hakodate: { name: 'Hakodate', jp: '函館', lon: 140.65, lat: 41.90 },
+    sapporo: { name: 'Sapporo', jp: '札幌', lon: 141.351, lat: 43.069 },
+    otaru: { name: 'Otaru', jp: '小樽', lon: 140.994, lat: 43.197 },
+    asahikawa: { name: 'Asahikawa', jp: '旭川', lon: 142.358, lat: 43.762 },
+    noboribetsu: { name: 'Noboribetsu', jp: '登別', lon: 141.108, lat: 42.414 },
+    akita: { name: 'Akita', jp: '秋田', lon: 140.129, lat: 39.717 },
+    hirosaki: { name: 'Hirosaki', jp: '弘前', lon: 140.466, lat: 40.602 },
+    nikko: { name: 'Nikko', jp: '日光', lon: 139.601, lat: 36.749 },
+    hakone: { name: 'Hakone', jp: '箱根', lon: 139.107, lat: 35.233 },
+    matsumoto: { name: 'Matsumoto', jp: '松本', lon: 137.964, lat: 36.231 },
+    takayama: { name: 'Takayama', jp: '高山', lon: 137.251, lat: 36.139 },
+    hamamatsu: { name: 'Hamamatsu', jp: '浜松', lon: 137.735, lat: 34.704 },
+    kurashiki: { name: 'Kurashiki', jp: '倉敷', lon: 133.768, lat: 34.600 },
+    matsue: { name: 'Matsue', jp: '松江', lon: 133.066, lat: 35.466 },
+    takamatsu: { name: 'Takamatsu', jp: '高松', lon: 134.047, lat: 34.350 },
+    matsuyama: { name: 'Matsuyama', jp: '松山', lon: 132.762, lat: 33.836 },
+    nagasaki: { name: 'Nagasaki', jp: '長崎', lon: 129.872, lat: 32.753 },
+    beppu: { name: 'Beppu', jp: '別府', lon: 131.500, lat: 33.279 }
   };
 
   // Lignes de Shinkansen / JR : les trajets proposés suivent ces tracés, gare par gare.
@@ -47,7 +64,7 @@
     ueno: ['Ueno', 139.777, 35.713], omiya: ['Ōmiya', 139.624, 35.906], shinyokohama: ['Shin-Yokohama', 139.617, 35.507],
     odawara: ['Odawara', 139.155, 35.256], atami: ['Atami', 139.078, 35.104], mishima: ['Mishima', 138.911, 35.127],
     shinfuji: ['Shin-Fuji', 138.664, 35.139], shizuoka: ['Shizuoka', 138.389, 34.972], kakegawa: ['Kakegawa', 137.998, 34.769],
-    hamamatsu: ['Hamamatsu', 137.735, 34.704], toyohashi: ['Toyohashi', 137.382, 34.763], mikawaanjo: ['Mikawa-Anjō', 137.062, 34.970],
+    toyohashi: ['Toyohashi', 137.382, 34.763], mikawaanjo: ['Mikawa-Anjō', 137.062, 34.970],
     gifuhashima: ['Gifu-Hashima', 136.690, 35.315], maibara: ['Maibara', 136.290, 35.314],
     aioi: ['Aioi', 134.470, 34.806], fukuyama: ['Fukuyama', 133.362, 34.489], higashihiroshima: ['Higashi-Hiroshima', 132.744, 34.427],
     shiniwakuni: ['Shin-Iwakuni', 132.162, 34.166], tokuyama: ['Tokuyama', 131.806, 34.052], shinyamaguchi: ['Shin-Yamaguchi', 131.433, 34.092],
@@ -64,7 +81,57 @@
     ueda: ['Ueda', 138.253, 36.392], iiyama: ['Iiyama', 138.364, 36.850], joetsu: ['Jōetsumyōkō', 138.250, 37.050],
     itoigawa: ['Itoigawa', 137.862, 37.043], kurobe: ['Kurobe-Unazukionsen', 137.462, 36.873], shintakaoka: ['Shin-Takaoka', 136.985, 36.714],
     echigoyuzawa: ['Echigo-Yuzawa', 138.810, 36.931], nagaoka: ['Nagaoka', 138.854, 37.447], tsubamesanjo: ['Tsubame-Sanjō', 138.882, 37.640],
-    ofuna: ['Ōfuna', 139.531, 35.354]
+    ofuna: ['Ōfuna', 139.531, 35.354],
+    // Hokkaidō, Akita, Nikkō, Alpes, Shikoku, Kyūshū (gares des lignes ajoutées)
+    mori: ['Mori', 140.574, 42.105],
+    oshamambe: ['Oshamambe', 140.375, 42.513],
+    toya: ['Tōya', 140.807, 42.562],
+    datemombetsu: ['Date-Mombetsu', 140.865, 42.470],
+    shiraoi: ['Shiraoi', 141.355, 42.553],
+    tomakomai: ['Tomakomai', 141.605, 42.634],
+    chitose: ['Chitose', 141.649, 42.817],
+    iwamizawa: ['Iwamizawa', 141.768, 43.197],
+    takikawa: ['Takikawa', 141.910, 43.558],
+    fukagawa: ['Fukagawa', 142.033, 43.720],
+    zenibako: ['Zenibako', 141.126, 43.141],
+    teine: ['Teine', 141.240, 43.122],
+    shizukuishi: ['Shizukuishi', 140.975, 39.690],
+    tazawako: ['Tazawako', 140.726, 39.702],
+    kakunodate: ['Kakunodate', 140.566, 39.597],
+    omagari: ['Ōmagari', 140.478, 39.460],
+    namioka: ['Namioka', 140.590, 40.700],
+    kanuma: ['Kanuma', 139.745, 36.566],
+    imaichi: ['Imaichi', 139.687, 36.719],
+    shinjuku: ['Shinjuku', 139.700, 35.690],
+    tachikawa: ['Tachikawa', 139.414, 35.698],
+    hachioji: ['Hachiōji', 139.338, 35.656],
+    otsuki: ['Ōtsuki', 138.940, 35.613],
+    kofu: ['Kōfu', 138.569, 35.667],
+    shiojiri: ['Shiojiri', 137.954, 36.108],
+    tajimi: ['Tajimi', 137.131, 35.332],
+    nakatsugawa: ['Nakatsugawa', 137.503, 35.490],
+    kisofukushima: ['Kiso-Fukushima', 137.693, 35.844],
+    shinonoi: ['Shinonoi', 138.122, 36.579],
+    gifu: ['Gifu', 136.758, 35.410],
+    gero: ['Gero', 137.244, 35.804],
+    etchuyatsuo: ['Etchū-Yatsuo', 137.136, 36.566],
+    inotani: ['Inotani', 137.196, 36.441],
+    hidafurukawa: ['Hida-Furukawa', 137.189, 36.234],
+    bitchutakahashi: ['Bitchū-Takahashi', 133.620, 34.791],
+    soja: ['Sōja', 133.748, 34.673],
+    niimi: ['Niimi', 133.470, 34.988],
+    yonago: ['Yonago', 133.336, 35.434],
+    kojima: ['Kojima', 133.810, 34.469],
+    sakaide: ['Sakaide', 133.856, 34.316],
+    marugame: ['Marugame', 133.797, 34.290],
+    kanonji: ['Kan’onji', 133.663, 34.129],
+    niihama: ['Niihama', 133.279, 33.962],
+    imabari: ['Imabari', 133.005, 34.066],
+    tosu: ['Tosu', 130.506, 33.378],
+    saga: ['Saga', 130.302, 33.265],
+    takeoonsen: ['Takeo-Onsen', 130.018, 33.193],
+    isahaya: ['Isahaya', 130.042, 32.848],
+    nakatsu: ['Nakatsu', 131.188, 33.597]
   };
   function line(ids) {
     return ids.map(function (id) { return CITIES[id] ? [id] : [id].concat(STATIONS[id]); });
@@ -85,7 +152,34 @@
     // Jōetsu Shinkansen
     line(['tokyo', 'ueno', 'omiya', 'kumagaya', 'honjowaseda', 'takasaki', 'echigoyuzawa', 'nagaoka', 'tsubamesanjo', 'niigata']),
     // Ligne Yokosuka (JR)
-    line(['tokyo', 'yokohama', 'ofuna', 'kamakura'])
+    line(['tokyo', 'yokohama', 'ofuna', 'kamakura']),
+    // Hokkaidō : Hakodate – Sapporo (train express Hokuto, pas encore de Shinkansen)
+    line(['hakodate', 'mori', 'oshamambe', 'toya', 'datemombetsu', 'noboribetsu', 'shiraoi', 'tomakomai', 'chitose', 'sapporo']),
+    line(['sapporo', 'iwamizawa', 'takikawa', 'fukagawa', 'asahikawa']),
+    line(['otaru', 'zenibako', 'teine', 'sapporo']),
+    // Akita Shinkansen (Komachi) : Tōhoku jusqu'à Morioka, puis ligne de Tazawako
+    line(['tokyo', 'ueno', 'omiya', 'oyama', 'utsunomiya', 'nasushiobara', 'shinshirakawa', 'koriyama', 'fukushima', 'shiroishi',
+      'sendai', 'furukawa', 'ichinoseki', 'mizusawa', 'kitakami', 'shinhanamaki', 'morioka', 'shizukuishi', 'tazawako',
+      'kakunodate', 'omagari', 'akita']),
+    line(['aomori', 'namioka', 'hirosaki']),
+    // Nikkō (ligne JR depuis Utsunomiya) et Hakone (Odakyū)
+    line(['tokyo', 'ueno', 'omiya', 'oyama', 'utsunomiya', 'kanuma', 'imaichi', 'nikko']),
+    line(['tokyo', 'shinjuku', 'odawara', 'hakone']),
+    // Chūō (Azusa, Shinano), Shinonoi, Hida
+    line(['tokyo', 'shinjuku', 'tachikawa', 'hachioji', 'otsuki', 'kofu', 'shiojiri', 'matsumoto']),
+    line(['nagoya', 'tajimi', 'nakatsugawa', 'kisofukushima', 'shiojiri', 'matsumoto']),
+    line(['nagano', 'shinonoi', 'matsumoto']),
+    line(['nagoya', 'gifu', 'gero', 'takayama']),
+    line(['toyama', 'etchuyatsuo', 'inotani', 'hidafurukawa', 'takayama']),
+    // San'yō local et Yakumo (San'in)
+    line(['okayama', 'kurashiki', 'soja', 'bitchutakahashi', 'niimi', 'yonago', 'matsue']),
+    // Shikoku : pont Seto-Ōhashi, Dosan / Yosan
+    line(['okayama', 'kojima', 'sakaide', 'takamatsu']),
+    line(['okayama', 'kojima', 'sakaide', 'marugame', 'kanonji', 'niihama', 'imabari', 'matsuyama']),
+    line(['takamatsu', 'sakaide', 'marugame', 'kanonji', 'niihama', 'imabari', 'matsuyama']),
+    // Kyūshū : Kamome (Nagasaki) et Sonic (Beppu)
+    line(['fukuoka', 'tosu', 'saga', 'takeoonsen', 'isahaya', 'nagasaki']),
+    line(['fukuoka', 'kokura', 'nakatsu', 'beppu'])
   ];
 
   // Contours très simplifiés (longitude, latitude) : une carte stylisée, pas un relevé précis.
@@ -98,6 +192,11 @@
 
   function byId(id) { return document.getElementById(id); }
   function pad2(n) { return String(n).padStart(2, '0'); }
+
+  // N'écrit dans le DOM que si le texte a changé (le tick passe toutes les 500 ms, la plupart des textes changent à la seconde).
+  function setText(el, text) {
+    if (el && el.textContent !== text) el.textContent = text;
+  }
 
   function readJourney() {
     try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (error) { return null; }
@@ -391,6 +490,8 @@
   var shell = null;
   var els = {};
   var tickTimer = null;
+  var lastPercent = -1;
+  var lastSpeedShown = null;
   var boardingTimers = [];
   var map = null;
   var viewMode = 'route';
@@ -414,6 +515,8 @@
 
   function startTick() {
     stopTick();
+    lastPercent = -1;
+    lastSpeedShown = null;
     tick();
     tickTimer = window.setInterval(tick, 500);
   }
@@ -636,19 +739,23 @@
     if (!map) return;
     var at = pointAtFraction(map.route, lastFraction);
     var ll = L.latLng(at.latlng);
-    map.train.setLatLng(ll);
-    if (map.trainDir) map.trainDir.style.transform = 'rotate(' + at.angle.toFixed(1) + 'deg)';
     if (map.trainEl) { map.trainEl.classList.toggle('is-paused', pausedNow); map.trainEl.classList.toggle('is-stopped', stoppedNow); }
-    var travelled = lastFraction > 0 ? travelledLatLngs(map.route, lastFraction) : [];
-    map.done.setLatLngs(travelled);
-    map.doneCasing.setLatLngs(travelled);
-    map.markers.forEach(function (item) {
-      var passed = lastFraction >= item.fraction - 0.0005;
-      if (item.passed === passed) return;
-      item.passed = passed;
-      if (item.isEnd || item.isTransfer) return;
-      item.marker.setStyle({ fillColor: passed ? '#be185d' : '#ffffff', color: passed ? '#be185d' : '#64748b' });
-    });
+    // Train à l'arrêt (gare, pause, correspondance) : même position qu'au tick précédent, on ne redessine ni le train ni le tracé.
+    if (map.drawnFraction !== lastFraction) {
+      map.drawnFraction = lastFraction;
+      map.train.setLatLng(ll);
+      if (map.trainDir) map.trainDir.style.transform = 'rotate(' + at.angle.toFixed(1) + 'deg)';
+      var travelled = lastFraction > 0 ? travelledLatLngs(map.route, lastFraction) : [];
+      map.done.setLatLngs(travelled);
+      map.doneCasing.setLatLngs(travelled);
+      map.markers.forEach(function (item) {
+        var passed = lastFraction >= item.fraction - 0.0005;
+        if (item.passed === passed) return;
+        item.passed = passed;
+        if (item.isEnd || item.isTransfer) return;
+        item.marker.setStyle({ fillColor: passed ? '#be185d' : '#ffffff', color: passed ? '#be185d' : '#64748b' });
+      });
+    }
     if (viewMode === 'follow') map.lmap.panTo(ll, { animate: false });
   }
 
@@ -699,7 +806,7 @@
     return minutes <= 1 ? 'dans moins d’une minute' : 'dans ' + minutes + ' min';
   }
 
-  function nextPassage(elapsed, journey) {
+  function nextPassage(elapsed, journey, fraction) {
     var stations = map.route.stations;
     var segments = map.route.segments;
     var legs = legsOf(journey);
@@ -714,7 +821,7 @@
       }
     }
     for (var i = 1; i < stations.length; i += 1) {
-      if (stations[i].time > elapsed + 1000 && stations[i].fraction > distanceFractionAt(map.route, elapsed) + 0.0005) {
+      if (stations[i].time > elapsed + 1000 && stations[i].fraction > (fraction != null ? fraction : distanceFractionAt(map.route, elapsed)) + 0.0005) {
         var final = i === stations.length - 1;
         return (final ? 'Arrivée à ' : (stations[i].transfer ? 'Correspondance à ' : '')) + stations[i].name + ' · ' + minutesText(stations[i].time - elapsed);
       }
@@ -781,12 +888,17 @@
       '</li>';
     }
 
-    timeline.innerHTML = html;
+    // Le tick passe toutes les 500 ms mais le texte ne change qu'à la seconde : on ne reconstruit
+    // la liste que si son contenu a changé (ou si elle a été vidée entre-temps).
+    if (timeline.__ftHtml !== html || !timeline.childElementCount) {
+      timeline.innerHTML = html;
+      timeline.__ftHtml = html;
+    }
     if (chip) {
       if (nextStationName) {
-        chip.textContent = nextStationCountdown === 'en gare' ? 'En gare : ' + nextStationName : 'Prochain : ' + nextStationName + ' (' + nextStationCountdown + ')';
+        setText(chip, nextStationCountdown === 'en gare' ? 'En gare : ' + nextStationName : 'Prochain : ' + nextStationName + ' (' + nextStationCountdown + ')');
       } else {
-        chip.textContent = 'Arrivée imminente';
+        setText(chip, 'Arrivée imminente');
       }
     }
   }
@@ -845,19 +957,19 @@
     els.segmentTimer.classList.toggle('hidden', !onBreak);
     if (onBreak) {
       var next = legs[segment.leg + 1];
-      els.segmentBadge.textContent = 'Pause';
-      els.segmentTitle.textContent = 'Pause à ' + CITIES[leg.to].name;
-      els.segmentText.textContent = 'Lève-toi, bois un verre d’eau, étire-toi. Ensuite, nouvelle session de focus : ' + next.train +
-        ' pour ' + CITIES[next.to].name + ' · voiture ' + pad2(next.coach) + ', place ' + next.seat + '.';
+      setText(els.segmentBadge, 'Pause');
+      setText(els.segmentTitle, 'Pause à ' + CITIES[leg.to].name);
+      setText(els.segmentText, 'Lève-toi, bois un verre d’eau, étire-toi. Ensuite, nouvelle session de focus : ' + next.train +
+        ' pour ' + CITIES[next.to].name + ' · voiture ' + pad2(next.coach) + ', place ' + next.seat + '.');
       var left = Math.max(0, Math.ceil((segment.end - elapsed) / 1000));
-      els.segmentCount.textContent = Math.floor(left / 60) + ':' + pad2(left % 60);
+      setText(els.segmentCount, Math.floor(left / 60) + ':' + pad2(left % 60));
     } else {
-      els.segmentBadge.textContent = 'Session de focus ' + (segment.leg + 1) + '/' + legs.length;
-      els.segmentTitle.textContent = leg.train + ' · ' + CITIES[leg.from].name + ' → ' + CITIES[leg.to].name;
-      els.segmentText.textContent = 'Voiture ' + pad2(leg.coach) + ' · place ' + leg.seat + ' (' + seatSide(leg.seat) + '). ' +
+      setText(els.segmentBadge, 'Session de focus ' + (segment.leg + 1) + '/' + legs.length);
+      setText(els.segmentTitle, leg.train + ' · ' + CITIES[leg.from].name + ' → ' + CITIES[leg.to].name);
+      setText(els.segmentText, 'Voiture ' + pad2(leg.coach) + ' · place ' + leg.seat + ' (' + seatSide(leg.seat) + '). ' +
         (leg.breakAfter && segment.leg < legs.length - 1
           ? 'À ' + CITIES[leg.to].name + ' : pause de ' + leg.breakAfter + ' min avant le prochain train.'
-          : 'Dernière étape : plus qu’à travailler jusqu’à ' + CITIES[leg.to].name + '.');
+          : 'Dernière étape : plus qu’à travailler jusqu’à ' + CITIES[leg.to].name + '.'));
     }
   }
 
@@ -868,15 +980,17 @@
     if (name.indexOf('nozomi') !== -1 || name.indexOf('mizuho') !== -1) return 285;
     if (name.indexOf('kagayaki') !== -1 || name.indexOf('hakutaka') !== -1) return 260;
     if (name.indexOf('toki') !== -1) return 240;
+    if (name.indexOf('komachi') !== -1) return 275;
     if (name.indexOf('hikari') !== -1 || name.indexOf('sakura') !== -1) return 285;
     if (type.indexOf('shinkansen') !== -1) return 285;
+    if (type.indexOf('express') !== -1) return 130;
     if (type.indexOf('rapid') !== -1 || type.indexOf('line') !== -1 || type.indexOf('jr') !== -1) return 130;
     return 280;
   }
 
-  function calculateCurrentSpeed(journey, elapsed) {
+  function calculateCurrentSpeed(journey, elapsed, motion) {
     if (!map || !map.route || !map.route.segments || journey.pausedAt) return 0;
-    var m = motionAt(map.route, elapsed);
+    var m = motion || motionAt(map.route, elapsed);
     if (m.stopped) return 0;
     var seg = map.route.segments[segmentIndexAt(map.route.segments, elapsed)];
     var legs = legsOf(journey);
@@ -896,27 +1010,33 @@
       return;
     }
     var progress = Math.max(0, elapsed / duration);
-    els.countdown.textContent = formatCountdown(duration - elapsed);
-    els.progressBar.style.width = (progress * 100).toFixed(2) + '%';
+    setText(els.countdown, formatCountdown(duration - elapsed));
+    var barWidth = (progress * 100).toFixed(2) + '%';
+    if (els.progressBar.style.width !== barWidth) els.progressBar.style.width = barWidth;
     var percent = Math.floor(progress * 100);
-    els.progress.setAttribute('aria-valuenow', String(percent));
-    els.progressText.textContent = percent + ' % du trajet';
+    if (percent !== lastPercent) {
+      lastPercent = percent;
+      els.progress.setAttribute('aria-valuenow', String(percent));
+      els.progressText.textContent = percent + ' % du trajet';
+    }
     renderDelay(journey);
     updateSegment(journey, elapsed);
     try { announceProgress(journey, elapsed); } catch (error) { /* les annonces sont facultatives */ }
     if (map) {
-      els.factNext.textContent = nextPassage(elapsed, journey);
+      // Le mouvement du train n'est calculé qu'une fois par tick, puis partagé par tous les affichages.
+      var motion = motionAt(map.route, elapsed);
+      lastFraction = motion.fraction;
+      setText(els.factNext, nextPassage(elapsed, journey, motion.fraction));
       updateStopsTimeline(elapsed, journey);
-      var currentSpeed = calculateCurrentSpeed(journey, elapsed);
-      if (els.factSpeed) {
+      var currentSpeed = calculateCurrentSpeed(journey, elapsed, motion);
+      if (els.factSpeed && currentSpeed !== lastSpeedShown) {
         els.factSpeed.innerHTML = '<span class="ft-speed-val">' + currentSpeed + '</span> <span style="font-size:0.75rem;opacity:0.8">km/h</span>';
       }
       var liveSpeedBadge = document.getElementById('ft-speed-badge-val');
       if (liveSpeedBadge) {
-        liveSpeedBadge.textContent = currentSpeed + ' km/h';
+        setText(liveSpeedBadge, currentSpeed + ' km/h');
       }
-      lastFraction = distanceFractionAt(map.route, elapsed);
-      var motion = motionAt(map.route, elapsed);
+      lastSpeedShown = currentSpeed;
       pausedNow = motion.onBreak;
       stoppedNow = (motion.stopped && !motion.onBreak) || !!journey.pausedAt;
       positionTrain();
@@ -934,13 +1054,13 @@
     var shown = total >= 1000;
     els.delay.classList.toggle('hidden', !shown);
     els.delay.classList.toggle('is-paused', paused);
-    els.delayTitle.textContent = paused ? 'Train à l’arrêt' : 'Retard cumulé';
-    els.delayCount.textContent = '+' + formatMmSs(total);
-    els.delayText.textContent = paused
+    setText(els.delayTitle, paused ? 'Train à l’arrêt' : 'Retard cumulé');
+    setText(els.delayCount, '+' + formatMmSs(total));
+    setText(els.delayText, paused
       ? 'Le temps de focus est suspendu. Arrivée prévue désormais à ' + formatClock(newEnd) + '.'
-      : 'Arrivée prévue à ' + formatClock(newEnd) + ' au lieu de ' + formatClock(plannedEnd) + '.';
+      : 'Arrivée prévue à ' + formatClock(newEnd) + ' au lieu de ' + formatClock(plannedEnd) + '.');
     var min = delayMinutes(total);
-    els.factEta.textContent = formatClock(newEnd) + (min >= 1 ? ' (+' + min + ' min)' : '');
+    setText(els.factEta, formatClock(newEnd) + (min >= 1 ? ' (+' + min + ' min)' : ''));
     els.factEta.classList.toggle('is-late', min >= 1);
     if (lastPauseState !== paused) {
       lastPauseState = paused;
@@ -1009,40 +1129,173 @@
   var annRoute = null;
   var annSpeakTimer = null;
 
+  // Réglages : voix on/off, voix japonaise choisie (par nom), vitesse. L'annonce est lue en japonais, avec la transcription française à l'écran.
+  var ANN_DEFAULTS = { voice: true, mode: 'ja', voiceJa: '', voiceFr: '', speed: 1 };
   function readAnn() {
     try {
       var saved = JSON.parse(localStorage.getItem(ANN_KEY) || '{}') || {};
-      return { voice: saved.voice !== false, lang: 'ja' };
-    } catch (error) { return { voice: true, lang: 'ja' }; }
+      return {
+        voice: saved.voice !== false,
+        mode: 'ja',
+        voiceJa: typeof saved.voiceJa === 'string' ? saved.voiceJa : '',
+        voiceFr: typeof saved.voiceFr === 'string' ? saved.voiceFr : '',
+        speed: [0.85, 1, 1.12].indexOf(Number(saved.speed)) !== -1 ? Number(saved.speed) : 1
+      };
+    } catch (error) { return Object.assign({}, ANN_DEFAULTS); }
   }
   function writeAnn(settings) {
     try { localStorage.setItem(ANN_KEY, JSON.stringify(settings)); } catch (error) { /* ignoré */ }
   }
+
+  // ——— Choix de la meilleure voix disponible ———
+  // Les voix « de base » du système (compactes, eSpeak…) sonnent très robotiques ; les voix neuronales (Microsoft « Natural »
+  // dans Edge, Google dans Chrome, voix « Améliorée » / « Premium » / Siri d'Apple) sont bien plus naturelles. On les classe par
+  // score et on prend la meilleure, sauf si l'utilisateur en a choisi une dans les réglages.
+  var TOP_NAMES = {
+    ja: /nanami|keita|ayumi|haruka|sayaka|ichiro|hattori|kyoko|o-?ren|otoya|mizuki|takumi|hikari|shiori|daichi|masaru|aoi|naoki|mayu/i,
+    fr: /denise|eloise|henri|vivienne|remy|r[ée]my|brigitte|yves|claude|audrey|am[ée]lie|aur[ée]lie|thomas|marie|julie|paul|hortense|virginie|c[ée]line|jacques|louise/i
+  };
+  var BAD_NAMES = /compact|espeak|festival|flite|pico|novelty|eloquence|albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|ralph|kathy|princess|agnes|bruce|vicki|victoria/i;
+
+  function voiceLang(voice) { return String(voice.lang || '').toLowerCase().replace('_', '-'); }
+  function voiceScore(voice, lang) {
+    var name = String(voice.name || '');
+    var tag = voiceLang(voice);
+    var score = 0;
+    if (/natural|neural|online|multilingual/i.test(name)) score += 100;
+    if (/premium|enhanced|am[ée]lior|プレミアム|拡張/i.test(name)) score += 80;
+    if (/siri/i.test(name)) score += 70;
+    if (/google/i.test(name)) score += 60;
+    if (/microsoft/i.test(name)) score += 15;
+    if (voice.localService === false) score += 25;
+    if (TOP_NAMES[lang] && TOP_NAMES[lang].test(name)) score += 20;
+    if (BAD_NAMES.test(name)) score -= 200;
+    if (tag === (lang === 'ja' ? 'ja-jp' : 'fr-fr')) score += 10;
+    return score;
+  }
+  function voicesFor(lang) {
+    var all = [];
+    try { all = window.speechSynthesis.getVoices() || []; } catch (error) { all = []; }
+    var list = all.filter(function (voice) { return voiceLang(voice).indexOf(lang) === 0; });
+    list.sort(function (x, y) { return voiceScore(y, lang) - voiceScore(x, lang) || String(x.name).localeCompare(String(y.name)); });
+    return list;
+  }
+  function pickVoice(lang, settings) {
+    var list = voicesFor(lang);
+    if (!list.length) return null;
+    var wanted = lang === 'ja' ? settings.voiceJa : settings.voiceFr;
+    if (wanted) {
+      var chosen = list.filter(function (voice) { return voice.name === wanted; })[0];
+      if (chosen) return chosen;
+    }
+    return list[0];
+  }
+  function isNaturalVoice(voice, lang) { return Boolean(voice) && voiceScore(voice, lang) >= 60; }
+
   function stopSpeech() {
     if (annSpeakTimer) { window.clearTimeout(annSpeakTimer); annSpeakTimer = null; }
+    speechToken += 1;
     try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (error) { /* ignoré */ }
   }
-  function speak(text, lang) {
-    stopSpeech();
-    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
-    // Petit délai : le carillon d'abord, puis la voix.
-    annSpeakTimer = window.setTimeout(function () {
-      annSpeakTimer = null;
-      try {
-        var utterance = new window.SpeechSynthesisUtterance(text);
-        var tag = lang === 'ja' ? 'ja-JP' : 'fr-FR';
-        utterance.lang = tag;
-        utterance.rate = lang === 'ja' ? 0.95 : 0.97;
-        var voices = window.speechSynthesis.getVoices() || [];
-        var match = voices.filter(function (v) { return String(v.lang).toLowerCase().indexOf(lang) === 0; })[0];
-        if (match) utterance.voice = match;
-        window.speechSynthesis.speak(utterance);
-      } catch (error) { /* la voix est facultative */ }
-    }, 1100);
+  var speechToken = 0;
+
+  // Texte préparé pour la synthèse : les voix lisent mal « 21:08 » ou les voyelles longues (Ō, Ū) et butent sur les
+  // phrases très longues (Chrome coupe un énoncé au bout d'une quinzaine de secondes), donc on les découpe en phrases.
+  function speechText(text, lang) {
+    var out = String(text || '');
+    if (lang === 'fr') {
+      out = out.normalize('NFD').replace(/̄/g, '').normalize('NFC');
+      out = out.replace(/(\d{1,2}):(\d{2})/g, '$1 h $2').replace(/\bmin\b/g, 'minutes');
+    } else {
+      out = out.replace(/(\d{1,2}):(\d{2})/g, '$1時$2分');
+    }
+    return out;
   }
+  function sentencesOf(text) {
+    var parts = text.match(/[^。！？!?.]+(?:[。！？!?]+|\.(?=\s|$))?/g) || [text];
+    return parts.map(function (part) { return part.trim(); }).filter(Boolean);
+  }
+
+  // Lit une suite de morceaux { text, lang } l'un après l'autre, avec une courte respiration entre les phrases
+  // (comme un vrai chef de gare) ; un nouveau stopSpeech() interrompt la suite.
+  function speakQueue(items, delayMs) {
+    stopSpeech();
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance || !items.length) return;
+    var token = speechToken;
+    var settings = readAnn();
+    var queue = [];
+    items.forEach(function (item, itemIndex) {
+      sentencesOf(speechText(item.text, item.lang)).forEach(function (sentence, i) {
+        queue.push({ text: sentence, lang: item.lang, gap: i === 0 && itemIndex > 0 ? 650 : 220 });
+      });
+    });
+    function next(index) {
+      if (token !== speechToken || index >= queue.length) return;
+      var part = queue[index];
+      var utterance = new window.SpeechSynthesisUtterance(part.text);
+      utterance.lang = part.lang === 'ja' ? 'ja-JP' : 'fr-FR';
+      var voice = pickVoice(part.lang, settings);
+      if (voice) { utterance.voice = voice; utterance.lang = voice.lang || utterance.lang; }
+      // Ton posé de speaker de gare : un peu plus lent que la parole courante, légèrement plus grave ; voix de base encore plus lentes pour rester intelligibles.
+      var natural = isNaturalVoice(voice, part.lang);
+      utterance.rate = (part.lang === 'ja' ? (natural ? 0.95 : 0.88) : (natural ? 0.96 : 0.9)) * settings.speed;
+      utterance.pitch = natural ? 1 : 0.95;
+      utterance.volume = 1;
+      var advanced = false;
+      function advance() {
+        if (advanced) return;
+        advanced = true;
+        annSpeakTimer = window.setTimeout(function () { annSpeakTimer = null; next(index + 1); }, part.gap);
+      }
+      utterance.onend = advance;
+      utterance.onerror = advance;
+      try { window.speechSynthesis.speak(utterance); } catch (error) { /* la voix est facultative */ }
+    }
+    // Petit délai : le carillon d'abord, puis la voix.
+    annSpeakTimer = window.setTimeout(function () { annSpeakTimer = null; next(0); }, delayMs == null ? 1100 : delayMs);
+  }
+
+  // Lit une annonce { fr, ja } selon la langue choisie (japonais, français, ou les deux : japonais puis français).
+  function speakAnnouncement(text, delayMs) {
+    var settings = readAnn();
+    if (!settings.voice || !text) return;
+    // Annonce lue en japonais ; la transcription française s'affiche dans le bandeau.
+    speakQueue(text.ja ? [{ text: text.ja, lang: 'ja' }] : [], delayMs);
+  }
+
+  // Noms de gares en japonais : une voix japonaise lit très mal les lettres latines (« Mori », « Tazawako »…).
+  var STATION_JP = {
+    ueno: '上野', omiya: '大宮', shinyokohama: '新横浜', odawara: '小田原',
+    atami: '熱海', mishima: '三島', shinfuji: '新富士', shizuoka: '静岡',
+    kakegawa: '掛川', toyohashi: '豊橋', mikawaanjo: '三河安城', gifuhashima: '岐阜羽島',
+    maibara: '米原', aioi: '相生', fukuyama: '福山', higashihiroshima: '東広島',
+    shiniwakuni: '新岩国', tokuyama: '徳山', shinyamaguchi: '新山口', shinshimonoseki: '新下関',
+    kokura: '小倉', shintosu: '新鳥栖', shinyatsushiro: '新八代', satsumasendai: '薩摩川内',
+    oyama: '小山', utsunomiya: '宇都宮', nasushiobara: '那須塩原', shinshirakawa: '新白河',
+    koriyama: '郡山', fukushima: '福島', shiroishi: '白石蔵王', furukawa: '古川',
+    ichinoseki: '一ノ関', mizusawa: '水沢江刺', kitakami: '北上', shinhanamaki: '新花巻',
+    ninohe: '二戸', hachinohe: '八戸', imabetsu: '奥津軽いまべつ', kikonai: '木古内',
+    kumagaya: '熊谷', honjowaseda: '本庄早稲田', takasaki: '高崎', annakaharuna: '安中榛名',
+    karuizawa: '軽井沢', sakudaira: '佐久平', ueda: '上田', iiyama: '飯山',
+    joetsu: '上越妙高', itoigawa: '糸魚川', kurobe: '黒部宇奈月温泉', shintakaoka: '新高岡',
+    echigoyuzawa: '越後湯沢', nagaoka: '長岡', tsubamesanjo: '燕三条', ofuna: '大船',
+    mori: '森', oshamambe: '長万部', toya: '洞爺', datemombetsu: '伊達紋別',
+    shiraoi: '白老', tomakomai: '苫小牧', chitose: '千歳', iwamizawa: '岩見沢',
+    takikawa: '滝川', fukagawa: '深川', zenibako: '銭函', teine: '手稲',
+    shizukuishi: '雫石', tazawako: '田沢湖', kakunodate: '角館', omagari: '大曲',
+    namioka: '浪岡', kanuma: '鹿沼', imaichi: '今市', shinjuku: '新宿',
+    tachikawa: '立川', hachioji: '八王子', otsuki: '大月', kofu: '甲府',
+    shiojiri: '塩尻', tajimi: '多治見', nakatsugawa: '中津川', kisofukushima: '木曽福島',
+    shinonoi: '篠ノ井', gifu: '岐阜', gero: '下呂', etchuyatsuo: '越中八尾',
+    inotani: '猪谷', hidafurukawa: '飛騨古川', bitchutakahashi: '備中高梁', soja: '総社',
+    niimi: '新見', yonago: '米子', kojima: '児島', sakaide: '坂出',
+    marugame: '丸亀', kanonji: '観音寺', niihama: '新居浜', imabari: '今治',
+    tosu: '鳥栖', saga: '佐賀', takeoonsen: '武雄温泉', isahaya: '諫早',
+    nakatsu: '中津'
+  };
   function jpName(station) {
     var city = station && station.isCity ? CITIES[station.id] : null;
-    return city ? city.jp : station.name;
+    return city ? city.jp : (STATION_JP[station.id] || station.name);
   }
   function stopWord(min) { return min <= 1 ? '1 minute' : min + ' minutes'; }
 
@@ -1110,10 +1363,11 @@
 
   function announce(text) {
     showAnnouncement(text);
-    var settings = readAnn();
     chime();
-    if (settings.voice) speak(text.ja, 'ja');
+    speakAnnouncement(text);
   }
+
+  var SAMPLE = 'まもなく、新横浜です。お忘れ物のないようご注意ください。';
 
   function renderAnnControls() {
     var settings = readAnn();
@@ -1126,17 +1380,97 @@
     }
   }
 
+  function fillVoiceSelect(select, lang, current) {
+    var list = voicesFor(lang);
+    select.innerHTML = '';
+    var auto = document.createElement('option');
+    auto.value = '';
+    auto.textContent = list.length ? 'Automatique : ' + list[0].name + (isNaturalVoice(list[0], lang) ? ' ★' : '') : 'Aucune voix installée';
+    select.appendChild(auto);
+    list.forEach(function (voice) {
+      var option = document.createElement('option');
+      option.value = voice.name;
+      option.textContent = voice.name + (isNaturalVoice(voice, lang) ? ' ★' : '') + (voice.localService === false ? ' · en ligne' : '');
+      select.appendChild(option);
+    });
+    select.disabled = !list.length;
+    select.value = list.some(function (voice) { return voice.name === current; }) ? current : '';
+  }
+
+  function buildAnnPanel(tools) {
+    if (document.getElementById('ft-ann-panel')) return;
+    var box = document.getElementById('ft-announce');
+    if (!box || !tools) return;
+    box.style.position = 'relative';
+    var gear = document.createElement('button');
+    gear.id = 'ft-ann-settings'; gear.type = 'button'; gear.className = 'ft-announce-btn';
+    gear.setAttribute('aria-expanded', 'false'); gear.setAttribute('aria-controls', 'ft-ann-panel');
+    gear.title = 'Choisir la voix et la vitesse';
+    gear.innerHTML = '<i class="fa-solid fa-sliders" aria-hidden="true"></i>';
+    tools.appendChild(gear);
+
+    var panel = document.createElement('div');
+    panel.id = 'ft-ann-panel'; panel.className = 'ft-ann-panel'; panel.hidden = true;
+    panel.innerHTML =
+      '<label class="ft-ann-field"><span>Voix japonaise</span><select id="ft-ann-voice-ja"></select></label>' +
+      '<label class="ft-ann-field"><span>Vitesse</span><select id="ft-ann-speed">' +
+      '<option value="0.85">Lente</option><option value="1">Normale</option><option value="1.12">Rapide</option></select></label>' +
+      '<div class="ft-ann-actions"><button type="button" id="ft-ann-test" class="ft-announce-btn"><i class="fa-solid fa-play" aria-hidden="true"></i>&nbsp;Écouter</button></div>' +
+      '<p class="ft-ann-tip" id="ft-ann-tip"></p>';
+    box.appendChild(panel);
+
+    var selJa = panel.querySelector('#ft-ann-voice-ja');
+    var selSpeed = panel.querySelector('#ft-ann-speed');
+    var tip = panel.querySelector('#ft-ann-tip');
+
+    function refresh() {
+      var settings = readAnn();
+      fillVoiceSelect(selJa, 'ja', settings.voiceJa);
+      selSpeed.value = String(settings.speed);
+      var bestJa = pickVoice('ja', settings);
+      var msg = [];
+      if (!bestJa) msg.push('Aucune voix japonaise n’est installée : ajoute-en une dans les réglages de ton système (langue et voix), puis recharge la page.');
+      else if (!isNaturalVoice(bestJa, 'ja')) msg.push('Voix de base détectée. Pour une voix plus naturelle : Microsoft Edge (voix « Natural » en ligne), Chrome, ou sur Mac / iPhone une voix « Améliorée » ou « Premium » (Réglages → Accessibilité → Contenu énoncé → Voix).');
+      tip.textContent = msg.join(' ');
+      tip.hidden = !msg.length;
+    }
+    refresh();
+    if (window.speechSynthesis && window.speechSynthesis.addEventListener) window.speechSynthesis.addEventListener('voiceschanged', refresh);
+
+    gear.addEventListener('click', function () {
+      panel.hidden = !panel.hidden;
+      gear.setAttribute('aria-expanded', String(!panel.hidden));
+      if (!panel.hidden) refresh();
+    });
+    function save() {
+      var settings = readAnn();
+      settings.voiceJa = selJa.value; settings.speed = Number(selSpeed.value) || 1;
+      writeAnn(settings);
+    }
+    function test() {
+      speakQueue([{ text: SAMPLE, lang: 'ja' }], 100);
+    }
+    [selJa, selSpeed].forEach(function (select) { select.addEventListener('change', function () { save(); refresh(); test(); }); });
+    panel.querySelector('#ft-ann-test').addEventListener('click', test);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !panel.hidden) { panel.hidden = true; gear.setAttribute('aria-expanded', 'false'); }
+    });
+  }
+
   function initAnnouncements() {
     var voice = document.getElementById('ft-ann-voice');
-    if (voice) voice.addEventListener('click', function () {
-      var settings = readAnn();
-      settings.voice = !settings.voice;
-      writeAnn(settings);
-      if (!settings.voice) stopSpeech();
-      renderAnnControls();
-    });
+    if (voice) {
+      voice.addEventListener('click', function () {
+        var settings = readAnn();
+        settings.voice = !settings.voice;
+        writeAnn(settings);
+        if (!settings.voice) stopSpeech();
+        renderAnnControls();
+      });
+      buildAnnPanel(voice.parentNode);
+    }
     renderAnnControls();
-    // Les voix du navigateur se chargent parfois après coup.
+    // Les voix du navigateur se chargent parfois après coup (Chrome) : on les demande dès maintenant.
     if (window.speechSynthesis && window.speechSynthesis.getVoices) window.speechSynthesis.getVoices();
   }
 
@@ -1233,8 +1567,7 @@
     var text = annText('end', { journey: journey, stations: st, index: st.length - 1 });
     a.last = text;
     writeJourney(journey);
-    var settings = readAnn();
-    if (settings.voice) speak(text.ja, 'ja');
+    speakAnnouncement(text);
   }
 
   // ——— Arrivée ———
@@ -1362,10 +1695,25 @@
   function resetJourney() {
     stopSpeech();
     var journey = readJourney();
+    // Voyage terminé (et non interrompu) : on est maintenant dans la gare d'arrivée, qui devient « Cette gare ».
+    var arrived = Boolean(journey && journey.departedAt && journey.logged);
+    var here = null;
+    var origin = null;
+    if (arrived) {
+      try {
+        here = finalCityId(journey);
+        origin = legsOf(journey)[0].from;
+      } catch (error) { here = null; }
+      if (!here || !CITIES[here]) { here = null; arrived = false; }
+    }
     if (journey) {
       writeJourney({
-        from: journey.from, to: journey.to, train: journey.train, trainType: journey.trainType,
-        durationMinutes: journey.durationMinutes, coachNumber: null, seat: null,
+        from: arrived ? here : journey.from,
+        to: arrived ? origin : journey.to,
+        train: arrived ? null : journey.train,
+        trainType: arrived ? null : journey.trainType,
+        durationMinutes: arrived ? null : journey.durationMinutes,
+        coachNumber: null, seat: null,
         torn: false, stamped: false, departedAt: null, logged: false, savedAt: new Date().toISOString()
       });
     }
@@ -1373,7 +1721,7 @@
     destroyMap();
     lastFraction = 0;
     setStage('plan');
-    window.dispatchEvent(new CustomEvent('ft:journey-changed'));
+    window.dispatchEvent(new CustomEvent('ft:journey-changed', { detail: { arrived: arrived, station: here } }));
   }
 
   function leaveTrain() {
@@ -1427,7 +1775,10 @@
     kagayaki: { a: '#1c3a78', b: '#c28a3c', top: 'transparent', jp: 'かがやき' },
     mizuho:   { a: '#1f4fa0', b: '#d9ad45', top: 'transparent', jp: 'みずほ' },
     sakura:   { a: '#1f4fa0', b: '#f08fb8', top: 'transparent', jp: 'さくら' },
-    toki:     { a: '#ef7db0', b: '#8fb7e8', top: 'transparent', jp: 'とき' }
+    toki:     { a: '#ef7db0', b: '#8fb7e8', top: 'transparent', jp: 'とき' },
+    komachi:  { a: '#d6282b', b: '#f4f6fb', top: 'transparent', jp: 'こまち' },
+    azusa:    { a: '#6a4fb3', b: '#f4f6fb', top: 'transparent', jp: 'あずさ' },
+    romancecar: { a: '#c9341a', b: '#f4f6fb', top: 'transparent', jp: 'ロマンスカー' }
   };
   function applyLivery(train, name) {
     var key = String(name || '').toLowerCase().split(' ')[0];
@@ -1618,9 +1969,14 @@
   window.FocusTrainStats = {
     history: readHistory,
     cityName: function (id) { return CITIES[id] ? CITIES[id].name : id; },
+    // Villes traversées de bout en bout (départ et arrivée compris) : sert à écarter les correspondances absurdes.
+    path: function (from, to) {
+      try { return routeStations(from, to).filter(function (st) { return st.isCity; }).map(function (st) { return st.id; }); } catch (error) { return [from, to]; }
+    },
     // Gares intermédiaires entre deux villes (sans le départ ni le terminus), pour le tableau des départs.
     stops: function (from, to) {
       try { return routeStations(from, to).slice(1, -1).map(function (st) { return st.name; }); } catch (error) { return []; }
     }
   };
+  try { window.dispatchEvent(new Event('focustrain:ready')); } catch (error) { /* ignoré */ }
 })();
