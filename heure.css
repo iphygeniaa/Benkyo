@@ -1,0 +1,153 @@
+/* =========================================================================
+   BENKYŌ — Thèmes selon l'heure (aube · midi · crépuscule · nuit)
+   -------------------------------------------------------------------------
+   L'attribut data-tod est posé sur <html> par heure.js.
+   À charger APRÈS home.css / style.css / pages.css.
+
+   Règles du jeu :
+   - L'IMAGE DE FOND NE CHANGE JAMAIS (toujours fond-japon.jpg). Seul le voile
+     de couleur par-dessus change, ainsi que le verre, l'encre et les ombres.
+   - Les saisons restent actives : elles gardent leur couleur d'accent
+     (--rose…), la teinte de la photo, les particules et les bandeaux.
+   - Pas de transition sur le fond : le thème ne change qu'une fois par plage
+     horaire, et on évite tout scintillement.
+   ========================================================================= */
+
+/* ---------- Variables communes à toutes les pages ---------- */
+html[data-tod="aube"] {
+  /* Lever du jour : ciel lavande-bleuté en haut, rose au milieu, soleil doré à l'horizon. */
+  --tod-veil: linear-gradient(180deg, rgba(142, 160, 232, .46) 0%, rgba(240, 168, 206, .38) 46%, rgba(255, 206, 150, .34) 100%),
+              radial-gradient(980px 560px at 50% 112%, rgba(255, 220, 130, .70), rgba(255, 176, 128, .28) 44%, transparent 74%);
+  --bg-filter: saturate(1.12) brightness(1.02);
+  --ink: #3c2a55; --ink-soft: #5b4678; --ink-faint: #75608f;
+  --bento-text-primary: #3c2a55; --bento-text-secondary: #4a3664; --bento-text-muted: #5b4678; --bento-text-faint: #75608f;
+  --sh-rgb: 96, 64, 128; --sh-deep-rgb: 70, 44, 110; --haze-rgb: 255, 214, 214;
+  --bg-base: #e9cde0; --bg-wash: rgba(180, 150, 235, .14);
+  --glass: rgba(255, 246, 250, .58); --glass-strong: rgba(255, 248, 251, .82); --glass-edge: rgba(255, 255, 255, .80);
+  --bento-bg: #ead2e2; --bento-bg-soft: #f4e4ee; --bento-sidebar: #fff6fa;
+  --bento-card-bg: rgba(255, 246, 250, .66); --bento-card-bg-strong: rgba(255, 248, 251, .88);
+  --bento-shadow: 0 18px 44px -18px rgba(96, 64, 128, .36), inset 0 1px 0 rgba(255, 255, 255, .72);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(96, 64, 128, .44), inset 0 1px 0 rgba(255, 255, 255, .76);
+}
+
+html[data-tod="midi"] {
+  --tod-veil: linear-gradient(180deg, rgba(255, 252, 246, .22) 0%, rgba(244, 250, 255, .16) 100%);
+  --sh-rgb: 60, 64, 86; --sh-deep-rgb: 40, 44, 66; --haze-rgb: 255, 244, 240;
+  --bg-base: #ece4e8; --bg-wash: rgba(255, 255, 255, .14);
+  --glass: rgba(255, 255, 255, .58); --glass-strong: rgba(255, 255, 255, .82); --glass-edge: rgba(255, 255, 255, .85);
+  --bento-bg: #eee6ea; --bento-bg-soft: #f5eff2; --bento-sidebar: #ffffff;
+  --bento-card-bg: rgba(255, 255, 255, .68); --bento-card-bg-strong: rgba(255, 255, 255, .90);
+  --bento-shadow: 0 18px 44px -18px rgba(60, 64, 86, .30), inset 0 1px 0 rgba(255, 255, 255, .8);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(60, 64, 86, .38), inset 0 1px 0 rgba(255, 255, 255, .85);
+}
+
+html[data-tod="crepuscule"] {
+  /* Coucher de soleil : indigo en haut, violet, rose corail, puis or à l'horizon. */
+  --tod-veil: linear-gradient(180deg, rgba(44, 38, 124, .64) 0%, rgba(122, 56, 156, .48) 36%, rgba(236, 96, 130, .40) 70%, rgba(255, 164, 84, .42) 100%),
+              radial-gradient(980px 560px at 50% 112%, rgba(255, 184, 84, .70), rgba(255, 120, 90, .26) 46%, transparent 76%);
+  --bg-filter: saturate(1.18) brightness(.88) contrast(1.04);
+  --ink: #34204e; --ink-soft: #55396f; --ink-faint: #6e5388;
+  --bento-text-primary: #34204e; --bento-text-secondary: #43285e; --bento-text-muted: #55396f; --bento-text-faint: #6e5388;
+  --sh-rgb: 46, 24, 90; --sh-deep-rgb: 32, 16, 70; --haze-rgb: 255, 160, 140;
+  --bg-base: #6a3f86; --bg-wash: rgba(110, 50, 150, .18);
+  --glass: rgba(251, 240, 250, .62); --glass-strong: rgba(252, 243, 251, .86); --glass-edge: rgba(255, 226, 214, .70);
+  --bento-bg: #5e3a80; --bento-bg-soft: #70478f; --bento-sidebar: #fbf0fa;
+  --bento-card-bg: rgba(251, 240, 250, .68); --bento-card-bg-strong: rgba(252, 243, 251, .90);
+  --bento-shadow: 0 18px 44px -18px rgba(32, 16, 70, .54), inset 0 1px 0 rgba(255, 236, 226, .66);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(32, 16, 70, .62), inset 0 1px 0 rgba(255, 236, 226, .72);
+}
+
+html[data-tod="nuit"] {
+  --tod-veil: linear-gradient(180deg, rgba(12, 16, 50, .68) 0%, rgba(28, 32, 84, .58) 100%),
+              radial-gradient(520px 380px at 84% 6%, rgba(196, 206, 255, .20), transparent 70%);
+  --ink: #1c2246; --ink-soft: #384070; --ink-faint: #4e5688;
+  --bento-text-primary: #1c2246; --bento-text-secondary: #2a3158; --bento-text-muted: #384070; --bento-text-faint: #4e5688;
+  --sh-rgb: 8, 10, 40; --sh-deep-rgb: 8, 10, 36; --haze-rgb: 120, 130, 210;
+  --bg-base: #232a52; --bg-wash: rgba(14, 18, 60, .40);
+  --glass: rgba(224, 230, 251, .66); --glass-strong: rgba(228, 233, 252, .88); --glass-edge: rgba(214, 222, 255, .55);
+  --bento-bg: #232a52; --bento-bg-soft: #2d3562; --bento-sidebar: #e6eafc;
+  --bento-card-bg: rgba(224, 230, 251, .70); --bento-card-bg-strong: rgba(228, 233, 252, .90);
+  --bento-inner-bg: rgba(255, 255, 255, .50); --bento-inner-bg-hover: rgba(255, 255, 255, .76);
+  --bento-border: rgba(214, 222, 255, .55);
+  --bento-shadow: 0 18px 44px -18px rgba(4, 6, 30, .62), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(4, 6, 30, .70), inset 0 1px 0 rgba(255, 255, 255, .55);
+}
+
+/* ---------- Pages « To-do », « Calendrier », etc. (pages.css) ----------
+   pages.css redéfinit ses variables sur body.pg : on les reprend ici. */
+html[data-tod="aube"] body.pg       { --ink: #3c2a55; --ink-soft: #5b4678; --ink-faint: #75608f; --glass: rgba(255, 246, 250, .62); --glass-strong: rgba(255, 248, 251, .88); --glass-edge: rgba(255, 255, 255, .82); --sh-rgb: 96, 64, 128; }
+html[data-tod="midi"] body.pg       { --glass: rgba(255, 255, 255, .62); --glass-strong: rgba(255, 255, 255, .88); --glass-edge: rgba(255, 255, 255, .88); --sh-rgb: 60, 64, 86; }
+html[data-tod="crepuscule"] body.pg { --ink: #34204e; --ink-soft: #55396f; --ink-faint: #6e5388; --glass: rgba(251, 240, 250, .66); --glass-strong: rgba(252, 243, 251, .90); --glass-edge: rgba(255, 226, 214, .74); --sh-rgb: 46, 24, 90; }
+html[data-tod="nuit"] body.pg       { --ink: #1c2246; --ink-soft: #384070; --ink-faint: #4e5688; --glass: rgba(224, 230, 251, .70); --glass-strong: rgba(228, 233, 252, .90); --glass-edge: rgba(214, 222, 255, .58); --sh-rgb: 8, 10, 40; }
+
+/* ---------- Fond des pages intérieures (style.css) ----------
+   Même photo qu'avant ; seul le voile change selon l'heure. */
+html[data-tod] body::before {
+  background:
+    var(--tod-veil),
+    url('fond-japon.jpg') center / cover no-repeat !important;
+}
+
+/* ---------- Accueil : le voile par-dessus la photo (home.css) ----------
+   La photo (.bg::before) et son filtre de saison ne sont pas touchés. */
+html[data-tod] body.home .bg::after {
+  background:
+    var(--tod-veil),
+    linear-gradient(180deg, rgba(var(--sh-deep-rgb), .34) 0%, rgba(var(--sh-deep-rgb), .10) 34%, rgba(var(--haze-rgb), .10) 60%, rgba(255, 255, 255, 0) 100%);
+}
+
+
+/* ---------- Nuit et crépuscule : textes posés DIRECTEMENT sur le fond ----------
+   Les titres et barres d'onglets de Pomodoro, Pense-bête et Grandes vacances
+   ne sont pas dans une carte de verre : en encre sombre ils disparaîtraient
+   sur le voile nocturne (ou sur le haut indigo du ciel du soir), on les passe en clair. */
+html[data-tod="nuit"] .imm-page-title,
+html[data-tod="crepuscule"] .imm-page-title,
+html[data-tod="nuit"] .pb-head h1,
+html[data-tod="crepuscule"] .pb-head h1,
+html[data-tod="nuit"] #tab-vacation > div:first-child h1,
+html[data-tod="crepuscule"] #tab-vacation > div:first-child h1 {
+  color: #f6f4ff !important; text-shadow: 0 1px 14px rgba(6, 8, 30, .65) !important;
+}
+html[data-tod="nuit"] .pb-head p,
+html[data-tod="crepuscule"] .pb-head p,
+html[data-tod="nuit"] #tab-vacation > div:first-child p,
+html[data-tod="crepuscule"] #tab-vacation > div:first-child p { color: #d8dcf8 !important; }
+html[data-tod="nuit"] .imm-tabbar,
+html[data-tod="crepuscule"] .imm-tabbar,
+html[data-tod="nuit"] #vacation-subtabs,
+html[data-tod="crepuscule"] #vacation-subtabs { border-color: rgba(214, 222, 255, .35) !important; }
+html[data-tod="nuit"] .imm-tabbar > button,
+html[data-tod="crepuscule"] .imm-tabbar > button,
+html[data-tod="nuit"] #vacation-subtabs .subtab-btn,
+html[data-tod="crepuscule"] #vacation-subtabs .subtab-btn { color: #dde0ff !important; }
+html[data-tod="nuit"] .imm-tabbar > button.text-brand-purple,
+html[data-tod="crepuscule"] .imm-tabbar > button.text-brand-purple { color: #ffc6dc !important; border-color: #ffc6dc !important; }
+html[data-tod="nuit"] #vacation-subtabs .subtab-btn.is-active-emerald,
+html[data-tod="crepuscule"] #vacation-subtabs .subtab-btn.is-active-emerald { color: #7fe3bd !important; border-bottom-color: #7fe3bd !important; }
+
+/* ---------- Lucioles du soir (créées par heure.js au crépuscule et la nuit) ----------
+   Derrière les cartes, sans clic. Pas de lucioles les jours de fête (le décor de fête prend la place). */
+.tod-fireflies { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; contain: layout paint; }
+.tod-fly {
+  position: absolute; left: var(--x, 50vw); top: var(--y, 60vh);
+  width: var(--s, 5px); height: var(--s, 5px); border-radius: 50%; opacity: 0; will-change: transform, opacity;
+  background: radial-gradient(circle, #fffde0 0%, #fff08a 42%, #cfe84e 100%);
+  box-shadow: 0 0 5px 2px rgba(255, 244, 140, .9), 0 0 16px 7px rgba(214, 238, 90, .5), 0 0 34px 14px rgba(190, 230, 80, .2);
+  animation:
+    tod-fly-move var(--mv, 20s) ease-in-out var(--d1, 0s) infinite,
+    tod-fly-blink var(--bl, 3.600s) ease-in-out var(--d2, 0s) infinite;
+}
+@keyframes tod-fly-move {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(var(--dx, 10vw), calc(var(--dy, 8vh) * -1)); }
+  50%      { transform: translate(calc(var(--dx, 10vw) * .35), var(--dy, 8vh)); }
+  75%      { transform: translate(calc(var(--dx, 10vw) * -.8), calc(var(--dy, 8vh) * .4)); }
+}
+@keyframes tod-fly-blink {
+  0%, 100% { opacity: 0; }
+  30%, 58% { opacity: var(--op, .95); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tod-fly { animation: none; opacity: .6; }
+}

@@ -1,0 +1,334 @@
+/* =========================================================================
+   BENKYŌ — Ambiances des jours de fête
+   (Halloween · veille de Noël · Noël · Saint-Sylvestre · Nouvel An)
+   -------------------------------------------------------------------------
+   L'attribut data-fete est posé sur <html> par fete.js, le jour J seulement.
+   À charger APRÈS heure.css : le thème de fête prend alors le dessus sur le
+   thème de l'heure (même liste de variables, donc rien ne « fuit »).
+
+   Règles du jeu (les mêmes que heure.css) :
+   - L'IMAGE DE FOND NE CHANGE JAMAIS (toujours fond-japon.jpg) ; sur
+     l'accueil elle reçoit seulement une teinte, comme avec les saisons.
+   - Tous les thèmes de fête ont un voile SOMBRE : le texte posé directement
+     sur le fond est clair, le verre des cartes reste clair, encre foncée.
+   - Le décor (citrouilles, flocons, étincelles…) est derrière les cartes,
+     ne reçoit aucun clic et s'arrête si « réduire les animations » est activé.
+   - Aperçu : ?fete=halloween | veille-noel | noel | sylvestre | nouvel-an
+   ========================================================================= */
+
+/* ---------- Halloween · 31 octobre — violet nuit, orange citrouille ---------- */
+html[data-fete="halloween"] {
+  --tod-veil: linear-gradient(180deg, rgba(24, 10, 44, .74) 0%, rgba(58, 22, 70, .58) 56%, rgba(120, 52, 20, .46) 100%),
+              radial-gradient(900px 520px at 50% 110%, rgba(255, 130, 30, .42), transparent 70%);
+  --ink: #2b1636; --ink-soft: #4a2a58; --ink-faint: #62407a;
+  --bento-text-primary: #2b1636; --bento-text-secondary: #2b1636; --bento-text-muted: #4a2a58; --bento-text-faint: #62407a;
+  --sh-rgb: 20, 8, 36; --sh-deep-rgb: 16, 6, 30; --haze-rgb: 255, 150, 60;
+  --bg-base: #2a1636; --bg-wash: rgba(60, 20, 80, .30); --bg-filter: brightness(.82) saturate(.75) hue-rotate(-14deg);
+  --glass: rgba(255, 241, 226, .68); --glass-strong: rgba(255, 244, 232, .88); --glass-edge: rgba(255, 214, 170, .60);
+  --bento-bg: #2a1636; --bento-bg-soft: #3a2050; --bento-sidebar: #fff1e2;
+  --bento-card-bg: rgba(255, 241, 226, .70); --bento-card-bg-strong: rgba(255, 244, 232, .90);
+  --bento-inner-bg: rgba(255, 255, 255, .50); --bento-inner-bg-hover: rgba(255, 255, 255, .76);
+  --bento-border: rgba(255, 190, 120, .50);
+  --bento-shadow: 0 18px 44px -18px rgba(20, 8, 36, .62), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(20, 8, 36, .70), inset 0 1px 0 rgba(255, 255, 255, .55);
+  --rose: #d9631a; --rose-rgb: 217, 99, 26; --rose-soft: #f0a15e; --rose-pale: #fde3c8; --rose-dark: #b04e10;
+  --grad-a: #ffb26b; --grad-b: #d9631a;
+  --fete-accent: #d9631a;
+}
+
+/* ---------- Veille de Noël · 24 décembre — bleu nuit étoilée, or chaud ---------- */
+html[data-fete="veille-noel"] {
+  --tod-veil: linear-gradient(180deg, rgba(10, 20, 58, .72) 0%, rgba(22, 40, 96, .56) 62%, rgba(150, 100, 50, .34) 100%),
+              radial-gradient(900px 520px at 50% 112%, rgba(255, 196, 110, .40), transparent 70%);
+  --ink: #17264a; --ink-soft: #32466f; --ink-faint: #4c6088;
+  --bento-text-primary: #17264a; --bento-text-secondary: #17264a; --bento-text-muted: #32466f; --bento-text-faint: #4c6088;
+  --sh-rgb: 6, 12, 40; --sh-deep-rgb: 6, 12, 38; --haze-rgb: 255, 214, 150;
+  --bg-base: #16264a; --bg-wash: rgba(14, 30, 80, .30); --bg-filter: saturate(.35) brightness(.78) hue-rotate(190deg);
+  --glass: rgba(236, 242, 255, .68); --glass-strong: rgba(240, 245, 255, .88); --glass-edge: rgba(255, 232, 190, .58);
+  --bento-bg: #16264a; --bento-bg-soft: #223562; --bento-sidebar: #eef3ff;
+  --bento-card-bg: rgba(236, 242, 255, .70); --bento-card-bg-strong: rgba(240, 245, 255, .90);
+  --bento-inner-bg: rgba(255, 255, 255, .50); --bento-inner-bg-hover: rgba(255, 255, 255, .76);
+  --bento-border: rgba(255, 226, 170, .46);
+  --bento-shadow: 0 18px 44px -18px rgba(6, 12, 40, .62), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(6, 12, 40, .70), inset 0 1px 0 rgba(255, 255, 255, .55);
+  --rose: #b8801f; --rose-rgb: 184, 128, 31; --rose-soft: #e8c070; --rose-pale: #fbefcf; --rose-dark: #946414;
+  --grad-a: #f2d58a; --grad-b: #b8801f;
+  --fete-accent: #b8801f;
+}
+
+/* ---------- Noël · 25 décembre — rouge houx, vert sapin, or ---------- */
+html[data-fete="noel"] {
+  --tod-veil: linear-gradient(180deg, rgba(110, 14, 34, .66) 0%, rgba(70, 22, 40, .54) 55%, rgba(16, 70, 46, .56) 100%),
+              radial-gradient(800px 480px at 50% 112%, rgba(255, 210, 120, .30), transparent 70%);
+  --ink: #3a1420; --ink-soft: #5e2a36; --ink-faint: #7a4450;
+  --bento-text-primary: #3a1420; --bento-text-secondary: #3a1420; --bento-text-muted: #5e2a36; --bento-text-faint: #7a4450;
+  --sh-rgb: 60, 8, 20; --sh-deep-rgb: 50, 6, 18; --haze-rgb: 255, 190, 160;
+  --bg-base: #4a1424; --bg-wash: rgba(120, 16, 40, .24); --bg-filter: saturate(.55) brightness(.84) hue-rotate(-28deg);
+  --glass: rgba(255, 244, 238, .70); --glass-strong: rgba(255, 246, 241, .89); --glass-edge: rgba(255, 226, 190, .62);
+  --bento-bg: #4a1424; --bento-bg-soft: #5c2030; --bento-sidebar: #fff4ee;
+  --bento-card-bg: rgba(255, 244, 238, .72); --bento-card-bg-strong: rgba(255, 246, 241, .91);
+  --bento-inner-bg: rgba(255, 255, 255, .50); --bento-inner-bg-hover: rgba(255, 255, 255, .76);
+  --bento-border: rgba(255, 214, 160, .50);
+  --bento-shadow: 0 18px 44px -18px rgba(60, 8, 20, .62), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(60, 8, 20, .70), inset 0 1px 0 rgba(255, 255, 255, .55);
+  --rose: #b3202f; --rose-rgb: 179, 32, 47; --rose-soft: #e88a94; --rose-pale: #fbd9dd; --rose-dark: #8f1824;
+  --grad-a: #f08a96; --grad-b: #b3202f;
+  --fete-accent: #b3202f;
+}
+
+/* ---------- Saint-Sylvestre · 31 décembre — nuit de feu d'artifice, champagne ---------- */
+html[data-fete="sylvestre"] {
+  --tod-veil: linear-gradient(180deg, rgba(14, 10, 46, .76) 0%, rgba(40, 24, 90, .60) 60%, rgba(120, 70, 120, .38) 100%),
+              radial-gradient(900px 520px at 50% 112%, rgba(255, 200, 120, .34), transparent 70%);
+  --ink: #2a2340; --ink-soft: #463d66; --ink-faint: #605782;
+  --bento-text-primary: #2a2340; --bento-text-secondary: #2a2340; --bento-text-muted: #463d66; --bento-text-faint: #605782;
+  --sh-rgb: 10, 6, 40; --sh-deep-rgb: 10, 6, 36; --haze-rgb: 200, 160, 255;
+  --bg-base: #1d1a45; --bg-wash: rgba(30, 20, 90, .30); --bg-filter: saturate(.4) brightness(.76) hue-rotate(230deg);
+  --glass: rgba(250, 245, 236, .68); --glass-strong: rgba(252, 248, 240, .88); --glass-edge: rgba(255, 228, 170, .58);
+  --bento-bg: #1d1a45; --bento-bg-soft: #2a2560; --bento-sidebar: #faf5ec;
+  --bento-card-bg: rgba(250, 245, 236, .70); --bento-card-bg-strong: rgba(252, 248, 240, .90);
+  --bento-inner-bg: rgba(255, 255, 255, .50); --bento-inner-bg-hover: rgba(255, 255, 255, .76);
+  --bento-border: rgba(255, 220, 150, .48);
+  --bento-shadow: 0 18px 44px -18px rgba(10, 6, 40, .62), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(10, 6, 40, .70), inset 0 1px 0 rgba(255, 255, 255, .55);
+  --rose: #8a5cc4; --rose-rgb: 138, 92, 196; --rose-soft: #bda0e8; --rose-pale: #e9defa; --rose-dark: #6e44a6;
+  --grad-a: #d3bcf2; --grad-b: #8a5cc4;
+  --fete-accent: #8a5cc4;
+}
+
+/* ---------- Nouvel An · 1er janvier — premier lever de soleil (hatsuhinode), rouge et or ---------- */
+html[data-fete="nouvel-an"] {
+  --tod-veil: linear-gradient(180deg, rgba(130, 20, 44, .62) 0%, rgba(196, 70, 70, .42) 58%, rgba(252, 178, 84, .38) 100%),
+              radial-gradient(900px 560px at 50% 112%, rgba(255, 214, 120, .52), transparent 70%);
+  --ink: #4a1a24; --ink-soft: #6e3340; --ink-faint: #884c58;
+  --bento-text-primary: #4a1a24; --bento-text-secondary: #4a1a24; --bento-text-muted: #6e3340; --bento-text-faint: #884c58;
+  --sh-rgb: 90, 18, 34; --sh-deep-rgb: 70, 12, 28; --haze-rgb: 255, 200, 150;
+  --bg-base: #5a1a2c; --bg-wash: rgba(160, 30, 50, .20); --bg-filter: saturate(.8) brightness(.9) hue-rotate(-12deg);
+  --glass: rgba(255, 247, 240, .70); --glass-strong: rgba(255, 249, 244, .89); --glass-edge: rgba(255, 232, 190, .66);
+  --bento-bg: #5a1a2c; --bento-bg-soft: #702638; --bento-sidebar: #fff7f0;
+  --bento-card-bg: rgba(255, 247, 240, .72); --bento-card-bg-strong: rgba(255, 249, 244, .91);
+  --bento-inner-bg: rgba(255, 255, 255, .50); --bento-inner-bg-hover: rgba(255, 255, 255, .76);
+  --bento-border: rgba(255, 222, 170, .52);
+  --bento-shadow: 0 18px 44px -18px rgba(90, 18, 34, .62), inset 0 1px 0 rgba(255, 255, 255, .5);
+  --bento-shadow-lg: 0 24px 52px -18px rgba(90, 18, 34, .70), inset 0 1px 0 rgba(255, 255, 255, .55);
+  --rose: #c1272d; --rose-rgb: 193, 39, 45; --rose-soft: #ec8c8f; --rose-pale: #fcdcdc; --rose-dark: #9d1c21;
+  --grad-a: #f5a5a8; --grad-b: #c1272d;
+  --fete-accent: #c1272d;
+}
+
+/* ---------- Pages « To-do », « Calendrier », etc. (pages.css) ---------- */
+html[data-fete="halloween"] body.pg { --ink: #2b1636; --ink-soft: #4a2a58; --ink-faint: #62407a; --glass: rgba(255, 241, 226, .68); --glass-strong: rgba(255, 244, 232, .88); --glass-edge: rgba(255, 214, 170, .60); --sh-rgb: 20, 8, 36; }
+html[data-fete="veille-noel"] body.pg { --ink: #17264a; --ink-soft: #32466f; --ink-faint: #4c6088; --glass: rgba(236, 242, 255, .68); --glass-strong: rgba(240, 245, 255, .88); --glass-edge: rgba(255, 232, 190, .58); --sh-rgb: 6, 12, 40; }
+html[data-fete="noel"] body.pg { --ink: #3a1420; --ink-soft: #5e2a36; --ink-faint: #7a4450; --glass: rgba(255, 244, 238, .70); --glass-strong: rgba(255, 246, 241, .89); --glass-edge: rgba(255, 226, 190, .62); --sh-rgb: 60, 8, 20; }
+html[data-fete="sylvestre"] body.pg { --ink: #2a2340; --ink-soft: #463d66; --ink-faint: #605782; --glass: rgba(250, 245, 236, .68); --glass-strong: rgba(252, 248, 240, .88); --glass-edge: rgba(255, 228, 170, .58); --sh-rgb: 10, 6, 40; }
+html[data-fete="nouvel-an"] body.pg { --ink: #4a1a24; --ink-soft: #6e3340; --ink-faint: #884c58; --glass: rgba(255, 247, 240, .70); --glass-strong: rgba(255, 249, 244, .89); --glass-edge: rgba(255, 232, 190, .66); --sh-rgb: 90, 18, 34; }
+
+/* ---------- Fond des pages intérieures et de l'accueil : même voile que heure.css ---------- */
+html[data-fete] body::before {
+  background:
+    var(--tod-veil),
+    url('fond-japon.jpg') center / cover no-repeat !important;
+}
+html[data-fete] body.home .bg::after {
+  background:
+    var(--tod-veil),
+    linear-gradient(180deg, rgba(var(--sh-deep-rgb), .34) 0%, rgba(var(--sh-deep-rgb), .10) 34%, rgba(var(--haze-rgb), .10) 60%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* ---------- Textes posés DIRECTEMENT sur le fond (pas dans une carte de verre) ----------
+   Voile sombre : on les passe en clair, comme heure.css le fait la nuit. */
+html[data-fete="halloween"] .imm-page-title,
+html[data-fete="veille-noel"] .imm-page-title,
+html[data-fete="noel"] .imm-page-title,
+html[data-fete="sylvestre"] .imm-page-title,
+html[data-fete="nouvel-an"] .imm-page-title {
+  color: #fff7ee !important; text-shadow: 0 1px 14px rgba(var(--sh-deep-rgb), .70) !important;
+}
+html[data-fete="halloween"] .pb-head h1,
+html[data-fete="veille-noel"] .pb-head h1,
+html[data-fete="noel"] .pb-head h1,
+html[data-fete="sylvestre"] .pb-head h1,
+html[data-fete="nouvel-an"] .pb-head h1 {
+  color: #fff7ee !important; text-shadow: 0 1px 14px rgba(var(--sh-deep-rgb), .70) !important;
+}
+html[data-fete="halloween"] #tab-vacation > div:first-child h1,
+html[data-fete="veille-noel"] #tab-vacation > div:first-child h1,
+html[data-fete="noel"] #tab-vacation > div:first-child h1,
+html[data-fete="sylvestre"] #tab-vacation > div:first-child h1,
+html[data-fete="nouvel-an"] #tab-vacation > div:first-child h1 {
+  color: #fff7ee !important; text-shadow: 0 1px 14px rgba(var(--sh-deep-rgb), .70) !important;
+}
+html[data-fete="halloween"] .pb-head p,
+html[data-fete="veille-noel"] .pb-head p,
+html[data-fete="noel"] .pb-head p,
+html[data-fete="sylvestre"] .pb-head p,
+html[data-fete="nouvel-an"] .pb-head p {
+  color: #f1e4dc !important;
+}
+html[data-fete="halloween"] #tab-vacation > div:first-child p,
+html[data-fete="veille-noel"] #tab-vacation > div:first-child p,
+html[data-fete="noel"] #tab-vacation > div:first-child p,
+html[data-fete="sylvestre"] #tab-vacation > div:first-child p,
+html[data-fete="nouvel-an"] #tab-vacation > div:first-child p {
+  color: #f1e4dc !important;
+}
+html[data-fete="halloween"] .imm-tabbar,
+html[data-fete="veille-noel"] .imm-tabbar,
+html[data-fete="noel"] .imm-tabbar,
+html[data-fete="sylvestre"] .imm-tabbar,
+html[data-fete="nouvel-an"] .imm-tabbar {
+  border-color: rgba(255, 240, 225, .38) !important;
+}
+html[data-fete="halloween"] #vacation-subtabs,
+html[data-fete="veille-noel"] #vacation-subtabs,
+html[data-fete="noel"] #vacation-subtabs,
+html[data-fete="sylvestre"] #vacation-subtabs,
+html[data-fete="nouvel-an"] #vacation-subtabs {
+  border-color: rgba(255, 240, 225, .38) !important;
+}
+html[data-fete="halloween"] .imm-tabbar > button,
+html[data-fete="veille-noel"] .imm-tabbar > button,
+html[data-fete="noel"] .imm-tabbar > button,
+html[data-fete="sylvestre"] .imm-tabbar > button,
+html[data-fete="nouvel-an"] .imm-tabbar > button {
+  color: #f4e8e0 !important;
+}
+html[data-fete="halloween"] #vacation-subtabs .subtab-btn,
+html[data-fete="veille-noel"] #vacation-subtabs .subtab-btn,
+html[data-fete="noel"] #vacation-subtabs .subtab-btn,
+html[data-fete="sylvestre"] #vacation-subtabs .subtab-btn,
+html[data-fete="nouvel-an"] #vacation-subtabs .subtab-btn {
+  color: #f4e8e0 !important;
+}
+html[data-fete="halloween"] .imm-tabbar > button.text-brand-purple,
+html[data-fete="veille-noel"] .imm-tabbar > button.text-brand-purple,
+html[data-fete="noel"] .imm-tabbar > button.text-brand-purple,
+html[data-fete="sylvestre"] .imm-tabbar > button.text-brand-purple,
+html[data-fete="nouvel-an"] .imm-tabbar > button.text-brand-purple { color: #ffd0a8 !important; border-color: #ffd0a8 !important; }
+html[data-fete="halloween"] #vacation-subtabs .subtab-btn.is-active-emerald,
+html[data-fete="veille-noel"] #vacation-subtabs .subtab-btn.is-active-emerald,
+html[data-fete="noel"] #vacation-subtabs .subtab-btn.is-active-emerald,
+html[data-fete="sylvestre"] #vacation-subtabs .subtab-btn.is-active-emerald,
+html[data-fete="nouvel-an"] #vacation-subtabs .subtab-btn.is-active-emerald { color: #9ff0c8 !important; border-bottom-color: #9ff0c8 !important; }
+
+/* =========================================================================
+   Décor flottant (créé par fete.js : <div class="fete-decor">)
+   Derrière les cartes (z-index -1), sans clic, plafonné à ~18 éléments.
+   ========================================================================= */
+.fete-decor {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  contain: layout paint;
+}
+.fete-item {
+  position: absolute; left: var(--x, 50vw); top: 0;
+  width: calc(var(--s, 30px) * var(--k, 1)); height: calc(var(--s, 30px) * var(--k, 1));
+  opacity: 0; will-change: transform, opacity;
+  animation-duration: var(--dur, 16s); animation-delay: var(--delay, 0s);
+  animation-iteration-count: infinite; animation-timing-function: linear;
+}
+@media (min-width: 1000px) { .fete-decor { --k: 1.3; } }
+.fs-ghost { filter: drop-shadow(0 0 10px rgba(255, 255, 255, .55)); }
+.fs-star, .fs-firework, .fs-snow { filter: drop-shadow(0 0 5px rgba(255, 240, 200, .7)); }
+.fs-pumpkin, .fs-bauble, .fs-gift, .fs-tree, .fs-ume, .fs-bat, .fs-confetti { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .28)); }
+.fete-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.fete-item:has(svg[viewBox="0 0 100 40"]) { height: calc(var(--s, 30px) * var(--k, 1) * .4); }
+.fete-item:has(svg[viewBox="0 0 10 16"]) { height: calc(var(--s, 30px) * var(--k, 1) * 1.6); }
+.fete-item:has(svg[viewBox="0 0 40 52"]) { height: calc(var(--s, 30px) * var(--k, 1) * 1.3); }
+
+/* tombe du haut vers le bas, en se balançant */
+.fete-fall { animation-name: fete-fall; }
+@keyframes fete-fall {
+  0%   { transform: translate3d(0, -14vh, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: var(--op, .8); }
+  50%  { transform: translate3d(calc(var(--dx, 4vw) * .5), 50vh, 0) rotate(calc(var(--rot, 90deg) * .5)); }
+  92%  { opacity: var(--op, .8); }
+  100% { transform: translate3d(var(--dx, 4vw), 112vh, 0) rotate(var(--rot, 180deg)); opacity: 0; }
+}
+
+/* monte du bas vers le haut, doucement */
+.fete-rise { animation-name: fete-rise; }
+@keyframes fete-rise {
+  0%   { transform: translate3d(0, 112vh, 0) rotate(-6deg); opacity: 0; }
+  10%  { opacity: var(--op, .7); }
+  30%  { transform: translate3d(calc(var(--dx, 4vw) * .6), 78vh, 0) rotate(6deg); }
+  60%  { transform: translate3d(calc(var(--dx, 4vw) * -.4), 42vh, 0) rotate(-6deg); }
+  90%  { opacity: var(--op, .7); }
+  100% { transform: translate3d(var(--dx, 4vw), -16vh, 0) rotate(4deg); opacity: 0; }
+}
+
+/* traverse l'écran de gauche à droite (ou l'inverse) en ondulant — chauves-souris */
+.fete-drift { top: var(--y, 20vh); animation-name: fete-drift; }
+.fete-drift svg { transform: scaleX(var(--flip, 1)); animation: fete-flap calc(var(--dur, 16s) / 22) ease-in-out infinite alternate; transform-origin: 50% 60%; }
+@keyframes fete-drift {
+  0%   { transform: translate3d(-18vw, 0, 0); opacity: 0; }
+  6%   { opacity: var(--op, .8); }
+  25%  { transform: translate3d(22vw, -7vh, 0); }
+  50%  { transform: translate3d(52vw, 5vh, 0); }
+  75%  { transform: translate3d(82vw, -6vh, 0); }
+  94%  { opacity: var(--op, .8); }
+  100% { transform: translate3d(114vw, 2vh, 0); opacity: 0; }
+}
+@keyframes fete-flap {
+  from { transform: scaleX(var(--flip, 1)) scaleY(1); }
+  to   { transform: scaleX(var(--flip, 1)) scaleY(.72); }
+}
+
+/* scintille sur place */
+.fete-twinkle { top: var(--y, 20vh); animation-name: fete-twinkle; animation-timing-function: ease-in-out; }
+@keyframes fete-twinkle {
+  0%, 100% { transform: scale(.25) rotate(0deg); opacity: 0; }
+  50%      { transform: scale(1) rotate(45deg); opacity: var(--op, .9); }
+}
+
+/* feu d'artifice : une gerbe qui s'ouvre puis s'éteint */
+.fete-burst { top: var(--y, 20vh); animation-name: fete-burst; animation-timing-function: cubic-bezier(.2, .7, .3, 1); }
+@keyframes fete-burst {
+  0%   { transform: scale(.15); opacity: 0; }
+  8%   { opacity: var(--op, .9); }
+  38%  { transform: scale(1); opacity: var(--op, .9); }
+  62%  { transform: scale(1.12); opacity: 0; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+
+/* lune orange d'Halloween */
+.fete-moon {
+  position: absolute; right: 7vw; top: 7vh; width: clamp(90px, 15vmin, 190px); aspect-ratio: 1; border-radius: 50%;
+  box-shadow: 0 0 60px 18px rgba(255, 170, 70, .34), 0 0 160px 60px rgba(255, 130, 40, .18);
+  opacity: .85;
+}
+.fete-moon svg { display: block; width: 100%; height: 100%; }
+/* halo doré en bas (veille de Noël, Saint-Sylvestre) */
+.fete-glow {
+  position: absolute; left: 50%; bottom: -30vh; width: 120vw; height: 60vh; transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(255, 206, 120, .32), transparent);
+}
+/* soleil rouge du premier matin de l'année */
+.fete-sun {
+  position: absolute; left: 50%; bottom: -14vmin; width: clamp(220px, 44vmin, 520px); aspect-ratio: 1; border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle at 50% 42%, #ff6a55 0%, #e03a3c 58%, #c1272d 100%);
+  box-shadow: 0 0 80px 26px rgba(255, 150, 90, .38), 0 0 220px 90px rgba(255, 190, 110, .22);
+  opacity: .72; animation: fete-sunrise 2.4s cubic-bezier(.2, .8, .2, 1) both;
+}
+.fete-sun::before {
+  content: ''; position: absolute; inset: -42%; border-radius: 50%; z-index: -1;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 226, 160, .30) 0deg 5deg, transparent 5deg 15deg);
+  -webkit-mask: radial-gradient(closest-side, transparent 38%, #000 52%, transparent 100%);
+          mask: radial-gradient(closest-side, transparent 38%, #000 52%, transparent 100%);
+  animation: fete-rays 140s linear infinite;
+}
+@keyframes fete-rays { to { transform: rotate(360deg); } }
+@keyframes fete-sunrise { from { transform: translate(-50%, 36%); opacity: 0; } to { transform: translate(-50%, 0); opacity: .72; } }
+
+@media (max-width: 640px) {
+  .fete-moon { right: 5vw; top: 4vh; }
+  .fete-sun  { bottom: -10vmin; }
+}
+
+/* Mouvement réduit : le décor reste, mais immobile et discret. */
+@media (prefers-reduced-motion: reduce) {
+  .fete-item { animation: none !important; opacity: calc(var(--op, .8) * .55); top: var(--y, 20vh); transform: none; }
+  .fete-item svg { animation: none !important; }
+  .fete-sun { animation: none; }
+  .fete-sun::before { animation: none; }
+}

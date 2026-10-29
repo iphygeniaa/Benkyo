@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-[#0a0e17] text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benkyō - Emploi du Temps</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="mask-icon" href="favicon.svg" color="#c1272d">
+  <meta name="theme-color" content="#0a0e17">
+  
+  <!-- Tailwind CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Bibliothèques JS chargées de manière différée -->
+  <script defer src="sakura.js"></script>
+
+  <style>.bg-dark-card{background-color:rgba(15, 20, 32, 0.85)}</style>
+  
+  <style>
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0a0e17; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    
+    .glass-panel { 
+      background: rgba(15, 20, 32, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    
+    .card-glow { 
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, box-shadow 0.2s; 
+    }
+    .card-glow:hover { 
+      border-color: rgba(232, 142, 178, 0.4); 
+      box-shadow: 0 0 25px -5px rgba(232, 142, 178, 0.25); 
+      transform: translateY(-2px); 
+    }
+    
+    .tab-content { transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; }
+    .tab-content.hidden { display: none; opacity: 0; transform: translateY(10px); }
+    .tab-content:not(.hidden) { opacity: 1; transform: translateY(0); }
+  </style>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tampons.css">
+  <!-- Suivi des séances de travail : polices japonaises (mincho + manuscrit) et style de l'onglet -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="suivi.css">
+  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="edt.css">
+  <!-- Thème selon l'heure (aube / midi / crépuscule / nuit) : après les autres feuilles de style -->
+  <link rel="stylesheet" href="heure.css">
+  <script src="heure.js"></script>
+  <!-- Ambiances des jours de fête (31/10, 24-25/12, 31/12, 1/1) : après heure.css / heure.js -->
+  <link rel="stylesheet" href="fete.css">
+  <script src="fete.js"></script>
+</head>
+<body class="pg h-full flex flex-col md:flex-row font-sans antialiased overflow-hidden text-slate-200 bg-[#0a0e17]">
+
+<!-- Navigation : onglet Menu (retour à l'accueil, d'où partent toutes les pages) -->
+  <a href="index.html" class="bk-menu-tab" aria-label="Menu — retour à l'accueil">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+    <span>Menu</span>
+  </a>
+  <!-- Éléments masqués conservés pour la compatibilité des scripts existants -->
+  <div hidden data-legacy-stubs><div><div><span id="streak-count">0</span></div></div><img id="sidebar-profile-img" alt=""></div>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <symbol id="ei-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+      <symbol id="ei-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+      <symbol id="ei-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></symbol>
+      <symbol id="ei-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+      <symbol id="ei-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+      <symbol id="ei-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+      <symbol id="ei-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="ei-week" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></symbol>
+      <symbol id="ei-day" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 15h8"/></symbol>
+      <symbol id="ei-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+      <symbol id="ei-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    </svg>
+
+    <div class="pg-shell edt" id="edt">
+
+      <!-- En-tête -->
+      <header class="pg-card edt-top">
+        <div class="edt-top-l">
+          <div class="edt-kanji" lang="ja" aria-hidden="true">時</div>
+          <div class="edt-top-txt">
+            <p class="pg-eyebrow">時間割 · Emploi du temps</p>
+            <h1 class="pg-title" id="edt-title">Mon emploi du temps</h1>
+            <p class="pg-muted" id="edt-sub"></p>
+          </div>
+        </div>
+        <div class="edt-tools">
+          <div class="rv-seg" role="group" aria-label="Affichage">
+            <button type="button" id="edt-v-week" data-view="week" class="is-active"><svg class="pg-ico"><use href="#ei-week"/></svg>Semaine</button>
+            <button type="button" id="edt-v-day" data-view="day"><svg class="pg-ico"><use href="#ei-day"/></svg>Jour</button>
+          </div>
+          <button type="button" id="edt-paste" class="pg-chip-btn hidden" title="Coller le créneau copié (Ctrl+V)"><svg class="pg-ico"><use href="#ei-copy"/></svg><span id="edt-paste-lab">Coller</span></button>
+          <button type="button" id="edt-today" class="pg-chip-btn accent">Aujourd'hui</button>
+          <button type="button" id="edt-add" class="pg-btn primary"><svg class="pg-ico"><use href="#ei-plus"/></svg>Créneau</button>
+        </div>
+      </header>
+
+      <!-- Maintenant / prochain cours -->
+      <section class="pg-card edt-now" id="edt-now" aria-live="polite"></section>
+
+      <!-- Vue semaine ou jour -->
+      <section id="edt-view"></section>
+
+    </div>
+  </main>
+
+  <!-- Modale : créneau -->
+  <div id="edt-modal" class="hidden pg-modal">
+    <div class="pg-sheet" role="dialog" aria-modal="true" aria-labelledby="edt-modal-title">
+      <p class="pg-eyebrow" id="edt-modal-eyebrow">Créneau</p>
+      <h3 id="edt-modal-title" class="pg-title">Nouveau créneau</h3>
+      <form id="edt-form" autocomplete="off" novalidate>
+        <div class="pg-field"><label class="pg-label" for="edt-f-title">Cours ou activité</label>
+          <input type="text" id="edt-f-title" class="pg-input" list="edt-titles" placeholder="Ex : Mathématiques, Sport…" maxlength="120">
+          <datalist id="edt-titles"></datalist></div>
+        <div class="pg-field"><span class="pg-label" id="edt-days-label">Jours</span>
+          <div id="edt-f-days" class="rv-chips" role="group" aria-labelledby="edt-days-label"></div></div>
+        <div class="pg-field pg-row">
+          <div><label class="pg-label" for="edt-f-start">Début</label><input type="time" id="edt-f-start" class="pg-input"></div>
+          <div><label class="pg-label" for="edt-f-end">Fin</label><input type="time" id="edt-f-end" class="pg-input"></div>
+        </div>
+        <div class="pg-field"><span class="pg-label">Durée rapide</span>
+          <div id="edt-f-durs" class="rv-chips"></div></div>
+        <div class="pg-field"><span class="pg-label">Couleur</span>
+          <div class="edt-swatches" id="edt-f-colors" role="group" aria-label="Couleur"></div></div>
+        <div class="pg-field"><label class="pg-label" for="edt-f-place">Lieu <span class="edt-opt">(facultatif)</span></label>
+          <input type="text" id="edt-f-place" class="pg-input" placeholder="Salle B12, gymnase…" maxlength="80"></div>
+        <div class="pg-field"><label class="pg-label" for="edt-f-desc">Notes <span class="edt-opt">(facultatif)</span></label>
+          <textarea id="edt-f-desc" class="pg-input" placeholder="Professeur, devoirs à préparer, matériel…"></textarea></div>
+        <p id="edt-f-hint" class="edt-hint hidden" role="status"></p>
+        <p id="edt-f-error" class="edt-error hidden" role="alert"></p>
+        <div class="pg-actions">
+          <button type="button" id="edt-f-delete" class="pg-btn danger hidden"><svg class="pg-ico"><use href="#ei-trash"/></svg>Supprimer</button>
+          <div class="grow">
+            <button type="button" id="edt-f-cancel" class="pg-btn">Annuler</button>
+            <button type="submit" class="pg-btn primary" id="edt-f-save">Enregistrer</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modale : copier un jour -->
+  <div id="edt-copy-modal" class="hidden pg-modal">
+    <div class="pg-sheet" role="dialog" aria-modal="true" aria-labelledby="edt-copy-title">
+      <p class="pg-eyebrow">Copier</p>
+      <h3 id="edt-copy-title" class="pg-title">Copier ce jour</h3>
+      <p class="pg-muted" id="edt-copy-info"></p>
+      <div class="pg-field"><span class="pg-label">Vers quels jours ?</span>
+        <div id="edt-copy-days" class="rv-chips" role="group"></div></div>
+      <div class="pg-actions"><div class="grow">
+        <button type="button" id="edt-copy-cancel" class="pg-btn">Annuler</button>
+        <button type="button" id="edt-copy-ok" class="pg-btn primary">Copier</button>
+      </div></div>
+    </div>
+  </div>
+
+  <div id="edt-toast" class="edt-toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+  <script src="tampons.js" defer></script>
+  <script src="edt.js"></script>
+  <script src="menu-nav.js"></script>
+</body>
+</html>
