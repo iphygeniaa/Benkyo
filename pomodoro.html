@@ -56,6 +56,7 @@
   <link rel="stylesheet" href="pomodoro-stats.css">
   <link rel="stylesheet" href="leaflet.css">
   <link rel="stylesheet" href="focus-train.css">
+  <link rel="stylesheet" href="focus-plane.css">
   <link rel="stylesheet" href="training.css">
   <!-- Thème selon l'heure (aube / midi / crépuscule / nuit) : après les autres feuilles de style -->
   <link rel="stylesheet" href="heure.css">
@@ -89,6 +90,9 @@
         </button>
         <button id="pomosubtab-btn-focus-train" onclick="switchPomodoroSubtab('focus-train')" class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white">
           <i class="fa-solid fa-train mr-1.5"></i>Focus train
+        </button>
+        <button id="pomosubtab-btn-focus-plane" onclick="switchPomodoroSubtab('focus-plane')" class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white">
+          <i class="fa-solid fa-plane mr-1.5"></i>Focus avion
         </button>
         <button id="pomosubtab-btn-training" onclick="switchPomodoroSubtab('training')" class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-white relative">
           <i class="fa-solid fa-graduation-cap mr-1.5"></i>Entraînement (Concours blanc)
@@ -535,9 +539,14 @@
 
       </div>
 
+      <!-- Sous-onglet Focus avion : vol Paris CDG → Japon -->
+      <div id="pomo-subtab-focus-plane" class="hidden space-y-6">
+        <section class="ft-shell" aria-labelledby="fp-title"><div class="ft-panel" id="fp-root"></div></section>
+      </div>
+
       <!-- Sous-onglet Focus train : trajet, choix du siège dans la voiture et billet à déchirer -->
       <div id="pomo-subtab-focus-train" class="hidden space-y-6">
-        <section class="ft-shell" aria-labelledby="ft-title">
+        <section id="ft-shell" class="ft-shell" aria-labelledby="ft-title">
           <div class="ft-panel">
             <div class="ft-heading">
               <span class="ft-eyebrow"><i class="fa-solid fa-ticket"></i> TON PROCHAIN VOYAGE DE FOCUS</span>
@@ -1337,7 +1346,7 @@
     // Sous-onglets : Pomodoro / Session de travail immersive / Entraînement (examen blanc) / Statistiques
     // ============================================================
     function switchPomodoroSubtab(tab) {
-      const tabs = ['timer', 'immersive', 'focus-train', 'training', 'stats'];
+      const tabs = ['timer', 'immersive', 'focus-train', 'focus-plane', 'training', 'stats'];
       if (tabs.indexOf(tab) === -1) tab = 'timer';
 
       tabs.forEach(function (name) {
@@ -1357,6 +1366,7 @@
         if (typeof renderFocusTrainTodos === 'function') renderFocusTrainTodos();
         setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
       }
+      if (tab === 'focus-plane') setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
       if (tab === 'training') renderTrainingHistory();
       if (tab === 'stats') renderPomodoroStats();
       if (typeof window.updateFocusTrainCompanionVisibility === 'function') {
@@ -4422,6 +4432,7 @@
   <script src="leaflet.js"></script>
   <script src="focus-train.js"></script>
   <script src="focus-train-voyage.js"></script>
+  <script src="focus-plane.js"></script>
   <script src="menu-nav.js"></script>
 </body>
 </html>

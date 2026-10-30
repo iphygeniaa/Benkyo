@@ -13,7 +13,7 @@
     ['pense-bete.html', 'Pense-bête', '付箋'],
     ['notes-moyennes.html', 'Résultats', '成績'],
     ['flashcards.html', 'Apprentissage', '学習', 'switchLearningSubtab', [['flashcards', 'Flashcards'], ['blanks', 'Texte à trous'], ['quotes', 'Citations']]],
-    ['pomodoro.html', 'Session de travail', '集中', 'switchPomodoroSubtab', [['timer', 'Pomodoro'], ['immersive', 'Session immersive'], ['focus-train', 'Focus train'], ['training', 'Entraînement (concours blanc)'], ['stats', 'Statistiques d’étude']]],
+    ['pomodoro.html', 'Session de travail', '集中', 'switchPomodoroSubtab', [['timer', 'Pomodoro'], ['immersive', 'Session immersive'], ['focus-train', 'Focus train'], ['focus-plane', 'Focus avion'], ['training', 'Entraînement (concours blanc)'], ['stats', 'Statistiques d’étude']]],
     ['fournitures.html', 'Fournitures & achats', '買物'],
     ['profil.html', 'Mon profil', '私', 'switchProfileSubtab', [['profil', 'Profil & résultats'], ['carnet', 'Mon carnet'], ['tampons', 'Mes tampons'], ['moral', 'Mon moral']]]
   ];

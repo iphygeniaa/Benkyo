@@ -82,3 +82,7 @@ Limite : sans voix naturelle installée, le navigateur n’a rien de mieux à pr
 ## « Cette gare » suit ta position (nouveau)
 
 Après un voyage terminé, tu es dans la gare d’arrivée : en cliquant sur « Nouveau voyage » à l’écran d’arrivée, le départ passe sur la ville où tu viens d’arriver (mémorisé, il survit au rechargement). Le bouton « Cette gare » du tableau des départs affiche donc ses trains, et non plus ceux de Tokyo. La destination proposée est la ville de départ du voyage précédent (trajet retour) ; sans liaison directe, c’est le départ le plus court depuis la nouvelle gare. Avec correspondances, c’est la gare finale qui compte. Descendre du train en cours de route (voyage interrompu) ne déplace pas : on reste à la gare de départ.
+
+## Correctif (3.6)
+
+- Pendant l'embarquement, le trajet et l'arrivée, le plan de voyage (tableau des départs, choix de billet, siège, correspondances) est bien masqué : seul l'écran du trajet reste affiché. La cause était que le script de voyage s'accrochait au premier bloc `.ft-shell` de la page, celui du Focus avion ; le bloc du Focus train a maintenant l'id `ft-shell`.

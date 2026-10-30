@@ -1884,7 +1884,7 @@
   }
 
   function init() {
-    shell = document.querySelector('.ft-shell');
+    shell = document.getElementById('ft-shell') || document.querySelector('#pomo-subtab-focus-train .ft-shell');
     var ids = {
       boarding: 'ft-stage-boarding', travel: 'ft-stage-travel', arrived: 'ft-stage-arrived', boardText: 'ft-board-text',
       boardSkip: 'ft-board-skip', map: 'ft-map', travelTitle: 'ft-travel-title', travelMeta: 'ft-travel-meta',
