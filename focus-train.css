@@ -126,15 +126,21 @@
 .ft-door-gap{transform-box:fill-box;transform-origin:center;transform:scaleX(0);transition:transform .7s ease}
 .ft-board-door.is-open .ft-door-gap{transform:scaleX(5)}
 .ft-person{transform:translate(150px,300px)}
-.ft-person.is-walking{transition:transform 2s linear;transform:translate(392px,300px)}
-.ft-person.is-walking.is-boarded{transition:transform .6s ease-in,opacity .6s ease-in;transform:translate(366px,252px) scale(.5);opacity:0}
+.ft-person.is-walking{transition:transform 2s linear;transform:translate(410px,302px)}
+.ft-person.is-walking.is-boarded{transition:transform .7s ease-in,opacity .7s ease-in;transform:translate(352px,262px) scale(.62);opacity:0}
 /* porteur de gare : chariot, valises chargées à bord, salut final */
 .ft-porter{transform:translate(50px,284px)}
 .ft-porter.is-walking{transition:transform 2s linear;transform:translate(272px,284px)}
 .ft-walk{transform-box:view-box}
 .is-walking .ft-walk{animation:ftStep .34s ease-in-out infinite alternate}
 .ft-porter.is-loading .ft-walk,.ft-person.is-boarded .ft-walk{animation:none}
-@keyframes ftStep{from{transform:translateY(0)}to{transform:translateY(-2.4px)}}
+@keyframes ftStep{from{transform:translateY(0)}to{transform:translateY(-1.6px)}}
+/* foulée : jambes et bras oscillent en opposition tant que le personnage marche */
+.is-walking .ft-leg-a,.is-walking .ft-arm-b{animation:ftSwingA .34s ease-in-out infinite alternate}
+.is-walking .ft-leg-b,.is-walking .ft-arm-a{animation:ftSwingB .34s ease-in-out infinite alternate}
+.ft-porter.is-loading .ft-leg,.ft-porter.is-loading .ft-arm{animation:none}
+@keyframes ftSwingA{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+@keyframes ftSwingB{from{transform:rotate(20deg)}to{transform:rotate(-20deg)}}
 .ft-bag{transform-box:fill-box;transform-origin:center}
 .ft-porter.is-loading .ft-bag{animation:ftBagLoad .7s cubic-bezier(.4,0,.6,1) both;animation-delay:calc(var(--i) * .5s)}
 @keyframes ftBagLoad{0%{transform:none;opacity:1}45%{transform:translate(calc(var(--dx) * .4),calc(var(--dy) - 22px)) rotate(-6deg);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.28);opacity:0}}
@@ -143,7 +149,7 @@
 @keyframes ftBow{0%{transform:none}35%,55%{transform:rotate(13deg)}100%{transform:none}}
 .ft-front-arm{transform-origin:0 0}
 .ft-porter.is-wave .ft-front-arm{animation:ftWave .5s ease-in-out infinite alternate}
-@keyframes ftWave{from{transform:rotate(-62deg)}to{transform:rotate(-96deg)}}
+@keyframes ftWave{from{transform:rotate(-30deg)}to{transform:rotate(-56deg)}}
 .ft-petal{animation:ftPetal 8s linear infinite;opacity:0}
 @keyframes ftPetal{0%{opacity:0;transform:translate(0,0) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translate(110px,215px) rotate(320deg)}}
 .ft-cloud{animation:ftCloud 40s ease-in-out infinite alternate}
@@ -1139,3 +1145,98 @@
 .ft-ann-tip{margin:0;color:var(--ft-muted);font-size:.72rem;line-height:1.5}
 .ft-ann-tip[hidden]{display:none}
 #ft-ann-mode{min-width:48px}
+
+/* Contrôle des billets (検札) : carte au-dessus de la carte du trajet, billet de la session et tampon « contrôlé » */
+.ft-check{display:grid;gap:12px;margin:10px 0 6px;padding:14px 16px;border-radius:20px;border:1px solid rgba(15,118,110,.28);background:linear-gradient(135deg,rgba(227,244,239,.95),rgba(255,255,255,.9));box-shadow:0 14px 30px -24px rgba(16,19,28,.5);animation:ftCheckIn .4s ease-out}
+.ft-check.hidden{display:none}
+.ft-check-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ft-check-jp{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:14px;background:var(--ft-green,#0f766e);color:#fff;font:800 1.05rem 'Plus Jakarta Sans',sans-serif;letter-spacing:.02em}
+.ft-check-heading{flex:1;min-width:200px}
+.ft-check-heading strong{display:block;color:var(--ft-ink,#10131c);font:800 .95rem 'Plus Jakarta Sans',sans-serif}
+.ft-check-heading p{margin:3px 0 0;color:var(--ft-muted,#5b6478);font-size:.8rem;line-height:1.5}
+.ft-check-btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:12px;background:var(--ft-green,#0f766e);color:#fff;font-weight:800;cursor:pointer}
+.ft-check-btn:hover{filter:brightness(1.08)}
+.ft-check-btn:focus-visible{outline:3px solid rgba(15,118,110,.55);outline-offset:3px}
+.ft-check-ticket{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:12px 14px;border-radius:14px;background:#fff;border:1px dashed rgba(15,23,42,.28)}
+.ft-check-ticket span:not(.ft-check-stamp){display:block;color:var(--ft-muted,#5b6478);font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ft-check-ticket strong{display:block;margin-top:3px;color:var(--ft-ink,#10131c);font-size:.84rem;font-weight:800}
+.ft-check-stamp{position:absolute;right:14px;top:50%;display:grid;place-items:center;width:64px;height:64px;border:3px solid var(--ft-green,#0f766e);border-radius:50%;color:var(--ft-green,#0f766e);font:800 .95rem/1 'Plus Jakarta Sans',sans-serif;text-align:center;opacity:0;transform:translateY(-50%) rotate(-14deg) scale(1.6);pointer-events:none}
+.ft-check-stamp small{display:block;font-size:.7rem;margin-top:2px}
+.ft-check.is-done .ft-check-stamp{opacity:.9;transform:translateY(-50%) rotate(-14deg) scale(1);transition:opacity .25s,transform .3s cubic-bezier(.2,1.6,.4,1)}
+.ft-check.is-done .ft-check-btn{display:none}
+.ft-check.is-done{border-color:rgba(15,118,110,.5)}
+@keyframes ftCheckIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ft-check{animation:none}.ft-check.is-done .ft-check-stamp{transition:none}}
+@media (max-width:560px){.ft-check-stamp{width:52px;height:52px;font-size:.8rem}}
+
+/* ——— Organisation de l'écran du trajet (3.10) ———
+   Ligne 1 : en-tête + annonce + fenêtre. Ligne 2 : carte (barre d'outils au-dessus) | tableau de bord (temps restant, vitesse,
+   pause, infos clés, descente). Ligne 3 : onglets « Gares & itinéraire · Ambiance · Objectifs » (un seul panneau à la fois). */
+.ft-travel{display:grid;gap:14px}
+.ft-travel>*{min-width:0}
+.ft-travel-head{align-items:center}
+.ft-travel-head h3{margin:6px 0 2px}
+.ft-travel .ft-announce{margin:0;padding:12px 14px;border-radius:18px}
+.ft-travel .ft-check{margin:0}
+.ft-travel .bi-win{margin:0}
+.ft-travel-grid{margin-top:0;gap:18px;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr)}
+.ft-map-col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ft-map-col .ft-map-card{flex:1 1 auto}
+.ft-map-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ft-map-bar-title{display:inline-flex;align-items:center;gap:8px;color:var(--ft-ink);font:800 .82rem 'Plus Jakarta Sans',sans-serif}
+.ft-map-bar-title i{color:var(--ft-green)}
+.ft-map-bar .ft-map-tools{max-width:100%;overflow-x:auto}
+.ft-map-bar .ft-map-tool{white-space:nowrap}
+.ft-map{min-height:clamp(380px,60vh,620px)}
+
+/* Tableau de bord */
+.ft-travel-info{gap:14px;padding:18px}
+.ft-live{display:grid;gap:10px;padding:16px 16px 14px;border-radius:18px;background:linear-gradient(145deg,rgba(255,236,244,.75),rgba(255,255,255,.9));border:1px solid rgba(190,24,93,.16)}
+.ft-live-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ft-live .ft-countdown{font-size:clamp(2.2rem,5vw,3.2rem)}
+.ft-live .ft-progress-text{margin:0}
+.ft-travel-info .ft-pause-row{padding:0}
+.ft-travel-info .ft-pause-btn{flex:none}
+.ft-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;padding:0;border-top:0}
+.ft-facts>div{display:grid;gap:3px;align-content:start;padding:10px 12px;border:1px solid var(--ft-line);border-radius:14px;background:#fff}
+.ft-facts dt{font-size:.66rem;letter-spacing:.04em;text-transform:uppercase}
+.ft-facts dd{text-align:left;font-size:.84rem;overflow-wrap:anywhere}
+.ft-facts .ft-fact-dup{display:none}
+.ft-travel-info .ft-travel-tip{padding:0 2px}
+.ft-travel-info .ft-leave{margin-top:auto;padding-top:4px}
+
+/* Onglets du bas */
+.ft-dock{display:grid;gap:12px;padding:12px;border:1px solid var(--ft-line);border-radius:22px;background:rgba(255,255,255,.78)}
+.ft-dock-tabs{display:flex;gap:6px;padding:4px;border-radius:15px;background:var(--ft-inner);overflow-x:auto;scrollbar-width:none}
+.ft-dock-tabs::-webkit-scrollbar{display:none}
+.ft-dock-tab{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:max-content;padding:10px 14px;border:0;border-radius:11px;background:transparent;color:#454c5c;font:700 .78rem 'Plus Jakarta Sans','Inter',sans-serif;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,box-shadow .15s}
+.ft-dock-tab i{color:var(--ft-green)}
+.ft-dock-tab:hover{background:rgba(255,255,255,.7)}
+.ft-dock-tab[aria-selected="true"]{background:#fff;color:var(--ft-ink);box-shadow:0 4px 12px -6px rgba(15,23,42,.35)}
+.ft-dock-tab:focus-visible{outline:3px solid rgba(15,118,110,.55);outline-offset:2px}
+.ft-dock-badge{padding:2px 8px;border-radius:999px;background:var(--ft-green);color:#fff;font-size:.64rem;font-weight:800;font-variant-numeric:tabular-nums}
+.ft-dock-badge.hidden{display:none}
+.ft-dock-tab .ft-dock-badge i{color:#fff;font-size:.6rem;margin-right:2px}
+.ft-dock-panel{min-width:0}
+.ft-dock-panel.hidden{display:none}
+.ft-dock .ft-extra-card{margin:0;padding:4px 6px;border:0;border-radius:0;background:transparent;box-shadow:none}
+.ft-dock #ft-itinerary{margin:0 6px 14px;padding:14px;border:1px solid var(--ft-line);border-radius:16px;background:#fff}
+.ft-dock #ft-itinerary.hidden{display:none}
+.ft-dock .ft-stops-timeline{max-height:min(46vh,380px)}
+.ft-dock .ft-todo-list{max-height:min(46vh,340px)}
+.ft-dock #ft-music-card .ft-music-row{gap:10px}
+
+@media (max-width:860px){
+  .ft-travel-grid{grid-template-columns:minmax(0,1fr)}
+  .ft-travel-info{order:-1}
+  .ft-map{min-height:clamp(320px,52vh,460px)}
+}
+@media (max-width:640px){
+  .ft-travel-info{padding:14px}
+  .ft-live{padding:14px 12px}
+  .ft-dock{padding:8px;border-radius:18px}
+  .ft-dock-tab{padding:10px 12px;font-size:.74rem}
+  .ft-map-bar-title{display:none}
+  .ft-map-bar .ft-map-tools{width:100%}
+  .ft-map-bar .ft-map-tool{flex:1 1 auto;padding:8px 10px}
+}

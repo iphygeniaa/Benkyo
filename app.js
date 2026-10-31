@@ -434,7 +434,58 @@
     Object.keys(STORAGE_KEYS).forEach(function (key) {
       state[key] = safeParse(localStorage.getItem(STORAGE_KEYS[key]), defaults[key]);
     });
+    snapshotBaseline(state);
     return state;
+  }
+
+  // --- Anti-écrasement entre onglets / pages -------------------------------
+  // Chaque page charge `state` UNE fois, puis réécrivait TOUTES les clés à
+  // chaque sauvegarde (et à chaque changement d'onglet via autoFlushOn).
+  // Une page restée ouverte (ancienne copie, sans la to-do du jour) pouvait
+  // donc effacer la to-do écrite entre-temps dans une autre page. On garde
+  // donc une "photo" (baseline) de chaque clé au chargement : une clé que la
+  // page n'a pas modifiée n'est JAMAIS réécrite, et est au contraire
+  // rafraîchie depuis le localStorage.
+  function snapshotBaseline(state) {
+    var base = {};
+    Object.keys(STORAGE_KEYS).forEach(function (key) {
+      try { base[key] = JSON.stringify(state[key]); } catch (e) {}
+    });
+    try {
+      Object.defineProperty(state, '__baseline', { value: base, writable: true, enumerable: false, configurable: true });
+    } catch (e) {}
+  }
+
+  // Recharge depuis le localStorage les clés que cette page n'a pas modifiées.
+  // Retourne true si au moins une clé a changé.
+  function refresh(state) {
+    if (!state || !state.__baseline) return false;
+    var changed = false;
+    Object.keys(STORAGE_KEYS).forEach(function (key) {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEYS[key]);
+        if (raw === null) return;
+        var cur = JSON.stringify(state[key]);
+        if (cur !== state.__baseline[key]) return; // modifiée localement : on ne touche pas
+        if (raw !== cur) {
+          state[key] = safeParse(raw, state[key]);
+          state.__baseline[key] = JSON.stringify(state[key]);
+          changed = true;
+        }
+      } catch (e) {}
+    });
+    if (changed) {
+      try { global.dispatchEvent(new CustomEvent('benkyo:refreshed')); } catch (e) {}
+    }
+    return changed;
+  }
+
+  // Clé de date LOCALE (AAAA-MM-JJ). toISOString() donne la date UTC, qui
+  // diffère de la date locale juste après minuit : la to-do "d'aujourd'hui"
+  // atterrissait alors sur la veille.
+  function dateKey(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
 
   // Données pilotées en direct par tampons.js (carnet de tampons, stickers
@@ -458,7 +509,17 @@
           try { state[key] = safeParse(localStorage.getItem(STORAGE_KEYS[key]), state[key]); } catch (e2) {}
           return;
         }
-        localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(state[key]));
+        var json = JSON.stringify(state[key]);
+        var base = state.__baseline;
+        if (base && base[key] === json && localStorage.getItem(STORAGE_KEYS[key]) !== null) {
+          // Non modifiée par cette page : on n'écrase pas une version plus
+          // récente écrite par une autre page/onglet, on la récupère.
+          var raw = localStorage.getItem(STORAGE_KEYS[key]);
+          if (raw !== json) { state[key] = safeParse(raw, state[key]); base[key] = JSON.stringify(state[key]); }
+          return;
+        }
+        localStorage.setItem(STORAGE_KEYS[key], json);
+        if (base) base[key] = json;
       } catch (e) {
         console.error('[Benkyo] Échec de la sauvegarde de "' + key + '" (stockage plein ou navigation privée ?)', e);
       }
@@ -489,7 +550,11 @@
     global.addEventListener('pagehide', function () { flush(state); });
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'hidden') flush(state);
+      else refresh(state);
     });
+    global.addEventListener('pageshow', function (e) { if (e.persisted) refresh(state); });
+    global.addEventListener('focus', function () { refresh(state); });
+    global.addEventListener('storage', function () { refresh(state); });
   }
 
   // Export : télécharge un fichier .json avec toutes les données actuelles.
@@ -1023,7 +1088,7 @@
       // Fin d'un cycle complet (ou d'un entraînement) : on joue le carillon
       // de Westminster en entier (~11 s) au lieu du motif court.
       if (repeat) { playWestminsterChime(); return; }
-      playSequence(0);
+      playZenBell();
     } catch (e) { console.error('[Benkyo] Impossible de jouer le carillon d\'école :', e); }
   }
 
@@ -1092,6 +1157,62 @@
       console.error('[Benkyo] Impossible de jouer le carillon de Westminster :', e);
       return 0;
     }
+  }
+
+
+  // ------------------------------------------------------------
+  // Hassha Melody (発車メロディ) : petit carillon de départ de gare japonaise,
+  // doux et lumineux (célesta/glockenspiel feutré), joué au démarrage du minuteur.
+  // Clochette zen (rin) : bol de méditation pur et long, joué en fin de session.
+  // ------------------------------------------------------------
+  function softNote(ctx, out, freq, t, dur, vol) {
+    [[1, 1], [2, .18], [3.01, .05]].forEach(function (p) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = freq * p[0];
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol * p[1], t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur / p[0]);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + 0.1);
+    });
+  }
+  function playHasshaMelody(startAt) {
+    try {
+      var ctx = getChimeCtx(); if (!ctx) return 0;
+      var t = (typeof startAt === 'number') ? startAt : ctx.currentTime + 0.05;
+      var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200;
+      var m = ctx.createGain(); m.gain.value = 0.32; lp.connect(m); m.connect(ctx.destination);
+      // Gamme pentatonique majeure (Do), phrase montante puis résolution
+      var C5 = 523.25, D5 = 587.33, E5 = 659.25, G5 = 783.99, A5 = 880, C6 = 1046.5;
+      var mel = [[E5, 0, .22], [G5, .22, .22], [A5, .44, .22], [G5, .66, .22], [C6, .88, .44], [A5, 1.32, .22], [G5, 1.54, .22], [E5, 1.76, .22], [D5, 1.98, .22], [E5, 2.2, .22], [G5, 2.42, .22], [C5, 2.64, 1]];
+      mel.forEach(function (n) { softNote(ctx, lp, n[0], t + n[1], Math.max(.9, n[2] * 4), 0.5); });
+      // Accompagnement très léger (quinte grave tenue)
+      softNote(ctx, lp, C5 / 2, t, 2.4, 0.18); softNote(ctx, lp, G5 / 4, t + 1.32, 2.4, 0.14);
+      softNote(ctx, lp, C5 / 2, t + 2.64, 2.6, 0.2);
+      return 3.8;
+    } catch (e) { return 0; }
+  }
+  function playZenBell(startAt) {
+    try {
+      var ctx = getChimeCtx(); if (!ctx) return 0;
+      var t = (typeof startAt === 'number') ? startAt : ctx.currentTime + 0.05;
+      var m = ctx.createGain(); m.gain.value = 0.45; m.connect(ctx.destination);
+      function rin(at, base, v) {
+        // Partiels d'un bol chantant, avec léger battement (deux oscillateurs désaccordés)
+        [[1, .5, 6], [2.71, .16, 3.5], [5.15, .06, 2], [8.3, .025, 1.2]].forEach(function (p) {
+          [0, 1.6].forEach(function (det) {
+            var o = ctx.createOscillator(), g = ctx.createGain();
+            o.type = 'sine'; o.frequency.value = base * p[0] + det;
+            g.gain.setValueAtTime(0.0001, at);
+            g.gain.exponentialRampToValueAtTime(p[1] * v * .5, at + 0.006);
+            g.gain.exponentialRampToValueAtTime(0.0001, at + p[2]);
+            o.connect(g); g.connect(m); o.start(at); o.stop(at + p[2] + 0.1);
+          });
+        });
+      }
+      rin(t, 784, 1);
+      rin(t + 2.6, 784, 0.6);
+      return 8.5;
+    } catch (e) { return 0; }
   }
 
   // ============================================================
@@ -1167,8 +1288,8 @@
   function playAlarmSound(kind) {
     if (kind === 'westminster') return playWestminsterChime();
     if (kind === 'bell') { playTempleBellSound(0.55); return 3.3; }
-    playSchoolChimeSound(false);
-    return 4.5;
+    playZenBell();
+    return 8.5;
   }
 
   // Sonneries programmées : chaque alarme est déclenchée par une horloge
@@ -1190,10 +1311,8 @@
             var at = ctx.currentTime + Math.max(0, msLeft) / 1000;
             if (a.kind === 'westminster') playWestminsterChime(at);
             else {
-              // Motif court : 4 notes de cloche programmées
-              [659.25, 554.37, 587.33, 440.0].forEach(function (f, i) {
-                ringBellNote(ctx, f, at + i * 1.05, 1.7, 0.55);
-              });
+              // Clochette zen programmée
+              playZenBell(at);
             }
             a.preScheduled = true;
           }
@@ -1490,6 +1609,8 @@
     save: save,
     saveDebounced: saveDebounced,
     flush: flush,
+    refresh: refresh,
+    dateKey: dateKey,
     autoFlushOn: autoFlushOn,
     exportBackup: exportBackup,
     importBackup: importBackup,
@@ -1499,6 +1620,8 @@
     playTempleBellSound: playTempleBellSound,
     playSchoolChimeSound: playSchoolChimeSound,
     playWestminsterChime: playWestminsterChime,
+    playHasshaMelody: playHasshaMelody,
+    playZenBell: playZenBell,
     unlockAudio: unlockAudio,
     keepAudioSessionAlive: keepAudioSessionAlive,
     stopAudioSessionKeepAlive: stopAudioSessionKeepAlive,

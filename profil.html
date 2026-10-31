@@ -450,10 +450,8 @@
       const file = e.target.files[0];
       if (!file) return;
       const statusEl = document.getElementById('backup-status');
-      if (!confirm("Restaurer cette sauvegarde va remplacer toutes les données actuelles (notes, todos, decks, etc.). Continuer ?")) {
-        e.target.value = '';
-        return;
-      }
+      e.target.value = '';
+      showConfirmModal('Restaurer cette sauvegarde ?', 'Toutes les données actuelles (notes, todos, decks, etc.) seront remplacées par celles de la sauvegarde.', function () {
       BenkyoStorage.importBackup(file).then(() => {
         statusEl.textContent = 'Sauvegarde restaurée, rechargement...';
         statusEl.classList.remove('hidden');
@@ -464,7 +462,7 @@
         statusEl.textContent = "Fichier de sauvegarde invalide.";
         statusEl.classList.remove('hidden');
       });
-      e.target.value = '';
+      }, 'Restaurer');
     }
 
     // -------- Modale de confirmation générique (remplace confirm()) --------

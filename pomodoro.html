@@ -57,6 +57,7 @@
   <link rel="stylesheet" href="leaflet.css">
   <link rel="stylesheet" href="focus-train.css">
   <link rel="stylesheet" href="focus-plane.css">
+  <link rel="stylesheet" href="immersion-voyage.css">
   <link rel="stylesheet" href="training.css">
   <!-- Thème selon l'heure (aube / midi / crépuscule / nuit) : après les autres feuilles de style -->
   <link rel="stylesheet" href="heure.css">
@@ -64,6 +65,7 @@
   <!-- Ambiances des jours de fête (31/10, 24-25/12, 31/12, 1/1) : après heure.css / heure.js -->
   <link rel="stylesheet" href="fete.css">
   <link rel="stylesheet" href="fluidite.css">
+  <link rel="stylesheet" href="confirm-dialog.css">
   <script src="fluidite.js" defer></script>
   <script src="fete.js"></script>
 </head>
@@ -828,138 +830,200 @@
             </div>
             <div class="ft-board-scene">
               <svg id="ft-board-svg" viewBox="0 0 800 340" role="img" aria-label="Quai de gare japonais : le Shinkansen entre en gare, le porteur charge les valises, puis le train repart">
-                <defs>
-  <linearGradient id="ftSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2b5cf"/><stop offset=".42" stop-color="#f8d9e6"/><stop offset="1" stop-color="#e8effb"/></linearGradient>
-  <radialGradient id="ftSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ef4b55"/><stop offset=".62" stop-color="#e0363f"/><stop offset=".64" stop-color="#e0363f" stop-opacity=".18"/><stop offset="1" stop-color="#e0363f" stop-opacity="0"/></radialGradient>
-  <linearGradient id="ftFuji" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f98ba"/><stop offset="1" stop-color="#b7c8e0"/></linearGradient>
-  <linearGradient id="ftRange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3d0e8"/><stop offset="1" stop-color="#dfe7f5"/></linearGradient>
-  <linearGradient id="ftBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#f4f6fb"/><stop offset="1" stop-color="#dde3ee"/></linearGradient>
-  <linearGradient id="ftGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#223652"/><stop offset=".55" stop-color="#3b587b"/><stop offset="1" stop-color="#5d82a8"/></linearGradient>
-  <linearGradient id="ftDoorIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d4b5e"/><stop offset="1" stop-color="#1e2733"/></linearGradient>
-  <linearGradient id="ftPlat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6e9f3"/><stop offset="1" stop-color="#c8cfe0"/></linearGradient>
-  <linearGradient id="ftCoat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4337a"/><stop offset="1" stop-color="#a8145a"/></linearGradient>
-  <linearGradient id="ftUni" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a4f78"/><stop offset="1" stop-color="#18304e"/></linearGradient>
-  <pattern id="ftDots" width="9" height="6" patternUnits="userSpaceOnUse"><rect width="9" height="6" fill="#f2c43c"/><circle cx="4.5" cy="3" r="1.7" fill="#d4a21a"/></pattern>
-  <clipPath id="ftBodyClip"><path d="M96 160 Q96 150 106 150 H676 C724 150 764 168 800 208 L800 216 Q800 224 790 224 H106 Q96 224 96 214 Z"/></clipPath>
+<defs>
+  <linearGradient id="ftSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fb8e6"/><stop offset=".38" stop-color="#d8cbee"/><stop offset=".7" stop-color="#f8dbe3"/><stop offset="1" stop-color="#ffe9d4"/></linearGradient>
+  <radialGradient id="ftSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6dc" stop-opacity=".95"/><stop offset=".22" stop-color="#ffe3b8" stop-opacity=".85"/><stop offset=".5" stop-color="#ffd2c0" stop-opacity=".28"/><stop offset="1" stop-color="#ffd2c0" stop-opacity="0"/></radialGradient>
+  <linearGradient id="ftFuji" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d8fc2"/><stop offset=".7" stop-color="#a9b4da"/><stop offset="1" stop-color="#d3d2ea"/></linearGradient>
+  <linearGradient id="ftRange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9c2e2"/><stop offset="1" stop-color="#e4e3f3"/></linearGradient>
+  <linearGradient id="ftHaze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffeedd" stop-opacity="0"/><stop offset="1" stop-color="#ffeedd" stop-opacity=".9"/></linearGradient>
+  <linearGradient id="ftBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#f3f6fc"/><stop offset=".8" stop-color="#d9e0ee"/><stop offset="1" stop-color="#c3cce0"/></linearGradient>
+  <linearGradient id="ftGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c2b45"/><stop offset=".55" stop-color="#345278"/><stop offset="1" stop-color="#6c93bb"/></linearGradient>
+  <linearGradient id="ftDoorIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7b8"/><stop offset=".4" stop-color="#d9c9b4"/><stop offset="1" stop-color="#4a5468"/></linearGradient>
+  <linearGradient id="ftPlat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9ebf5"/><stop offset=".5" stop-color="#d4d9ea"/><stop offset="1" stop-color="#bcc4dc"/></linearGradient>
+  <linearGradient id="ftRefl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="ftCoat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c52a72"/><stop offset=".6" stop-color="#df4a8a"/><stop offset="1" stop-color="#ef6ba3"/></linearGradient>
+  <linearGradient id="ftUni" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1d3556"/><stop offset=".6" stop-color="#2b4c7c"/><stop offset="1" stop-color="#3a609a"/></linearGradient>
+  <linearGradient id="ftCanopy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfcff"/><stop offset="1" stop-color="#d9deee"/></linearGradient>
+  <pattern id="ftDots" width="9" height="6" patternUnits="userSpaceOnUse"><rect width="9" height="6" fill="#f3c64a"/><circle cx="4.5" cy="3" r="1.6" fill="#d9a526"/><circle cx="4.5" cy="2.4" r=".7" fill="#fff0b0" opacity=".8"/></pattern>
+  <clipPath id="ftBodyClip"><path d="M-70 160 Q-70 150 -60 150 H650 C700 150 748 164 776 192 C790 206 796 214 794 219 Q792 224 782 224 H-60 Q-70 224 -70 214 Z"/></clipPath>
+  <filter id="ftSoft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
 </defs>
-                <rect width="800" height="340" fill="url(#ftSky)"/>
-                <circle cx="480" cy="96" r="52" fill="url(#ftSun)"/>
-                <g class="ft-cloud" opacity=".75" fill="#fff"><ellipse cx="380" cy="60" rx="46" ry="10"/><ellipse cx="410" cy="52" rx="28" ry="9"/><ellipse cx="600" cy="104" rx="38" ry="8"/><ellipse cx="70" cy="74" rx="34" ry="8"/></g>
-                <path d="M0 232 L0 176 L40 150 L84 176 L130 140 L190 190 L300 170 L380 132 L440 172 L520 150 L580 182 L660 146 L730 178 L800 156 L800 232 Z" fill="url(#ftRange)"/>
-                <path d="M10 238 C100 218 190 152 230 106 Q246 84 262 76 Q278 84 294 106 C334 152 424 218 520 238 Z" fill="url(#ftFuji)"/>
-                <path d="M262 76 Q278 84 294 106 C334 152 424 218 520 238 L440 238 C372 204 300 152 262 76 Z" fill="#6c86ad" opacity=".24"/>
-                <path d="M230 106 Q246 84 262 76 Q278 84 294 106 L286 101 L278 114 L268 102 L258 115 L248 102 L240 112 Z" fill="#fff"/>
-                <g fill="#b3c2db" opacity=".9"><rect x="596" y="124" width="16" height="108"/><rect x="614" y="100" width="12" height="132"/><rect x="740" y="118" width="18" height="114"/><rect x="760" y="136" width="14" height="96"/><rect x="778" y="110" width="22" height="122"/><rect x="636" y="140" width="16" height="92"/></g>
-                <g fill="#9fb0cc"><polygon points="686,232 689.4,110 690.6,110 694,232"/><rect x="689.3" y="40" width="1.4" height="72"/><ellipse cx="690" cy="112" rx="9" ry="4.4"/><ellipse cx="690" cy="136" rx="6.6" ry="3.2"/></g>
-                <ellipse cx="130" cy="236" rx="130" ry="44" fill="#a9d0a5"/><ellipse cx="660" cy="238" rx="170" ry="30" fill="#b5d8b0"/>
-                <g fill="#7fb07f"><circle cx="30" cy="206" r="16"/><circle cx="52" cy="212" r="13"/><circle cx="212" cy="214" r="12"/><circle cx="236" cy="218" r="10"/><circle cx="760" cy="214" r="14"/><circle cx="784" cy="212" r="16"/></g>
-                <g fill="#5f9467"><polygon points="12,230 22,196 32,230"/><polygon points="26,230 36,202 46,230"/><polygon points="200,230 208,204 216,230"/><polygon points="738,230 748,198 758,230"/></g>
-                <g opacity=".96"><rect x="112" y="230" width="40" height="8" rx="2" fill="#bfae96"/><rect x="109.0" y="214" width="46.0" height="16" fill="#f0dec2"/><rect x="113.7" y="214" width="2.6" height="16" fill="#c0392b"/><rect x="130.7" y="214" width="2.6" height="16" fill="#c0392b"/><rect x="147.7" y="214" width="2.6" height="16" fill="#c0392b"/><path d="M91.0 218 Q98.0 214 105.0 202 L159.0 202 Q166.0 214 173.0 218 Z" fill="#5d4e6b"/><rect x="99.0" y="216" width="66.0" height="2.4" fill="#7a6a88"/><rect x="113.5" y="186" width="37.0" height="16" fill="#f0dec2"/><rect x="118.2" y="186" width="2.6" height="16" fill="#c0392b"/><rect x="130.7" y="186" width="2.6" height="16" fill="#c0392b"/><rect x="143.2" y="186" width="2.6" height="16" fill="#c0392b"/><path d="M95.5 190 Q102.5 186 109.5 174 L154.5 174 Q161.5 186 168.5 190 Z" fill="#5d4e6b"/><rect x="103.5" y="188" width="57.0" height="2.4" fill="#7a6a88"/><rect x="118.0" y="158" width="28.0" height="16" fill="#f0dec2"/><rect x="122.7" y="158" width="2.6" height="16" fill="#c0392b"/><rect x="130.7" y="158" width="2.6" height="16" fill="#c0392b"/><rect x="138.7" y="158" width="2.6" height="16" fill="#c0392b"/><path d="M100.0 162 Q107.0 158 114.0 146 L150.0 146 Q157.0 158 164.0 162 Z" fill="#5d4e6b"/><rect x="108.0" y="160" width="48.0" height="2.4" fill="#7a6a88"/><rect x="122.5" y="130" width="19.0" height="16" fill="#f0dec2"/><rect x="127.2" y="130" width="2.6" height="16" fill="#c0392b"/><rect x="130.7" y="130" width="2.6" height="16" fill="#c0392b"/><rect x="134.2" y="130" width="2.6" height="16" fill="#c0392b"/><path d="M104.5 134 Q111.5 130 118.5 118 L145.5 118 Q152.5 130 159.5 134 Z" fill="#5d4e6b"/><rect x="112.5" y="132" width="39.0" height="2.4" fill="#7a6a88"/><rect x="127.0" y="102" width="10.0" height="16" fill="#f0dec2"/><rect x="131.7" y="102" width="2.6" height="16" fill="#c0392b"/><rect x="130.7" y="102" width="2.6" height="16" fill="#c0392b"/><rect x="129.7" y="102" width="2.6" height="16" fill="#c0392b"/><path d="M109.0 106 Q116.0 102 123.0 90 L141.0 90 Q148.0 102 155.0 106 Z" fill="#5d4e6b"/><rect x="117.0" y="104" width="30.0" height="2.4" fill="#7a6a88"/><rect x="131" y="60" width="2" height="30" fill="#b8923a"/><rect x="128" y="64" width="8" height="2.2" rx="1" fill="#d6b04e"/><rect x="128" y="70" width="8" height="2.2" rx="1" fill="#d6b04e"/><rect x="128" y="76" width="8" height="2.2" rx="1" fill="#d6b04e"/><rect x="128" y="82" width="8" height="2.2" rx="1" fill="#d6b04e"/></g>
-                <rect width="800" height="9" fill="#f3f5fa"/><rect y="9" width="800" height="4" fill="#cdd5e6"/>
-                <g><rect x="338" y="13" width="1.6" height="10" fill="#8a93a8"/><rect x="408" y="13" width="1.6" height="10" fill="#8a93a8"/><rect x="326" y="23" width="96" height="30" rx="6" fill="#1d3a5a"/><rect x="329" y="26" width="90" height="24" rx="4" fill="none" stroke="#ffffff" stroke-opacity=".5"/><circle cx="347" cy="38" r="10" fill="#fff"/><text x="347" y="42.4" text-anchor="middle" font-size="12" font-weight="800" fill="#1d3a5a" font-family="Inter,sans-serif">14</text><text x="386" y="38" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="'Noto Sans JP','Plus Jakarta Sans',sans-serif">番線</text><text x="386" y="47.5" text-anchor="middle" font-size="6.4" font-weight="700" fill="#c9d6ea" letter-spacing=".12em" font-family="Inter,sans-serif">TRACK 14</text></g>
-                <g transform="translate(800 0) scale(-1 1)"><g id="ft-board-branch">
-  <path d="M-10 34 C 40 28 92 54 150 38 S 232 22 280 46" fill="none" stroke="#6b4a3a" stroke-width="4.5" stroke-linecap="round"/>
-  <path d="M72 46 q10 -20 30 -24 M150 38 q8 14 26 18 M214 28 q10 -14 26 -14" fill="none" stroke="#6b4a3a" stroke-width="2.6" stroke-linecap="round"/>
-  <g fill="#f9a8c6"><circle cx="34" cy="34" r="9"/><circle cx="52" cy="32" r="7"/><circle cx="68" cy="44" r="9"/><circle cx="100" cy="26" r="8"/><circle cx="116" cy="44" r="8"/><circle cx="136" cy="38" r="9"/><circle cx="154" cy="34" r="7"/><circle cx="176" cy="58" r="8"/><circle cx="204" cy="28" r="9"/><circle cx="238" cy="18" r="7"/><circle cx="256" cy="38" r="8"/><circle cx="276" cy="46" r="6"/></g>
-  <g fill="#fde3ec"><circle cx="31" cy="32" r="3.4"/><circle cx="66" cy="42" r="3.4"/><circle cx="98" cy="24" r="3"/><circle cx="134" cy="36" r="3.4"/><circle cx="202" cy="26" r="3.4"/><circle cx="254" cy="36" r="3"/><circle cx="118" cy="42" r="3"/><circle cx="174" cy="56" r="3"/></g>
+<rect width="800" height="340" fill="url(#ftSky)"/>
+<circle cx="470" cy="112" r="96" fill="url(#ftSun)"/><circle cx="470" cy="112" r="21" fill="#fff4d6" opacity=".92"/>
+<g class="ft-cloud"><g transform="translate(380 58) scale(1)" opacity="0.85"><ellipse cx="0" cy="0" rx="48" ry="9" fill="#fff"/><ellipse cx="-18" cy="-7" rx="24" ry="9" fill="#fff"/><ellipse cx="14" cy="-9" rx="20" ry="9" fill="#fff"/><ellipse cx="4" cy="4" rx="40" ry="5" fill="#ecdff0" opacity=".7"/></g><g transform="translate(610 98) scale(0.8)" opacity="0.75"><ellipse cx="0" cy="0" rx="48" ry="9" fill="#fff"/><ellipse cx="-18" cy="-7" rx="24" ry="9" fill="#fff"/><ellipse cx="14" cy="-9" rx="20" ry="9" fill="#fff"/><ellipse cx="4" cy="4" rx="40" ry="5" fill="#ecdff0" opacity=".7"/></g><g transform="translate(78 78) scale(0.75)" opacity="0.8"><ellipse cx="0" cy="0" rx="48" ry="9" fill="#fff"/><ellipse cx="-18" cy="-7" rx="24" ry="9" fill="#fff"/><ellipse cx="14" cy="-9" rx="20" ry="9" fill="#fff"/><ellipse cx="4" cy="4" rx="40" ry="5" fill="#ecdff0" opacity=".7"/></g><g transform="translate(240 40) scale(0.55)" opacity="0.6"><ellipse cx="0" cy="0" rx="48" ry="9" fill="#fff"/><ellipse cx="-18" cy="-7" rx="24" ry="9" fill="#fff"/><ellipse cx="14" cy="-9" rx="20" ry="9" fill="#fff"/><ellipse cx="4" cy="4" rx="40" ry="5" fill="#ecdff0" opacity=".7"/></g></g>
+<path d="M0 236 L0 184 C30 168 52 160 84 176 C110 160 124 146 150 150 C190 176 230 190 300 172 C340 150 372 134 404 150 C440 168 470 176 520 156 C560 142 590 160 630 172 C660 150 700 140 730 160 C760 170 780 160 800 154 L800 236 Z" fill="url(#ftRange)"/>
+<path d="M-10 240 C90 224 180 160 224 110 Q244 84 262 76 Q280 84 300 110 C344 160 436 224 540 240 Z" fill="url(#ftFuji)"/>
+<path d="M262 76 Q280 84 300 110 C344 160 436 224 540 240 L450 240 C380 206 306 156 262 76 Z" fill="#6c74b4" opacity=".22"/>
+<path d="M224 110 Q244 84 262 76 Q280 84 300 110 L292 106 L284 121 L274 107 L264 124 L254 108 L246 120 L238 108 Z" fill="#fff"/>
+<path d="M262 76 Q280 84 300 110 L292 106 L284 121 L276 108 L270 90 Z" fill="#dfe3f5" opacity=".9"/>
+<rect x="0" y="196" width="800" height="44" fill="url(#ftHaze)"/>
+<g><rect x="596" y="128" width="17" height="108" fill="#c3c8e6"/><rect x="599" y="136" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="145" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="154" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="163" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="172" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="181" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="190" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="199" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="208" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="599" y="217" width="11" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="615" y="102" width="12" height="134" fill="#c3c8e6"/><rect x="618" y="110" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="119" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="128" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="137" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="146" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="155" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="164" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="173" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="182" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="191" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="200" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="209" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="618" y="218" width="6" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="636" y="144" width="16" height="92" fill="#c3c8e6"/><rect x="639" y="152" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="161" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="170" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="179" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="188" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="197" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="206" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="215" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="639" y="224" width="10" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="742" y="120" width="18" height="116" fill="#c3c8e6"/><rect x="745" y="128" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="137" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="146" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="155" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="164" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="173" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="182" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="191" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="200" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="209" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="745" y="218" width="12" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="762" y="138" width="14" height="98" fill="#c3c8e6"/><rect x="765" y="146" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="155" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="164" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="173" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="182" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="191" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="200" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="209" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="765" y="218" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="780" y="112" width="22" height="124" fill="#c3c8e6"/><rect x="783" y="120" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="129" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="138" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="147" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="156" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="165" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="174" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="183" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="192" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="201" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="210" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="783" y="219" width="16" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="668" y="156" width="14" height="80" fill="#c3c8e6"/><rect x="671" y="164" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="671" y="173" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="671" y="182" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="671" y="191" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="671" y="200" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="671" y="209" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/><rect x="671" y="218" width="8" height="1.6" fill="#e3e5f6" opacity=".7"/></g>
+<g fill="#aeb5d8"><polygon points="686,236 689.4,112 690.6,112 694,236"/><rect x="689.35" y="44" width="1.3" height="70"/><ellipse cx="690" cy="114" rx="9" ry="4.2" fill="#b9bfe0"/><ellipse cx="690" cy="138" rx="6.4" ry="3"/></g>
+<g transform="translate(160 0)"><rect x="-3" y="62" width="6" height="14" fill="#8e6a5a"/><rect x="-12" y="73" width="24" height="7" fill="#d9c5b0"/><rect x="-12" y="73" width="24" height="7" fill="#b9564f" opacity=".35"/><rect x="-7.800000000000001" y="74" width="2.4" height="6" fill="#b0453f"/><rect x="-1.2" y="74" width="2.4" height="6" fill="#b0453f"/><rect x="5.4" y="74" width="2.4" height="6" fill="#b0453f"/><path d="M-26 80 Q-16 78 -10 71 H10 Q16 78 26 80 Q0 83 -26 80 Z" fill="#6c5878"/><path d="M-26 80 Q0 83 26 80" stroke="#4d3f5e" stroke-width="1.2" fill="none"/><rect x="-18" y="96" width="36" height="10" fill="#d9c5b0"/><rect x="-18" y="96" width="36" height="10" fill="#b9564f" opacity=".35"/><rect x="-11.1" y="97" width="2.4" height="9" fill="#b0453f"/><rect x="-1.2" y="97" width="2.4" height="9" fill="#b0453f"/><rect x="8.700000000000001" y="97" width="2.4" height="9" fill="#b0453f"/><path d="M-32 106 Q-22 104 -16 97 H16 Q22 104 32 106 Q0 109 -32 106 Z" fill="#6c5878"/><path d="M-32 106 Q0 109 32 106" stroke="#4d3f5e" stroke-width="1.2" fill="none"/><rect x="-24" y="120" width="48" height="12" fill="#d9c5b0"/><rect x="-24" y="120" width="48" height="12" fill="#b9564f" opacity=".35"/><rect x="-14.4" y="121" width="2.4" height="11" fill="#b0453f"/><rect x="-1.2" y="121" width="2.4" height="11" fill="#b0453f"/><rect x="12.000000000000002" y="121" width="2.4" height="11" fill="#b0453f"/><path d="M-38 132 Q-28 130 -22 123 H22 Q28 130 38 132 Q0 135 -38 132 Z" fill="#6c5878"/><path d="M-38 132 Q0 135 38 132" stroke="#4d3f5e" stroke-width="1.2" fill="none"/><rect x="-30" y="144" width="60" height="14" fill="#d9c5b0"/><rect x="-30" y="144" width="60" height="14" fill="#b9564f" opacity=".35"/><rect x="-17.7" y="145" width="2.4" height="13" fill="#b0453f"/><rect x="-1.2" y="145" width="2.4" height="13" fill="#b0453f"/><rect x="15.3" y="145" width="2.4" height="13" fill="#b0453f"/><path d="M-44 158 Q-34 156 -28 149 H28 Q34 156 44 158 Q0 161 -44 158 Z" fill="#6c5878"/><path d="M-44 158 Q0 161 44 158" stroke="#4d3f5e" stroke-width="1.2" fill="none"/><rect x="-36" y="168" width="72" height="16" fill="#d9c5b0"/><rect x="-36" y="168" width="72" height="16" fill="#b9564f" opacity=".35"/><rect x="-21" y="169" width="2.4" height="15" fill="#b0453f"/><rect x="-1.2" y="169" width="2.4" height="15" fill="#b0453f"/><rect x="18.6" y="169" width="2.4" height="15" fill="#b0453f"/><path d="M-50 184 Q-40 182 -34 175 H34 Q40 182 50 184 Q0 187 -50 184 Z" fill="#6c5878"/><path d="M-50 184 Q0 187 50 184" stroke="#4d3f5e" stroke-width="1.2" fill="none"/><rect x="-1" y="48" width="2" height="30" fill="#6c5878"/><circle cx="0" cy="56" r="2.4" fill="#e9c46a"/><circle cx="0" cy="64" r="2" fill="#e9c46a"/></g>
+<ellipse cx="120" cy="240" rx="170" ry="40" fill="#b9d6bf"/><ellipse cx="660" cy="242" rx="200" ry="30" fill="#c4ddc4"/>
+<g><g transform="translate(26 234) scale(1.2)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#78ae82"/><circle cx="-8" cy="-8" r="9" fill="#78ae82"/><circle cx="8" cy="-9" r="9.5" fill="#78ae82"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(58 238) scale(0.9)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#86b789"/><circle cx="-8" cy="-8" r="9" fill="#86b789"/><circle cx="8" cy="-9" r="9.5" fill="#86b789"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(214 236) scale(1)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#78ae82"/><circle cx="-8" cy="-8" r="9" fill="#78ae82"/><circle cx="8" cy="-9" r="9.5" fill="#78ae82"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(240 238) scale(0.8)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#86b789"/><circle cx="-8" cy="-8" r="9" fill="#86b789"/><circle cx="8" cy="-9" r="9.5" fill="#86b789"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(748 236) scale(1.1)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#78ae82"/><circle cx="-8" cy="-8" r="9" fill="#78ae82"/><circle cx="8" cy="-9" r="9.5" fill="#78ae82"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(782 234) scale(1.25)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#86b789"/><circle cx="-8" cy="-8" r="9" fill="#86b789"/><circle cx="8" cy="-9" r="9.5" fill="#86b789"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(596 238) scale(0.8)"><rect x="-1.4" y="-6" width="2.8" height="10" fill="#6f5a4a"/><circle cx="0" cy="-14" r="13" fill="#78ae82"/><circle cx="-8" cy="-8" r="9" fill="#78ae82"/><circle cx="8" cy="-9" r="9.5" fill="#78ae82"/><circle cx="2" cy="-17" r="8" fill="#9cc79c" opacity=".9"/></g><g transform="translate(10 236) scale(0.95)"><rect x="-1.2" y="-4" width="2.4" height="8" fill="#6f5a4a"/><path d="M0 -34 L10 -14 H5 L12 -4 H-12 L-5 -14 H-10 Z" fill="#5d9470"/></g><g transform="translate(42 238) scale(0.85)"><rect x="-1.2" y="-4" width="2.4" height="8" fill="#6f5a4a"/><path d="M0 -34 L10 -14 H5 L12 -4 H-12 L-5 -14 H-10 Z" fill="#5d9470"/></g><g transform="translate(196 238) scale(0.8)"><rect x="-1.2" y="-4" width="2.4" height="8" fill="#6f5a4a"/><path d="M0 -34 L10 -14 H5 L12 -4 H-12 L-5 -14 H-10 Z" fill="#5d9470"/></g><g transform="translate(726 238) scale(0.9)"><rect x="-1.2" y="-4" width="2.4" height="8" fill="#6f5a4a"/><path d="M0 -34 L10 -14 H5 L12 -4 H-12 L-5 -14 H-10 Z" fill="#5d9470"/></g><g transform="translate(610 238) scale(0.7)"><rect x="-1.2" y="-4" width="2.4" height="8" fill="#6f5a4a"/><path d="M0 -34 L10 -14 H5 L12 -4 H-12 L-5 -14 H-10 Z" fill="#5d9470"/></g></g>
+<rect width="800" height="10" fill="url(#ftCanopy)"/><rect y="10" width="800" height="4" fill="#c3cbe0"/><rect y="14" width="800" height="1.4" fill="#aab3cc" opacity=".7"/>
+<g><rect x="-3" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M0 28 L34 14 M0 28 L-34 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="97" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M100 28 L134 14 M100 28 L66 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="197" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M200 28 L234 14 M200 28 L166 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="297" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M300 28 L334 14 M300 28 L266 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="397" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M400 28 L434 14 M400 28 L366 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="497" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M500 28 L534 14 M500 28 L466 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="597" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M600 28 L634 14 M600 28 L566 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="697" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M700 28 L734 14 M700 28 L666 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="797" y="14" width="6" height="14" rx="1" fill="#b4bdd5"/><path d="M800 28 L834 14 M800 28 L766 14" stroke="#c3cbe0" stroke-width="2.2" fill="none"/><rect x="36" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="36" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="136" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="136" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="236" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="236" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="336" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="336" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="436" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="436" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="536" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="536" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="636" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="636" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/><rect x="736" y="14" width="28" height="3.4" rx="1.7" fill="#fff7e0"/><rect x="736" y="17" width="28" height="9" fill="#fff7e0" opacity=".18"/></g>
+<g><rect x="338" y="14" width="1.8" height="10" fill="#8a93a8"/><rect x="418" y="14" width="1.8" height="10" fill="#8a93a8"/>
+<rect x="322" y="24" width="112" height="32" rx="7" fill="#1b3556"/><rect x="325" y="27" width="106" height="26" rx="5" fill="none" stroke="#fff" stroke-opacity=".45"/>
+<circle cx="344" cy="40" r="10.5" fill="#fff"/><text x="344" y="44.6" text-anchor="middle" font-size="13" font-weight="800" fill="#1b3556" font-family="Inter,sans-serif">14</text>
+<text x="372" y="39" font-size="12.5" font-weight="800" fill="#fff" font-family="'Noto Sans JP',sans-serif" letter-spacing=".06em">番線</text>
+<text x="372" y="49" font-size="7" font-weight="700" fill="#b9cae6" font-family="Inter,sans-serif" letter-spacing=".18em">TRACK 14</text></g>
+<g transform="translate(800 0) scale(-1 1)"><g id="ft-board-branch">
+  <path d="M-12 36 C 40 28 92 58 150 40 S 232 24 284 50" fill="none" stroke="#5e4034" stroke-width="5" stroke-linecap="round"/>
+  <path d="M72 48 q10 -22 32 -26 M150 40 q8 14 26 20 M214 30 q10 -16 28 -16 M30 34 q6 -14 18 -20" fill="none" stroke="#5e4034" stroke-width="2.6" stroke-linecap="round"/>
+  <g fill="#f5a3c3"><circle cx="10" cy="54.8" r="6.4"/><circle cx="66.8" cy="47.2" r="7.7"/><circle cx="98.9" cy="48.1" r="8.8"/><circle cx="156.6" cy="45.4" r="8.2"/><circle cx="230.5" cy="27.7" r="6.9"/><circle cx="201.1" cy="45.9" r="5.3"/><circle cx="194.7" cy="36.7" r="9.6"/><circle cx="228" cy="22.9" r="7.6"/><circle cx="259.3" cy="45.5" r="8.2"/><circle cx="165.9" cy="54.5" r="9.5"/><circle cx="110.5" cy="31.4" r="9.2"/><circle cx="99.7" cy="24.1" r="6.5"/><circle cx="125.7" cy="29.8" r="9.7"/><circle cx="160.5" cy="47.2" r="9.4"/><circle cx="25.8" cy="28.9" r="7.8"/><circle cx="147.4" cy="34.9" r="6"/><circle cx="255.4" cy="20.2" r="6.8"/><circle cx="102.9" cy="44.6" r="9.6"/><circle cx="149" cy="24.6" r="7"/><circle cx="86.6" cy="32.6" r="7.1"/><circle cx="99.8" cy="39.3" r="8.1"/><circle cx="73" cy="54.3" r="7.3"/><circle cx="243" cy="43.4" r="8.2"/><circle cx="149.4" cy="38.2" r="8.4"/><circle cx="263.7" cy="33.9" r="8.5"/><circle cx="77.8" cy="41.5" r="6.8"/></g>
+  <g fill="#fbc5d9"><circle cx="99.3" cy="31.7" r="5.4"/><circle cx="246.9" cy="20.4" r="5.5"/><circle cx="31" cy="32.3" r="3.5"/><circle cx="31" cy="55.8" r="3.7"/><circle cx="180.7" cy="21.8" r="4.4"/><circle cx="170.1" cy="21.5" r="5.8"/><circle cx="248.8" cy="51.6" r="5.7"/><circle cx="255.1" cy="46.4" r="3.8"/><circle cx="12.8" cy="25.9" r="3.2"/><circle cx="10.4" cy="40.7" r="3.7"/><circle cx="210.1" cy="35.6" r="5.1"/><circle cx="74.3" cy="51.3" r="3.7"/><circle cx="111" cy="51.8" r="3.4"/><circle cx="142.1" cy="16.1" r="5.7"/><circle cx="182" cy="52.9" r="3.1"/><circle cx="253" cy="23.5" r="5.9"/><circle cx="162.6" cy="43.2" r="3.8"/><circle cx="70.1" cy="24.4" r="4.7"/><circle cx="24.1" cy="46.8" r="5.1"/><circle cx="202.8" cy="35.9" r="3.1"/><circle cx="39.8" cy="52.8" r="3.4"/><circle cx="195.7" cy="51.7" r="3.1"/></g>
+  <g fill="#fff0f5"><circle cx="248.4" cy="50.5" r="3"/><circle cx="267.7" cy="46.6" r="2.1"/><circle cx="77" cy="45.1" r="2.8"/><circle cx="117.5" cy="25.4" r="2"/><circle cx="249.5" cy="38.4" r="2"/><circle cx="177.8" cy="45.4" r="1.9"/><circle cx="205.8" cy="32.9" r="1.7"/><circle cx="94.2" cy="55.4" r="3"/><circle cx="180.8" cy="50.9" r="2.9"/><circle cx="63.9" cy="41.8" r="1.6"/><circle cx="144.3" cy="38.3" r="2.6"/><circle cx="265.4" cy="35.3" r="1.7"/><circle cx="130.6" cy="22.6" r="2.5"/><circle cx="150.9" cy="38.5" r="2.2"/><circle cx="214.4" cy="30.5" r="2.6"/><circle cx="17" cy="28" r="2.3"/></g>
 </g></g>
-                <g id="ft-board-train" class="ft-board-train"><rect x="120" y="224" width="670" height="8" fill="#39424f"/><rect x="150" y="222" width="86" height="12" rx="4" fill="#262d37"/><circle cx="166" cy="228" r="6" fill="#3a4350"/><circle cx="220" cy="228" r="6" fill="#3a4350"/><circle cx="166" cy="228" r="2" fill="#aab3c8"/><circle cx="220" cy="228" r="2" fill="#aab3c8"/><rect x="520" y="222" width="86" height="12" rx="4" fill="#262d37"/><circle cx="536" cy="228" r="6" fill="#3a4350"/><circle cx="590" cy="228" r="6" fill="#3a4350"/><circle cx="536" cy="228" r="2" fill="#aab3c8"/><circle cx="590" cy="228" r="2" fill="#aab3c8"/><g fill="#46505e"><rect x="150" y="145" width="64" height="5" rx="2"/><rect x="470" y="145" width="56" height="5" rx="2"/><path d="M556 150 L574 136 L592 150 L588 150 L574 140 L560 150 Z"/><rect x="566" y="133" width="16" height="3" rx="1.5"/></g><path d="M96 160 Q96 150 106 150 H676 C724 150 764 168 800 208 L800 216 Q800 224 790 224 H106 Q96 224 96 214 Z" fill="url(#ftBody)" stroke="#bcc5d8" stroke-width="1.6"/><g clip-path="url(#ftBodyClip)"><rect id="ft-liv-top" x="90" y="150" width="720" height="46" style="fill:var(--ftl-top,transparent)"/><rect x="90" y="200" width="720" height="5" style="fill:var(--ftl-a,#1f4fa0)"/><rect x="90" y="207" width="720" height="2.2" style="fill:var(--ftl-b,#1f4fa0)"/><rect x="90" y="212" width="720" height="14" fill="#c4cbd9"/><rect x="90" y="212" width="720" height="1.6" fill="#aab3c8"/></g><g fill="url(#ftGlass)" stroke="#16263c" stroke-opacity=".35" stroke-width="1"><rect x="114" y="166" width="28" height="22" rx="6"/><rect x="150" y="166" width="28" height="22" rx="6"/><rect x="186" y="166" width="28" height="22" rx="6"/><rect x="222" y="166" width="28" height="22" rx="6"/><rect x="258" y="166" width="28" height="22" rx="6"/><rect x="294" y="166" width="28" height="22" rx="6"/><rect x="404" y="166" width="28" height="22" rx="6"/><rect x="440" y="166" width="28" height="22" rx="6"/><rect x="476" y="166" width="28" height="22" rx="6"/><rect x="512" y="166" width="28" height="22" rx="6"/><rect x="548" y="166" width="28" height="22" rx="6"/><rect x="584" y="166" width="28" height="22" rx="6"/><rect x="620" y="166" width="28" height="22" rx="6"/><rect x="656" y="166" width="28" height="22" rx="6"/></g><g stroke="#fff" stroke-opacity=".28" stroke-width="2" stroke-linecap="round"><path d="M118 170 l9 -0 M118 176 l5 0"/><path d="M154 170 l9 -0 M154 176 l5 0"/><path d="M190 170 l9 -0 M190 176 l5 0"/><path d="M226 170 l9 -0 M226 176 l5 0"/><path d="M262 170 l9 -0 M262 176 l5 0"/><path d="M298 170 l9 -0 M298 176 l5 0"/><path d="M408 170 l9 -0 M408 176 l5 0"/><path d="M444 170 l9 -0 M444 176 l5 0"/><path d="M480 170 l9 -0 M480 176 l5 0"/><path d="M516 170 l9 -0 M516 176 l5 0"/><path d="M552 170 l9 -0 M552 176 l5 0"/><path d="M588 170 l9 -0 M588 176 l5 0"/><path d="M624 170 l9 -0 M624 176 l5 0"/><path d="M660 170 l9 -0 M660 176 l5 0"/></g><path d="M690 166 C728 166 756 178 776 200 L690 200 Z" fill="url(#ftGlass)" stroke="#16263c" stroke-opacity=".35"/><path d="M700 170 C726 172 746 182 760 196" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="792" cy="211" rx="4" ry="3" fill="#ffe9a8"/><text id="ft-board-train-name" x="470" y="197" text-anchor="middle" font-size="9" font-weight="800" letter-spacing=".14em" fill="#2a3f63" opacity=".85" font-family="Inter,'Noto Sans JP',sans-serif">NOZOMI · のぞみ</text><g id="ft-board-door" class="ft-board-door">
-  <rect x="306" y="162" width="88" height="62" rx="5" fill="#eef2f9" stroke="#a5afc5" stroke-width="1.6"/>
-  <rect class="ft-door-gap" x="346" y="166" width="8" height="58" fill="url(#ftDoorIn)"/>
-  <rect x="318" y="172" width="16" height="24" rx="4" fill="url(#ftGlass)"/><rect x="366" y="172" width="16" height="24" rx="4" fill="url(#ftGlass)"/>
-  <rect x="306" y="214" width="88" height="3" fill="#f2c43c"/><rect x="311" y="200" width="3" height="10" rx="1.5" fill="#8f99ae"/><rect x="386" y="200" width="3" height="10" rx="1.5" fill="#8f99ae"/>
-</g><rect x="324" y="151" width="52" height="12" rx="4" fill="#be185d"/><text id="ft-board-coach" x="350" y="160.2" text-anchor="middle" fill="#fff" font-size="9.6" font-weight="800" font-family="Inter,sans-serif">03</text></g>
-                <rect y="232" width="800" height="108" fill="url(#ftPlat)"/><rect y="232" width="800" height="9" fill="#aab3c9"/><rect y="232" width="800" height="2" fill="#97a1ba"/><rect y="246" width="800" height="6" fill="url(#ftDots)"/>
-                <g stroke="#b9c1d6" stroke-width="1.2" opacity=".7"><path d="M0 286 H800 M0 322 H800"/><path d="M80 252 L40 340 M220 252 L200 340 M360 252 L360 340 M500 252 L520 340 M640 252 L680 340 M780 252 L840 340"/></g>
-                <g fill="#f9a8c6" opacity=".85"><ellipse cx="120" cy="322" rx="4" ry="2" transform="rotate(20 120 322)"/><ellipse cx="260" cy="312" rx="3.6" ry="1.8"/><ellipse cx="470" cy="328" rx="4" ry="2" transform="rotate(-25 470 328)"/><ellipse cx="610" cy="318" rx="3.6" ry="1.8"/><ellipse cx="720" cy="330" rx="4" ry="2"/></g>
-                <g transform="translate(14 250)"><ellipse cx="22" cy="58" rx="28" ry="3.6" fill="#1f2a44" opacity=".14"/>
-  <rect x="0" y="0" width="44" height="58" rx="5" fill="#d9363e"/><rect x="0" y="0" width="44" height="6" rx="3" fill="#f4f6fb"/>
-  <rect x="4" y="9" width="27" height="31" rx="2" fill="#fff7ec"/>
-  <g><rect x="7" y="12" width="4" height="8" rx="1" fill="#2a9d8f"/><rect x="13" y="12" width="4" height="8" rx="1" fill="#f4a261"/><rect x="19" y="12" width="4" height="8" rx="1" fill="#e9c46a"/><rect x="25" y="12" width="4" height="8" rx="1" fill="#7bbf5a"/>
-  <rect x="7" y="23" width="4" height="8" rx="1" fill="#e9c46a"/><rect x="13" y="23" width="4" height="8" rx="1" fill="#2a9d8f"/><rect x="19" y="23" width="4" height="8" rx="1" fill="#be185d"/><rect x="25" y="23" width="4" height="8" rx="1" fill="#f4a261"/></g>
-  <circle cx="37" cy="14" r="2.4" fill="#fff"/><circle cx="37" cy="22" r="2.4" fill="#fff"/><circle cx="37" cy="30" r="2.4" fill="#fff"/>
-  <rect x="5" y="46" width="30" height="8" rx="2" fill="#2b2f3a"/></g>
-                <g id="ft-board-sign" transform="translate(556 0)">
-  <ellipse cx="72" cy="310" rx="74" ry="4" fill="#1f2a44" opacity=".14"/>
-  <rect x="14" y="290" width="6" height="22" fill="#7d879c"/><rect x="124" y="290" width="6" height="22" fill="#7d879c"/>
-  <rect x="0" y="244" width="144" height="52" rx="7" fill="#fff" stroke="#1d3a5a" stroke-width="2.2"/>
-  <path d="M0 251 a7 7 0 0 1 7 -7 H137 a7 7 0 0 1 7 7 V260 H0 Z" fill="#1d3a5a"/>
-  <text x="8" y="255.4" font-size="8.6" font-weight="800" fill="#fff" font-family="'Noto Sans JP','Plus Jakarta Sans',sans-serif">のりば 14</text>
-  <text id="ft-board-sign-dest" x="136" y="255.4" text-anchor="end" font-size="8" font-weight="800" fill="#ffd9e8" font-family="Inter,sans-serif">→ Kyoto</text>
+<g id="ft-board-train" class="ft-board-train">
+<!-- châssis et bogies -->
+<rect x="-60" y="222" width="840" height="9" fill="#3a4350"/><rect x="-60" y="222" width="840" height="2" fill="#566074"/>
+<g><rect x="-10" y="220" width="96" height="13" rx="5" fill="#252c38"/><circle cx="8" cy="228" r="6.6" fill="#323a48"/><circle cx="68" cy="228" r="6.6" fill="#323a48"/><circle cx="8" cy="228" r="2.4" fill="#9aa4bb"/><circle cx="68" cy="228" r="2.4" fill="#9aa4bb"/></g><g><rect x="440" y="220" width="96" height="13" rx="5" fill="#252c38"/><circle cx="458" cy="228" r="6.6" fill="#323a48"/><circle cx="518" cy="228" r="6.6" fill="#323a48"/><circle cx="458" cy="228" r="2.4" fill="#9aa4bb"/><circle cx="518" cy="228" r="2.4" fill="#9aa4bb"/></g><g><rect x="612" y="220" width="96" height="13" rx="5" fill="#252c38"/><circle cx="630" cy="228" r="6.6" fill="#323a48"/><circle cx="690" cy="228" r="6.6" fill="#323a48"/><circle cx="630" cy="228" r="2.4" fill="#9aa4bb"/><circle cx="690" cy="228" r="2.4" fill="#9aa4bb"/></g>
+<!-- pantographe -->
+<g fill="none" stroke="#56627a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M556 150 L574 134 L592 150"/><path d="M562 150 L574 139 L586 150" stroke-width="1.6"/></g><rect x="562" y="130" width="24" height="3.6" rx="1.8" fill="#56627a"/><rect x="150" y="146" width="68" height="5" rx="2.5" fill="#56627a"/><rect x="440" y="146" width="60" height="5" rx="2.5" fill="#56627a"/>
+<!-- caisse -->
+<path d="M-70 160 Q-70 150 -60 150 H650 C700 150 748 164 776 192 C790 206 796 214 794 219 Q792 224 782 224 H-60 Q-70 224 -70 214 Z" fill="url(#ftBody)" stroke="#b2bbd2" stroke-width="1.4"/>
+<g clip-path="url(#ftBodyClip)">
+  <rect id="ft-liv-top" x="-80" y="150" width="900" height="44" style="fill:var(--ftl-top,transparent)"/>
+  <rect x="-80" y="198" width="900" height="6" style="fill:var(--ftl-a,#1f4fa0)"/>
+  <rect x="-80" y="206" width="900" height="2.4" style="fill:var(--ftl-b,#1f4fa0)"/>
+  <rect x="-80" y="211" width="900" height="14" fill="#cbd3e4"/><rect x="-80" y="211" width="900" height="1.6" fill="#a9b3ca"/>
+  <rect x="-80" y="150" width="900" height="5" fill="#fff" opacity=".75"/>
+</g>
+<rect x="176" y="156" width="12" height="68" fill="#aeb8cf"/><rect x="178" y="156" width="2" height="68" fill="#8e99b3"/><rect x="182" y="156" width="2" height="68" fill="#8e99b3"/><rect x="186" y="156" width="2" height="68" fill="#8e99b3"/><rect x="522" y="156" width="12" height="68" fill="#aeb8cf"/><rect x="524" y="156" width="2" height="68" fill="#8e99b3"/><rect x="528" y="156" width="2" height="68" fill="#8e99b3"/><rect x="532" y="156" width="2" height="68" fill="#8e99b3"/>
+<rect x="-30" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="-28.4" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M-26 183 L-16 167 H-11 L-21 183 Z" fill="#fff" opacity=".16"/><rect x="-28.4" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="10" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="11.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M14 183 L24 167 H29 L19 183 Z" fill="#fff" opacity=".16"/><rect x="11.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="50" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="51.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M54 183 L64 167 H69 L59 183 Z" fill="#fff" opacity=".16"/><rect x="51.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="90" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="91.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M94 183 L104 167 H109 L99 183 Z" fill="#fff" opacity=".16"/><rect x="91.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="130" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="131.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M134 183 L144 167 H149 L139 183 Z" fill="#fff" opacity=".16"/><rect x="131.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="200" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="201.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M204 183 L214 167 H219 L209 183 Z" fill="#fff" opacity=".16"/><rect x="201.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="240" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="241.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M244 183 L254 167 H259 L249 183 Z" fill="#fff" opacity=".16"/><rect x="241.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="424" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="425.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M428 183 L438 167 H443 L433 183 Z" fill="#fff" opacity=".16"/><rect x="425.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="464" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="465.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M468 183 L478 167 H483 L473 183 Z" fill="#fff" opacity=".16"/><rect x="465.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="548" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="549.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M552 183 L562 167 H567 L557 183 Z" fill="#fff" opacity=".16"/><rect x="549.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="588" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="589.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M592 183 L602 167 H607 L597 183 Z" fill="#fff" opacity=".16"/><rect x="589.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/><rect x="628" y="164" width="28" height="22" rx="7" fill="#e2e8f3"/><rect x="629.6" y="165.6" width="24.8" height="18.8" rx="5.6" fill="url(#ftGlass)"/><path d="M632 183 L642 167 H647 L637 183 Z" fill="#fff" opacity=".16"/><rect x="629.6" y="165.6" width="24.8" height="5" rx="2.5" fill="#f3e9d6" opacity=".55"/>
+<!-- baie du poste de conduite -->
+<path d="M698 160 C730 162 758 176 776 196 L700 196 Z" fill="url(#ftGlass)" stroke="#16263c" stroke-opacity=".4"/>
+<path d="M706 166 C728 169 746 180 758 192" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="2.4" stroke-linecap="round"/>
+<ellipse cx="788" cy="212" rx="4.6" ry="3.2" fill="#fff2c2"/><ellipse cx="788" cy="212" rx="9" ry="6" fill="#fff2c2" opacity=".28"/>
+<text id="ft-board-train-name" x="458" y="196.4" text-anchor="middle" font-size="8" font-weight="800" letter-spacing=".16em" fill="#2a3f63" opacity=".9" font-family="Inter,'Noto Sans JP',sans-serif">NOZOMI · のぞみ</text>
+<!-- porte -->
+<g id="ft-board-door" class="ft-board-door">
+  <rect x="304" y="159" width="92" height="65" rx="5" fill="#e9eef8" stroke="#a3aec6" stroke-width="1.4"/>
+  <rect x="312" y="164" width="76" height="60" rx="3" fill="#2a3446"/>
+  <rect class="ft-door-gap" x="346" y="164" width="8" height="60" fill="url(#ftDoorIn)"/>
+  <rect x="312" y="164" width="36" height="60" rx="3" fill="#f4f7fc" stroke="#b9c3d8"/><rect x="352" y="164" width="36" height="60" rx="3" fill="#f4f7fc" stroke="#b9c3d8"/>
+  <rect x="318" y="170" width="24" height="24" rx="6" fill="url(#ftGlass)"/><rect x="358" y="170" width="24" height="24" rx="6" fill="url(#ftGlass)"/>
+  <path d="M322 192 L332 173 H336 L326 192 Z M362 192 L372 173 H376 L366 192 Z" fill="#fff" opacity=".18"/>
+  <rect x="304" y="214" width="92" height="3.4" fill="#f3c64a"/>
+  <rect x="338" y="200" width="3" height="12" rx="1.5" fill="#8f99ae"/><rect x="359" y="200" width="3" height="12" rx="1.5" fill="#8f99ae"/>
+</g>
+<rect x="322" y="147" width="56" height="13" rx="6.5" fill="#be185d"/><text id="ft-board-coach" x="350" y="156.4" text-anchor="middle" fill="#fff" font-size="9.6" font-weight="800" font-family="Inter,sans-serif">03</text>
+</g>
+<rect y="232" width="800" height="108" fill="url(#ftPlat)"/>
+<rect y="232" width="800" height="7" fill="#9fa9c4"/><rect y="232" width="800" height="1.6" fill="#8791ad"/>
+<rect y="238" width="800" height="26" fill="url(#ftRefl)" opacity=".75"/>
+<rect y="246" width="800" height="6" fill="url(#ftDots)"/><rect y="252" width="800" height="1.6" fill="#fff" opacity=".7"/>
+<rect y="258" width="800" height="2.6" fill="#fff" opacity=".85"/>
+<g stroke="#b4bcd4" stroke-width="1.1" opacity=".75"><path d="M0 288 H800 M0 324 H800"/><path d="M80 264 L40 340 M220 264 L200 340 M360 264 L360 340 M500 264 L520 340 M640 264 L680 340 M780 264 L840 340"/></g>
+<rect y="232" width="800" height="12" fill="#24304e" opacity=".12"/>
+<g fill="#f7b0cb" opacity=".9"><ellipse cx="174.1" cy="319.4" rx="3.5" ry="1.8" transform="rotate(14 174.1 319.4)"/><ellipse cx="346.2" cy="280.5" rx="4.2" ry="2.3" transform="rotate(37 346.2 280.5)"/><ellipse cx="711.6" cy="316.9" rx="4.5" ry="1.6" transform="rotate(24 711.6 316.9)"/><ellipse cx="476.8" cy="319.4" rx="4.4" ry="1.6" transform="rotate(-33 476.8 319.4)"/><ellipse cx="81" cy="282.5" rx="3.1" ry="1.6" transform="rotate(9 81 282.5)"/><ellipse cx="738.8" cy="287.5" rx="3.2" ry="1.8" transform="rotate(16 738.8 287.5)"/><ellipse cx="204.9" cy="303.4" rx="4.6" ry="1.9" transform="rotate(16 204.9 303.4)"/><ellipse cx="608.5" cy="299.8" rx="3.7" ry="1.6" transform="rotate(-24 608.5 299.8)"/><ellipse cx="633.8" cy="334.5" rx="3.2" ry="2.3" transform="rotate(1 633.8 334.5)"/><ellipse cx="112.8" cy="288.6" rx="4" ry="1.7" transform="rotate(-38 112.8 288.6)"/><ellipse cx="227.3" cy="314.8" rx="3.9" ry="2" transform="rotate(44 227.3 314.8)"/><ellipse cx="77.2" cy="300.8" rx="3.5" ry="1.6" transform="rotate(-44 77.2 300.8)"/></g>
+<g transform="translate(14 250)"><ellipse cx="24" cy="60" rx="30" ry="4" fill="#1f2a44" opacity=".16"/>
+  <rect x="0" y="0" width="46" height="60" rx="6" fill="#d9363e"/><rect x="0" y="0" width="46" height="7" rx="3.5" fill="#f7f8fc"/>
+  <rect x="0" y="0" width="46" height="60" rx="6" fill="url(#ftRefl)" opacity=".18"/>
+  <rect x="4" y="10" width="29" height="33" rx="2.5" fill="#fff7ec"/>
+  <rect x="7" y="13" width="4.4" height="9" rx="1.4" fill="#2a9d8f"/><rect x="13.3" y="13" width="4.4" height="9" rx="1.4" fill="#f4a261"/><rect x="19.6" y="13" width="4.4" height="9" rx="1.4" fill="#e9c46a"/><rect x="25.9" y="13" width="4.4" height="9" rx="1.4" fill="#7bbf5a"/><rect x="7" y="24.5" width="4.4" height="9" rx="1.4" fill="#e9c46a"/><rect x="13.3" y="24.5" width="4.4" height="9" rx="1.4" fill="#2a9d8f"/><rect x="19.6" y="24.5" width="4.4" height="9" rx="1.4" fill="#be185d"/><rect x="25.9" y="24.5" width="4.4" height="9" rx="1.4" fill="#f4a261"/>
+  <rect x="4" y="10" width="29" height="33" rx="2.5" fill="none" stroke="#8c2a30" stroke-opacity=".35"/><path d="M6 14 L16 12 L6 26 Z" fill="#fff" opacity=".35"/>
+  <circle cx="39.5" cy="15" r="2.6" fill="#fff"/><circle cx="39.5" cy="23" r="2.6" fill="#fff"/><circle cx="39.5" cy="31" r="2.6" fill="#fff"/>
+  <rect x="5" y="47" width="30" height="9" rx="2" fill="#2b2f3a"/><rect x="38" y="46" width="5" height="7" rx="1" fill="#f3c64a"/></g>
+<g id="ft-board-sign" transform="translate(556 0)">
+  <ellipse cx="72" cy="312" rx="76" ry="4.4" fill="#1f2a44" opacity=".16"/>
+  <rect x="14" y="292" width="6" height="22" fill="#7d879c"/><rect x="124" y="292" width="6" height="22" fill="#7d879c"/>
+  <rect x="0" y="244" width="144" height="52" rx="8" fill="#fff" stroke="#1b3556" stroke-width="2.2"/>
+  <path d="M0 252 a8 8 0 0 1 8 -8 H136 a8 8 0 0 1 8 8 V260 H0 Z" fill="#1b3556"/>
+  <text x="8" y="255.6" font-size="8.6" font-weight="800" fill="#fff" font-family="'Noto Sans JP','Plus Jakarta Sans',sans-serif">のりば 14</text>
+  <text id="ft-board-sign-dest" x="136" y="255.6" text-anchor="end" font-size="8" font-weight="800" fill="#ffd9e8" font-family="Inter,sans-serif">→ Kyoto</text>
   <text id="ft-board-sign-jp" x="72" y="282" text-anchor="middle" font-size="22" font-weight="800" fill="#10233d" font-family="'Noto Serif JP','Noto Sans JP',serif">東京</text>
   <text id="ft-board-sign-text" x="72" y="292.4" text-anchor="middle" font-size="8.6" font-weight="800" letter-spacing=".18em" fill="#3a4a66" font-family="Inter,sans-serif">Tokyo</text>
   <path d="M10 276 l8 -5 v10 z M134 276 l-8 -5 v10 z" fill="#1f4fa0"/>
 </g>
-                <g transform="translate(704 296)"><ellipse cx="42" cy="2" rx="46" ry="3" fill="#000" opacity=".08"/>
-  <rect x="4" y="-20" width="4" height="20" fill="#7a5a3a"/><rect x="78" y="-20" width="4" height="20" fill="#7a5a3a"/>
-  <rect x="0" y="-22" width="86" height="6" rx="2" fill="#b58a5a"/><rect x="0" y="-42" width="86" height="5" rx="2" fill="#b58a5a"/>
-  <rect x="5" y="-38" width="3" height="16" fill="#8a6540"/><rect x="78" y="-38" width="3" height="16" fill="#8a6540"/></g>
-                <g id="ft-board-porter" class="ft-porter">
-  <ellipse cx="48" cy="1" rx="62" ry="4" fill="#1f2a44" opacity=".16"/>
+<g transform="translate(706 298)"><ellipse cx="42" cy="2" rx="48" ry="3.4" fill="#000" opacity=".1"/>
+  <rect x="5" y="-22" width="4" height="22" fill="#6e5036"/><rect x="77" y="-22" width="4" height="22" fill="#6e5036"/>
+  <rect x="0" y="-26" width="86" height="6" rx="2" fill="#c49564"/><rect x="0" y="-26" width="86" height="1.6" fill="#e2bd8c"/>
+  <rect x="0" y="-46" width="86" height="5" rx="2" fill="#c49564"/><rect x="0" y="-38" width="86" height="4" rx="2" fill="#b58a5a"/>
+  <rect x="6" y="-42" width="3" height="18" fill="#8a6540"/><rect x="77" y="-42" width="3" height="18" fill="#8a6540"/></g>
+<g id="ft-board-porter" class="ft-porter">
+  <ellipse cx="48" cy="1.4" rx="64" ry="4.4" fill="#1f2a44" opacity=".18"/>
   <g class="ft-cart">
-    <rect x="32" y="-54" width="3" height="36" fill="#6b7488"/>
-    <rect x="21" y="-43" width="17" height="3.6" rx="1.8" fill="#6b7488"/>
-    <rect x="32" y="-20" width="64" height="5" rx="2" fill="#8b95ab"/>
-    <rect x="38" y="-15" width="3" height="7" fill="#6b7488"/><rect x="86" y="-15" width="3" height="7" fill="#6b7488"/>
-    <circle cx="40" cy="-8" r="7" fill="#2b2f3a"/><circle cx="40" cy="-8" r="2.6" fill="#aab3c8"/>
-    <circle cx="88" cy="-8" r="7" fill="#2b2f3a"/><circle cx="88" cy="-8" r="2.6" fill="#aab3c8"/>
-    <g class="ft-bag" style="--i:3;--dx:25px;--dy:-17px">
-      <rect x="42" y="-72" width="22" height="20" rx="3" fill="#f4d58d"/><rect x="42" y="-64" width="22" height="2.4" fill="#e0b455"/>
-      <path d="M49 -72 v-3 h8 v3" fill="none" stroke="#b9852a" stroke-width="1.8"/>
-    </g>
-    <g class="ft-bag" style="--i:2;--dx:-4px;--dy:-27px">
-      <rect x="73" y="-60" width="19" height="16" rx="5" fill="#f4a7c0"/><rect x="73" y="-54" width="19" height="3" fill="#fff" opacity=".85"/><circle cx="82.5" cy="-52" r="1.8" fill="#be185d"/>
-    </g>
-    <g class="ft-bag" style="--i:1;--dx:-4px;--dy:-47px">
-      <rect x="70" y="-44" width="24" height="24" rx="4" fill="#2a9d8f"/><rect x="70" y="-33" width="24" height="2.6" fill="#1f7a6f"/>
-      <rect x="79" y="-44" width="6" height="3" fill="#e8c33a"/><path d="M78 -44 v-3 h8 v3" fill="none" stroke="#1b6b61" stroke-width="1.8"/>
-    </g>
-    <g class="ft-bag" style="--i:0;--dx:25px;--dy:-43px">
-      <rect x="38" y="-52" width="30" height="32" rx="4" fill="#b4373f"/><rect x="38" y="-40" width="30" height="2.6" fill="#8f242c"/>
-      <rect x="50" y="-52" width="6" height="3.4" fill="#e8c33a"/><path d="M47 -52 v-4 h12 v4" fill="none" stroke="#6b2227" stroke-width="2"/>
-    </g>
+    <path d="M30 -56 V-20 H34 V-56 Z" fill="#6b7488"/><rect x="21" y="-47" width="17" height="3.8" rx="1.9" fill="#7a8398"/>
+    <rect x="32" y="-21" width="66" height="5.4" rx="2.4" fill="#9aa4ba"/><rect x="32" y="-21" width="66" height="1.6" fill="#c7cede"/>
+    <path d="M36 -16 V-9 M92 -16 V-9" stroke="#6b7488" stroke-width="3"/>
+    <circle cx="40" cy="-7.4" r="7" fill="#2b2f3a"/><circle cx="40" cy="-7.4" r="2.8" fill="#b4bdd0"/>
+    <circle cx="90" cy="-7.4" r="7" fill="#2b2f3a"/><circle cx="90" cy="-7.4" r="2.8" fill="#b4bdd0"/>
+    <g class="ft-bag" style="--i:3;--dx:25px;--dy:-17px"><rect x="42" y="-72" width="22" height="20" rx="3.4" fill="#f2cf80"/><rect x="42" y="-64" width="22" height="2.4" fill="#d9a945"/><rect x="42" y="-72" width="22" height="3.2" rx="1.6" fill="#fff" opacity=".35"/><path d="M49 -72 v-3.4 h8 v3.4" fill="none" stroke="#a97a24" stroke-width="1.8"/></g>
+    <g class="ft-bag" style="--i:2;--dx:-4px;--dy:-27px"><rect x="73" y="-60" width="19" height="16" rx="5.4" fill="#f4a0bd"/><rect x="73" y="-54" width="19" height="3" fill="#fff" opacity=".85"/><circle cx="82.5" cy="-52" r="1.8" fill="#be185d"/><rect x="73" y="-60" width="19" height="3" rx="1.5" fill="#fff" opacity=".3"/></g>
+    <g class="ft-bag" style="--i:1;--dx:-4px;--dy:-47px"><rect x="70" y="-44" width="24" height="24" rx="4.4" fill="#2a9d8f"/><rect x="70" y="-33" width="24" height="2.6" fill="#1f7a6f"/><rect x="70" y="-44" width="24" height="3.4" rx="1.7" fill="#fff" opacity=".28"/><rect x="79" y="-44" width="6" height="3" fill="#e8c33a"/><path d="M78 -44 v-3.4 h8 v3.4" fill="none" stroke="#1b6b61" stroke-width="1.8"/></g>
+    <g class="ft-bag" style="--i:0;--dx:25px;--dy:-43px"><rect x="38" y="-52" width="30" height="32" rx="4.6" fill="#b4373f"/><rect x="38" y="-40" width="30" height="2.6" fill="#8f242c"/><rect x="38" y="-52" width="30" height="3.6" rx="1.8" fill="#fff" opacity=".25"/><rect x="50" y="-52" width="6" height="3.4" fill="#e8c33a"/><path d="M47 -52 v-4.4 h12 v4.4" fill="none" stroke="#6b2227" stroke-width="2"/><rect x="42" y="-47" width="2" height="24" fill="#8f242c" opacity=".5"/><rect x="62" y="-47" width="2" height="24" fill="#8f242c" opacity=".5"/></g>
   </g>
   <g class="ft-walk">
-    <rect x="-8" y="-20" width="7" height="20" rx="3" fill="#18304e"/><rect x="1" y="-20" width="7" height="20" rx="3" fill="#18304e"/>
-    <rect x="-10" y="-4" width="10" height="4" rx="2" fill="#111"/><rect x="1" y="-4" width="11" height="4" rx="2" fill="#111"/>
+    <!-- jambes -->
+    <g class="ft-leg ft-leg-b" style="transform-origin:2.2px -27px"><path d="M-1 -27 H5.6 L5 -4 H-1.2 Z" fill="#15263f"/><path d="M-2 -4.4 H6.4 Q10.4 -4 12 -1.6 V0 H-2 Z" fill="#14161c"/></g>
+    <g class="ft-leg ft-leg-a" style="transform-origin:-2.2px -27px"><path d="M-5.6 -27 H1 L.6 -4 H-5.8 Z" fill="#1d3354"/><path d="M-6.6 -4.4 H2 Q6 -4 7.6 -1.6 V0 H-6.6 Z" fill="#1b1d25"/></g>
     <g class="ft-bow">
-      <rect x="-12" y="-47" width="24" height="31" rx="9" fill="url(#ftUni)"/>
-      <path d="M-4 -47 L0 -38 L4 -47 Z" fill="#fff"/><path d="M-1.6 -45 L0 -38 L1.6 -45 Z" fill="#be185d"/>
-      <g fill="#e8c33a"><circle cx="0" cy="-34" r="1.5"/><circle cx="0" cy="-28" r="1.5"/><circle cx="0" cy="-22" r="1.5"/></g>
-      <rect x="-12" y="-22" width="24" height="2.4" fill="#e8c33a" opacity=".85"/>
-      <circle cx="0" cy="-58" r="11" fill="#f6d2b0"/>
-      <ellipse cx="-9.5" cy="-58" rx="2.2" ry="3.2" fill="#f1c39c"/>
-      <circle cx="4.6" cy="-58.6" r="1.5" fill="#2b2a2a"/><circle cx="5" cy="-59.1" r=".5" fill="#fff"/>
-      <circle cx="7" cy="-54" r="2.2" fill="#f4a39a" opacity=".6"/>
-      <path d="M2.6 -53.6 q2.8 2.2 5.6 0" fill="none" stroke="#a86a4a" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M-11 -62 Q-10 -76 0 -76 Q10 -76 11 -62 Z" fill="url(#ftUni)"/>
-      <rect x="-11.4" y="-65" width="22.8" height="3.4" rx="1.4" fill="#e8c33a"/>
-      <path d="M2 -63 H17 Q18.5 -63 18 -61.4 L16.6 -60 H2 Z" fill="#14283f"/>
-      <circle cx="0" cy="-70.4" r="2.6" fill="#e8c33a"/>
-      <g transform="translate(6 -42)"><g class="ft-front-arm"><path d="M0 0 L19 2" stroke="#18304e" stroke-width="7" stroke-linecap="round"/><circle cx="20.5" cy="2" r="3.8" fill="#fff"/></g></g>
+      <!-- bras arrière (tient le chariot) -->
+      <path d="M-6 -48 L12 -38" stroke="#1d3556" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+      <!-- buste -->
+      <path d="M-10.4 -26 Q-11.6 -42 -9 -50 Q0 -53.4 9 -50 Q11.6 -42 10.4 -26 Z" fill="url(#ftUni)"/>
+      <path d="M-10.4 -26 H10.4 V-23.6 H-10.4 Z" fill="#c9a23b"/>
+      <path d="M-4.6 -51.6 L0 -42 L4.6 -51.6 L2.4 -53 H-2.4 Z" fill="#f7f8fc"/><path d="M-1.4 -48 L0 -43 L1.4 -48 Z" fill="#c8325a"/>
+      <path d="M0 -42 V-26" stroke="#142744" stroke-width="1" opacity=".7"/>
+      <g fill="#e4bd46"><circle cx="-2.6" cy="-38" r="1.3"/><circle cx="-2.6" cy="-33" r="1.3"/><circle cx="-2.6" cy="-28.6" r="1.3"/><circle cx="2.6" cy="-38" r="1.3"/><circle cx="2.6" cy="-33" r="1.3"/><circle cx="2.6" cy="-28.6" r="1.3"/></g>
+      <rect x="-10.6" y="-51" width="6" height="2.4" rx="1.2" fill="#e4bd46"/>
+      <!-- cou et tête -->
+      <rect x="-2.4" y="-57" width="5" height="6" fill="#e9bf9a"/>
+      <ellipse cx="0" cy="-63" rx="7.4" ry="8" fill="#f4d1b0"/>
+      <path d="M-7.4 -62 Q-8 -70 -1 -70 L-2 -62 Z" fill="#2a2430"/>
+      <ellipse cx="-2.6" cy="-62.4" rx="1.7" ry="2.5" fill="#eebf9a"/>
+      <path d="M2.4 -66.4 q2.4 -1.2 4.4 -.4" fill="none" stroke="#2a2430" stroke-width="1" stroke-linecap="round"/>
+      <ellipse cx="4.6" cy="-64" rx="1.2" ry="1.5" fill="#2a2430"/><circle cx="4.9" cy="-64.6" r=".45" fill="#fff"/>
+      <path d="M7 -62.2 q1.2 1.2 .2 2.2" fill="none" stroke="#dca682" stroke-width=".9" stroke-linecap="round"/>
+      <path d="M3 -58.6 q2.4 1.6 4.4 -.2" fill="none" stroke="#a5604c" stroke-width="1.1" stroke-linecap="round"/>
+      <ellipse cx="5.2" cy="-60.8" rx="1.8" ry="1" fill="#f3a392" opacity=".5"/>
+      <!-- casquette -->
+      <path d="M-8.2 -68 Q-8.6 -78.4 0 -78.4 Q8.6 -78.4 8.2 -68 Z" fill="url(#ftUni)"/>
+      <rect x="-8.6" y="-70.6" width="17.2" height="3.2" rx="1.2" fill="#e4bd46"/>
+      <path d="M1 -68.4 H14 Q15.6 -68.4 15 -66.8 L13.6 -65.6 H1 Z" fill="#101f36"/>
+      <circle cx="0" cy="-75" r="2.2" fill="#e4bd46"/>
+      <!-- bras avant (salut) -->
+      <g transform="translate(5.4 -47)"><g class="ft-front-arm"><path d="M0 0 L9.4 6.2 L19 1.8" stroke="#223e68" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="20.6" cy="1.6" r="3.6" fill="#fff"/><path d="M18.6 -.4 q2 -1.4 3.8 0" stroke="#d7dce8" stroke-width=".8" fill="none"/></g></g>
     </g>
   </g>
 </g>
-                <g id="ft-board-person" class="ft-person">
-  <ellipse cx="2" cy="1" rx="16" ry="3.4" fill="#1f2a44" opacity=".16"/>
+<g id="ft-board-person" class="ft-person">
+  <ellipse cx="2" cy="1.4" rx="16" ry="3.6" fill="#1f2a44" opacity=".18"/>
   <g class="ft-walk">
-    <rect x="-7" y="-17" width="6" height="17" rx="3" fill="#3a2f3e"/><rect x="1" y="-17" width="6" height="17" rx="3" fill="#3a2f3e"/>
-    <path d="M-9 -1 H0 V-7 H-7 Z M1 -1 H11 L9 -7 H1 Z" fill="#6b2f45"/>
-    <path d="M-12 -18 Q-13 -42 -6 -44 H6 Q13 -42 12 -18 Z" fill="url(#ftCoat)"/>
-    <rect x="-12" y="-27" width="24" height="3.2" fill="#7d0f45" opacity=".55"/>
-    <path d="M-8 -44 Q0 -38 8 -44 V-40 Q0 -34 -8 -40 Z" fill="#fff7ec"/>
-    <path d="M-9 -38 L-7 -30" stroke="#7b5b3a" stroke-width="1.6"/><path d="M8 -38 L12 -22" stroke="#7b5b3a" stroke-width="1.6"/>
-    <rect x="6" y="-24" width="14" height="13" rx="3" fill="#8a6540"/><path d="M6 -19 h14" stroke="#5e4429" stroke-width="1.3"/><path d="M10 -24 q3 -6 6 0" fill="none" stroke="#5e4429" stroke-width="1.6"/>
-    <circle cx="-1.5" cy="-55" r="13" fill="#3b2a35"/>
-    <circle cx="1" cy="-53" r="10.2" fill="#f6d2b0"/>
-    <path d="M-9.6 -56 Q-4 -66 3 -62 Q10 -66 11.4 -55 Q6 -60 -2 -59 Q-6 -58 -9.6 -56 Z" fill="#3b2a35"/>
-    <circle cx="-2.4" cy="-52.6" r="1.4" fill="#2b2a2a"/><circle cx="5.2" cy="-52.6" r="1.4" fill="#2b2a2a"/><circle cx="-2" cy="-53.1" r=".5" fill="#fff"/><circle cx="5.6" cy="-53.1" r=".5" fill="#fff"/>
-    <circle cx="-5.2" cy="-49" r="2.1" fill="#f4a39a" opacity=".6"/><circle cx="8.2" cy="-49" r="2.1" fill="#f4a39a" opacity=".6"/>
-    <path d="M0 -48.6 q2.2 1.8 4.4 0" fill="none" stroke="#a86a4a" stroke-width="1.1" stroke-linecap="round"/>
-    <g fill="#f9a8c6"><circle cx="-8.4" cy="-61" r="2.6"/><circle cx="-5.6" cy="-63.4" r="2.2"/><circle cx="-10.4" cy="-58" r="2.2"/></g><circle cx="-8.2" cy="-60.6" r="1" fill="#fde3ec"/>
+    <g class="ft-leg ft-leg-b" style="transform-origin:2.4px -22px"><path d="M-.6 -22 H5.2 L4.6 -5 H-.2 Z" fill="#3b2f46"/><path d="M-1.4 -6 H5.6 L6 -.6 H8.4 Q10 -.4 9.8 .6 V1 H-2 Z" fill="#6b2a49"/></g>
+    <g class="ft-leg ft-leg-a" style="transform-origin:-2.4px -22px"><path d="M-5.2 -22 H.6 L.2 -5 H-4.6 Z" fill="#4a3d58"/><path d="M-6 -6 H.8 L1.2 -.6 H3.8 Q5.4 -.4 5.2 .6 V1 H-6.4 Z" fill="#7d3558"/></g>
+    <!-- bras arrière -->
+    <g class="ft-arm ft-arm-b" style="transform-origin:-1px -42px"><path d="M-1 -42 L-3 -27" stroke="#c43a7c" stroke-width="5" stroke-linecap="round"/><circle cx="-3.2" cy="-25" r="2.4" fill="#f4d1b0"/></g>
+    <!-- manteau -->
+    <path d="M-9.6 -44 Q-12.4 -26 -11 -14 H11.4 Q12 -28 8.6 -44 Q0 -47.6 -9.6 -44 Z" fill="url(#ftCoat)"/>
+    <path d="M-11 -14 H11.4 V-12.2 H-11 Z" fill="#a4195a"/>
+    <path d="M0 -45 V-13" stroke="#8d1550" stroke-width="1.1" opacity=".65"/>
+    <rect x="-10.4" y="-29" width="21.6" height="2.6" fill="#8d1550" opacity=".55"/>
+    <g fill="#fbe7a8"><circle cx="1.8" cy="-39" r="1.1"/><circle cx="1.8" cy="-34" r="1.1"/><circle cx="1.8" cy="-24" r="1.1"/></g>
+    <path d="M-7 -45 Q0 -39 7.4 -45 L5 -47 H-5 Z" fill="#fff7ec"/>
+    <!-- sac bandoulière -->
+    <path d="M-6 -45 L8.8 -26" stroke="#7b5a38" stroke-width="1.4"/>
+    <rect x="5.6" y="-29" width="12" height="11" rx="3" fill="#9a6e44"/><rect x="5.6" y="-29" width="12" height="4.4" rx="2.2" fill="#b4875a"/><circle cx="11.6" cy="-24" r="1.2" fill="#e4bd46"/>
+    <!-- bras avant -->
+    <g class="ft-arm ft-arm-a" style="transform-origin:5px -42px"><path d="M5 -42 L8 -28" stroke="#d6478a" stroke-width="5" stroke-linecap="round"/><circle cx="8.4" cy="-26" r="2.4" fill="#f4d1b0"/></g>
+    <!-- tête -->
+    <rect x="-2" y="-50" width="4.6" height="5" fill="#eebf9a"/>
+    <circle cx="-2.2" cy="-56" r="9.6" fill="#33232f"/>
+    <ellipse cx="1" cy="-55" rx="7.3" ry="8" fill="#f6d4b4"/>
+    <path d="M-7.8 -57.6 Q-5 -66 2.6 -64 Q8.8 -62.6 8.4 -56 Q5.6 -60.6 0 -60.4 Q-4.6 -60.4 -7.8 -57.6 Z" fill="#33232f"/>
+    <path d="M-9 -56 Q-10.6 -49 -6.4 -46 L-5 -50 Z" fill="#33232f"/>
+    <ellipse cx="2.6" cy="-55.2" rx="1.15" ry="1.5" fill="#2b2430"/><circle cx="2.9" cy="-55.8" r=".45" fill="#fff"/>
+    <path d="M1.2 -57.6 q1.6 -1 3 -.2" fill="none" stroke="#2b2430" stroke-width=".9" stroke-linecap="round"/>
+    <path d="M6.4 -54.2 q1 1 .2 1.9" fill="none" stroke="#dca682" stroke-width=".8" stroke-linecap="round"/>
+    <path d="M2.4 -50.6 q2 1.4 3.8 -.2" fill="none" stroke="#a5604c" stroke-width="1" stroke-linecap="round"/>
+    <ellipse cx="4.6" cy="-52.4" rx="1.8" ry="1" fill="#f3a392" opacity=".55"/>
+    <g><circle cx="-7.2" cy="-62" r="2.6" fill="#f7b0cb"/><circle cx="-4.4" cy="-64.2" r="2.2" fill="#f7b0cb"/><circle cx="-8.8" cy="-58.8" r="2" fill="#f7b0cb"/><circle cx="-6.2" cy="-61.6" r=".9" fill="#fff0f5"/></g>
   </g>
 </g>
-                <g fill="#f9a8c6" opacity=".9"><ellipse class="ft-petal" cx="60" cy="60" rx="4" ry="2.2" style="animation-delay:0s;animation-duration:7s"/><ellipse class="ft-petal" cx="120" cy="56" rx="4" ry="2.2" style="animation-delay:1.7s;animation-duration:8s"/><ellipse class="ft-petal" cx="190" cy="70" rx="4" ry="2.2" style="animation-delay:3.1s;animation-duration:7.5s"/><ellipse class="ft-petal" cx="250" cy="50" rx="4" ry="2.2" style="animation-delay:0.9s;animation-duration:9s"/><ellipse class="ft-petal" cx="90" cy="40" rx="4" ry="2.2" style="animation-delay:4.2s;animation-duration:8.5s"/><ellipse class="ft-petal" cx="330" cy="64" rx="4" ry="2.2" style="animation-delay:5.3s;animation-duration:7s"/><ellipse class="ft-petal" cx="560" cy="60" rx="4" ry="2.2" style="animation-delay:2.4s;animation-duration:8s"/><ellipse class="ft-petal" cx="650" cy="50" rx="4" ry="2.2" style="animation-delay:3.8s;animation-duration:9s"/></g>
+<g fill="#f7b0cb" opacity=".92"><ellipse class="ft-petal" cx="36" cy="43" rx="4" ry="2.2" style="animation-delay:0.2s;animation-duration:9.7s"/><ellipse class="ft-petal" cx="69" cy="61" rx="4" ry="2.2" style="animation-delay:1.3s;animation-duration:9.5s"/><ellipse class="ft-petal" cx="99" cy="62" rx="4" ry="2.2" style="animation-delay:2.5s;animation-duration:8.5s"/><ellipse class="ft-petal" cx="119" cy="51" rx="4" ry="2.2" style="animation-delay:3.2s;animation-duration:8.2s"/><ellipse class="ft-petal" cx="150" cy="60" rx="4" ry="2.2" style="animation-delay:4.3s;animation-duration:8.7s"/><ellipse class="ft-petal" cx="180" cy="65" rx="4" ry="2.2" style="animation-delay:5.3s;animation-duration:10s"/><ellipse class="ft-petal" cx="204" cy="54" rx="4" ry="2.2" style="animation-delay:6.4s;animation-duration:9.9s"/><ellipse class="ft-petal" cx="231" cy="42" rx="4" ry="2.2" style="animation-delay:6.6s;animation-duration:9.6s"/><ellipse class="ft-petal" cx="264" cy="61" rx="4" ry="2.2" style="animation-delay:8.2s;animation-duration:9.3s"/><ellipse class="ft-petal" cx="285" cy="47" rx="4" ry="2.2" style="animation-delay:8.9s;animation-duration:6.9s"/><ellipse class="ft-petal" cx="323" cy="62" rx="4" ry="2.2" style="animation-delay:9.6s;animation-duration:9s"/><ellipse class="ft-petal" cx="346" cy="52" rx="4" ry="2.2" style="animation-delay:10.8s;animation-duration:8.5s"/></g>
               </svg>
             </div>
             <div class="ft-board-caption">
@@ -968,18 +1032,15 @@
             </div>
           </div>
 
-          <!-- Étape 4 : voyage sur la carte du Japon -->
+          <!-- Étape 4 : voyage sur la carte du Japon
+           Organisation (3.10) : en-tête, annonce, fenêtre, puis tableau de bord (temps restant, vitesse, pause, infos clés)
+           à côté de la carte ; sous la carte, des onglets rangent gares & itinéraire, ambiance et objectifs. -->
           <div id="ft-stage-travel" class="ft-stage ft-travel hidden" aria-labelledby="ft-travel-title">
             <div class="ft-travel-head">
               <div>
                 <span class="ft-eyebrow"><i class="fa-solid fa-train"></i> EN ROUTE</span>
                 <h3 id="ft-travel-title">Tokyo → Kyoto</h3>
                 <p id="ft-travel-meta" class="ft-travel-meta"></p>
-              </div>
-              <div class="ft-map-tools" role="group" aria-label="Vue de la carte">
-                <button id="ft-view-route" class="ft-map-tool" type="button" aria-pressed="true">Mon trajet</button>
-                <button id="ft-view-japan" class="ft-map-tool" type="button" aria-pressed="false">Tout le Japon</button>
-                <button id="ft-view-follow" class="ft-map-tool" type="button" aria-pressed="false"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i> Suivre le train</button>
               </div>
             </div>
             <div id="ft-announce" class="ft-announce is-idle" role="status" aria-live="polite">
@@ -993,20 +1054,48 @@
                 <button id="ft-ann-voice" type="button" class="ft-announce-btn" aria-pressed="true" title="Couper la voix des annonces"><i class="fa-solid fa-volume-high" aria-hidden="true"></i></button>
               </div>
             </div>
+            <section id="ft-check" class="ft-check hidden" aria-labelledby="ft-check-title" aria-live="polite">
+              <div class="ft-check-head">
+                <span class="ft-check-jp" lang="ja" aria-hidden="true">検札</span>
+                <div class="ft-check-heading">
+                  <strong id="ft-check-title">Contrôle des billets</strong>
+                  <p id="ft-check-text">Le contrôleur passe dans ta voiture : prépare ton billet.</p>
+                </div>
+                <button id="ft-check-show" class="ft-tear-button ft-check-btn" type="button"><i class="fa-solid fa-ticket" aria-hidden="true"></i> Montrer mon billet</button>
+              </div>
+              <div id="ft-check-ticket" class="ft-check-ticket">
+                <div><span>Trajet</span><strong id="ft-check-route"></strong></div>
+                <div><span>Train</span><strong id="ft-check-train"></strong></div>
+                <div><span>Voiture · Place</span><strong id="ft-check-seat"></strong></div>
+                <span id="ft-check-stamp" class="ft-check-stamp" lang="ja" aria-hidden="true">確認<small>済</small></span>
+              </div>
+            </section>
             <div class="ft-travel-grid">
-              <div class="ft-map-card">
+              <div class="ft-map-col">
+                <div class="ft-map-bar">
+                  <span class="ft-map-bar-title"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Carte du Japon</span>
+                  <div class="ft-map-tools" role="group" aria-label="Vue de la carte">
+                <button id="ft-view-route" class="ft-map-tool" type="button" aria-pressed="true">Mon trajet</button>
+                <button id="ft-view-japan" class="ft-map-tool" type="button" aria-pressed="false">Tout le Japon</button>
+                <button id="ft-view-follow" class="ft-map-tool" type="button" aria-pressed="false"><i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i> Suivre le train</button>
+</div>
+                </div>
+                <div class="ft-map-card">
                 <div id="ft-map" class="ft-map" role="region" aria-label="Carte du Japon avec la progression du train"></div>
               </div>
+              </div>
               <div class="ft-travel-info">
-                <div class="flex items-center justify-between">
-                  <span class="ft-eyebrow">TEMPS RESTANT AVANT L’ARRIVÉE</span>
-                  <span id="ft-live-speed-pill" class="ft-chip" style="color:var(--ft-red,#be185d); font-weight:800; font-family:'Plus Jakarta Sans',sans-serif">
-                    <i class="fa-solid fa-gauge-high mr-1"></i><span id="ft-speed-badge-val">0 km/h</span>
-                  </span>
+                <div class="ft-live">
+                  <div class="ft-live-top">
+                    <span class="ft-eyebrow">TEMPS RESTANT AVANT L’ARRIVÉE</span>
+                    <span id="ft-live-speed-pill" class="ft-chip" style="color:var(--ft-red,#be185d); font-weight:800; font-family:'Plus Jakarta Sans',sans-serif">
+                      <i class="fa-solid fa-gauge-high mr-1"></i><span id="ft-speed-badge-val">0 km/h</span>
+                    </span>
+                  </div>
+                  <div id="ft-countdown" class="ft-countdown" role="timer" aria-live="off">0:00:00</div>
+                  <div class="ft-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progression du trajet"><span id="ft-progress-bar"></span></div>
+                  <p id="ft-progress-text" class="ft-progress-text">0 % du trajet</p>
                 </div>
-                <div id="ft-countdown" class="ft-countdown" role="timer" aria-live="off">0:00:00</div>
-                <div class="ft-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progression du trajet"><span id="ft-progress-bar"></span></div>
-                <p id="ft-progress-text" class="ft-progress-text">0 % du trajet</p>
                 <div class="ft-pause-row">
                   <button id="ft-pause" class="ft-ghost-button ft-pause-btn" type="button" aria-pressed="false"><i class="fa-solid fa-pause" aria-hidden="true"></i><span>Mettre en pause</span></button>
                   <small>Comme en vrai : chaque minute d’arrêt retarde l’arrivée.</small>
@@ -1028,16 +1117,40 @@
                 <dl class="ft-facts">
                   <div><dt>Départ</dt><dd id="ft-fact-departed"></dd></div>
                   <div><dt>Arrivée prévue</dt><dd id="ft-fact-eta"></dd></div>
-                  <div><dt>Prochain passage</dt><dd id="ft-fact-next"></dd></div>
-                  <div><dt>Vitesse en direct</dt><dd id="ft-fact-speed" style="color:var(--ft-red,#be185d);font-weight:800"><span class="ft-speed-val">0</span> <span style="font-size:0.75rem;opacity:0.8">km/h</span></dd></div>
                   <div><dt>Ta place</dt><dd id="ft-fact-seat"></dd></div>
+                  <div><dt>Prochain passage</dt><dd id="ft-fact-next"></dd></div>
+                  <div class="ft-fact-dup"><dt>Vitesse en direct</dt><dd id="ft-fact-speed" style="color:var(--ft-red,#be185d);font-weight:800"><span class="ft-speed-val">0</span> <span style="font-size:0.75rem;opacity:0.8">km/h</span></dd></div>
                 </dl>
+                <p class="ft-travel-tip">Travaille tranquillement : le train avance même si tu changes d’onglet ou fermes la page.</p>
+                <div class="ft-leave">
+                  <button id="ft-leave" class="ft-ghost-button" type="button"><i class="fa-solid fa-person-walking-arrow-right"></i> Descendre du train</button>
+                  <div id="ft-leave-confirm" class="pg-modal hidden" aria-hidden="true">
+                    <div class="pg-sheet pg-confirm" role="alertdialog" aria-modal="true" aria-labelledby="ft-leave-title" aria-describedby="ft-leave-desc">
+                      <div class="pg-seal" lang="ja">注意</div>
+                      <h3 id="ft-leave-title" class="pg-title">Descendre du train ?</h3>
+                      <p id="ft-leave-desc">Si tu descends maintenant, le voyage s’arrête et sera noté comme interrompu.</p>
+                      <div class="pg-actions">
+                        <button id="ft-leave-stay" class="pg-btn" type="button">Rester à bord</button>
+                        <button id="ft-leave-yes" class="pg-btn danger-fill" type="button">Oui, descendre</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pendant le trajet : un seul panneau à la fois -->
+            <section class="ft-dock" id="ft-dock" aria-label="Pendant le trajet">
+              <div class="ft-dock-tabs" role="tablist" aria-label="Pendant le trajet">
+                <button type="button" role="tab" class="ft-dock-tab" id="ft-dock-tab-route" data-dock="route" aria-controls="ft-dock-route" aria-selected="true"><i class="fa-solid fa-route" aria-hidden="true"></i> Gares &amp; itinéraire</button>
+                <button type="button" role="tab" class="ft-dock-tab" id="ft-dock-tab-music" data-dock="music" aria-controls="ft-dock-music" aria-selected="false" tabindex="-1"><i class="fa-solid fa-headphones" aria-hidden="true"></i> Ambiance <span class="ft-dock-badge hidden" id="ft-dock-badge-music"></span></button>
+                <button type="button" role="tab" class="ft-dock-tab" id="ft-dock-tab-todo" data-dock="todo" aria-controls="ft-dock-todo" aria-selected="false" tabindex="-1"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Objectifs <span class="ft-dock-badge" id="ft-dock-badge-todo">0 / 0</span></button>
+              </div>
+              <div class="ft-dock-panel" id="ft-dock-route" role="tabpanel" aria-labelledby="ft-dock-tab-route">
                 <div id="ft-itinerary" class="ft-itinerary hidden">
                   <span class="ft-eyebrow">TON ITINÉRAIRE</span>
                   <ol id="ft-itinerary-list" class="ft-itinerary-list"></ol>
                 </div>
-
-                <!-- Liste détaillée de tous les arrêts et gares du trajet -->
                 <div class="ft-extra-card" id="ft-all-stops-card">
                   <div class="ft-extra-head" style="cursor:pointer" onclick="toggleFocusTrainStopsCollapse()">
                     <span class="ft-extra-title">
@@ -1050,10 +1163,8 @@
                     <ol id="ft-all-stops-timeline" class="ft-stops-timeline"></ol>
                   </div>
                 </div>
-
-                <p class="ft-travel-tip">Travaille tranquillement : le train avance même si tu changes d’onglet ou fermes la page.</p>
-
-                <!-- Ambiance audio à bord du train -->
+              </div>
+              <div class="ft-dock-panel hidden" id="ft-dock-music" role="tabpanel" aria-labelledby="ft-dock-tab-music">
                 <div class="ft-extra-card" id="ft-music-card">
                   <div class="ft-extra-head">
                     <span class="ft-extra-title"><i class="fa-solid fa-headphones" style="color:var(--ft-red,#be185d)"></i> Ambiance à bord</span>
@@ -1080,8 +1191,8 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- Checklist To-Do à bord du train -->
+              </div>
+              <div class="ft-dock-panel hidden" id="ft-dock-todo" role="tabpanel" aria-labelledby="ft-dock-tab-todo">
                 <div class="ft-extra-card" id="ft-todo-card">
                   <div class="ft-extra-head">
                     <span class="ft-extra-title"><i class="fa-solid fa-list-check" style="color:var(--ft-red,#be185d)"></i> Objectifs du voyage</span>
@@ -1093,19 +1204,8 @@
                   </form>
                   <ul id="ft-todo-list" class="ft-todo-list"></ul>
                 </div>
-
-                <div class="ft-leave">
-                  <button id="ft-leave" class="ft-ghost-button" type="button"><i class="fa-solid fa-person-walking-arrow-right"></i> Descendre du train</button>
-                  <div id="ft-leave-confirm" class="ft-leave-confirm hidden" role="alertdialog" aria-label="Confirmer la descente du train">
-                    <p>Descendre maintenant ? Le voyage sera noté comme interrompu.</p>
-                    <div class="ft-action-buttons">
-                      <button id="ft-leave-stay" class="ft-ghost-button" type="button">Rester</button>
-                      <button id="ft-leave-yes" class="ft-tear-button" type="button">Oui, descendre</button>
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
+            </section>
           </div>
 
           <!-- Étape 5 : arrivée -->
@@ -1273,20 +1373,14 @@
   </div>
 
   <!-- Modale de confirmation générique (remplace confirm()) -->
-  <div id="generic-confirm-modal" class="hidden fixed inset-0 bg-[#0a0e17]/90 backdrop-blur-md z-[70] flex items-center justify-center p-4">
-    <div class="glass-panel border border-dark-border rounded-3xl p-8 w-full max-w-sm text-center space-y-4 shadow-2xl">
-      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
-        <i class="fa-solid fa-trash text-2xl text-red-400"></i>
-      </div>
-      <div class="text-red-400" style="line-height:1.15;">
-        <div class="text-2xl font-black" style="font-family:'Noto Serif JP','Hiragino Mincho ProN',serif;">注意</div>
-        <div class="text-[10px] uppercase tracking-wider text-red-400/70 italic">Chūi — Attention</div>
-      </div>
-      <h3 id="generic-confirm-title" class="text-xl font-extrabold text-white">Confirmer la suppression</h3>
-      <p id="generic-confirm-message" class="text-sm text-slate-400">Cette action est définitive et ne peut pas être annulée.</p>
-      <div class="flex gap-2 pt-2">
-        <button onclick="closeGenericConfirmModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold rounded-xl transition">Annuler</button>
-        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition">Supprimer</button>
+  <div id="generic-confirm-modal" class="hidden pg-modal">
+    <div class="pg-sheet pg-confirm" role="alertdialog" aria-modal="true" aria-labelledby="generic-confirm-title">
+      <div class="pg-seal" lang="ja">注意</div>
+      <h3 id="generic-confirm-title" class="pg-title">Confirmer la suppression</h3>
+      <p id="generic-confirm-message">Cette action est définitive et ne peut pas être annulée.</p>
+      <div class="pg-actions">
+        <button onclick="closeGenericConfirmModal()" class="pg-btn">Annuler</button>
+        <button id="generic-confirm-btn" onclick="executeGenericConfirm()" class="pg-btn danger-fill">Supprimer</button>
       </div>
     </div>
   </div>
@@ -2156,7 +2250,7 @@
         }
       }
 
-      const dateKey = now.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(now);
       const todayTodos = state.todos[dateKey] || [];
       const todoContainer = document.getElementById('dash-todos');
       if (todoContainer) {
@@ -2376,7 +2470,7 @@
       const list = document.getElementById('todo-list');
       if (!list) return;
 
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       const todoTitle = document.getElementById('todo-date-title');
       if (todoTitle) todoTitle.innerText = currentTodoDate.toDateString() === new Date().toDateString() ? "Aujourd'hui ✅" : currentTodoDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
       
@@ -2426,7 +2520,7 @@
       const duration = parseInt(document.getElementById('todo-duration').value) || 30;
       const time = document.getElementById('todo-time').value;
       const urgency = parseInt(document.getElementById('todo-urgency').value) || 2;
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
 
       if (!state.todos[dateKey]) state.todos[dateKey] = [];
       state.todos[dateKey].push({ text: input.value, desc, duration, time, urgency, done: false });
@@ -2499,7 +2593,7 @@
     }
 
     function sortTodos(criterion) {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       let items = state.todos[dateKey] || [];
       if (!items.length) return;
       if (criterion === 'alpha') items.sort((a, b) => a.text.localeCompare(b.text));
@@ -2518,7 +2612,7 @@
     }
 
     function renderGeneratedChronologicalSchedule() {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       const items = [...(state.todos[dateKey] || [])];
       const container = document.getElementById('todo-schedule-container');
       if (!container) return;
@@ -2552,7 +2646,7 @@
     }
 
     function addGeneratedScheduleToTimetable() {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       const items = state.todos[dateKey] || [];
       if(!items.length) return alert("Aucune tâche à importer.");
 
@@ -3229,6 +3323,7 @@
         isRunning = true;
         updatePomoStatusLabel();
         schedulePomoAlarm();
+        if (window.BenkyoStorage && BenkyoStorage.playHasshaMelody) BenkyoStorage.playHasshaMelody();
       } else {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -4246,7 +4341,6 @@
       const pauseBtn = document.getElementById('ft-music-pause-btn');
 
       ftLofiAudio = new Audio('https://stream.zeno.fm/f3wvbbqmdg8uv');
-      ftLofiAudio.crossOrigin = "anonymous";
       ftLofiAudio.play().then(() => {
         ftActiveMediaType = 'lofi';
         saveTrainAudioState(true, 'lofi', 'Radio Lofi studieux');
@@ -4266,6 +4360,8 @@
 
     function handleFocusTrainCustomAudio(event) {
       const file = event.target.files && event.target.files[0];
+      // On vide le champ : on peut ainsi rechoisir le même fichier plus tard (sinon le navigateur ne déclenche rien).
+      event.target.value = '';
       if (!file) return;
 
       stopFocusTrainMusic();
@@ -4432,7 +4528,9 @@
   <script src="leaflet.js"></script>
   <script src="focus-train.js"></script>
   <script src="focus-train-voyage.js"></script>
+  <script src="focus-train-layout.js"></script>
   <script src="focus-plane.js"></script>
+  <script src="immersion-voyage.js"></script>
   <script src="menu-nav.js"></script>
 </body>
 </html>

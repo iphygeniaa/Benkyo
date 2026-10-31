@@ -227,9 +227,10 @@ html[data-fete="nouvel-an"] #vacation-subtabs .subtab-btn.is-active-emerald { co
   animation-iteration-count: infinite; animation-timing-function: linear;
 }
 @media (min-width: 1000px) { .fete-decor { --k: 1.3; } }
-.fs-ghost { filter: drop-shadow(0 0 10px rgba(255, 255, 255, .55)); }
+.fs-ghost { filter: drop-shadow(0 0 12px rgba(230, 215, 255, .7)) drop-shadow(0 3px 4px rgba(90, 50, 110, .18)); }
+.fs-pumpkin { filter: drop-shadow(0 0 10px rgba(255, 190, 140, .45)) drop-shadow(0 3px 4px rgba(90, 50, 60, .2)); }
 .fs-star, .fs-firework, .fs-snow { filter: drop-shadow(0 0 5px rgba(255, 240, 200, .7)); }
-.fs-pumpkin, .fs-bauble, .fs-gift, .fs-tree, .fs-ume, .fs-bat, .fs-confetti { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .28)); }
+.fs-bauble, .fs-gift, .fs-tree, .fs-ume, .fs-bat, .fs-confetti { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .28)); }
 .fete-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .fete-item:has(svg[viewBox="0 0 100 40"]) { height: calc(var(--s, 30px) * var(--k, 1) * .4); }
 .fete-item:has(svg[viewBox="0 0 10 16"]) { height: calc(var(--s, 30px) * var(--k, 1) * 1.6); }

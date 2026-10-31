@@ -1,0 +1,47 @@
+/* =========================================================================
+   BENKYŌ — Fenêtre de confirmation commune (suppression, annulation, abandon)
+   Reprend exactement le style « pg-confirm » des pages To-do / Calendrier /
+   Révisions… pour les pages qui ne chargent pas pages.css (Session de travail :
+   Pomodoro, Focus train, Focus avion). Couleurs de secours = thème sakura ;
+   les saisons sont suivies via html[data-season].
+   ========================================================================= */
+.bk-confirm-scope, .pg-modal {
+  --cf-ink: var(--ink, #4a2838); --cf-ink-soft: var(--ink-soft, #6b4757);
+  --cf-sh: var(--sh-rgb, 92, 40, 62);
+}
+html[data-season="ete"] .pg-modal { --cf-ink: #1e3b4a; --cf-ink-soft: #3e5f6f; --cf-sh: 22, 62, 82; }
+html[data-season="automne"] .pg-modal { --cf-ink: #4a2a1c; --cf-ink-soft: #6e4a38; --cf-sh: 92, 52, 30; }
+html[data-season="hiver"] .pg-modal { --cf-ink: #26364f; --cf-ink-soft: #44587a; --cf-sh: 38, 56, 90; }
+
+.pg-modal {
+  position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 18px;
+  background: rgba(58, 24, 42, .38); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  font-family: 'Manrope', 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+}
+.pg-modal.hidden { display: none !important; }
+.pg-modal .pg-sheet {
+  width: min(460px, 100%); max-height: calc(100vh - 36px); overflow-y: auto; padding: 26px;
+  border-radius: 30px; background: rgba(255, 251, 252, .94); border: 1px solid rgba(255, 255, 255, .78);
+  box-shadow: 0 30px 70px -24px rgba(var(--cf-sh), .6); color: var(--cf-ink);
+}
+.pg-modal .pg-confirm { text-align: center; }
+.pg-modal .pg-confirm .pg-seal {
+  width: 62px; height: 62px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(217, 66, 78, .13); color: #c0323d; font: 700 1.7rem/1 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+}
+.pg-modal .pg-confirm h3, .pg-modal .pg-title {
+  margin: 0; font: 800 1.3rem/1.2 'Fraunces', 'Plus Jakarta Sans', Georgia, serif; color: var(--cf-ink); text-shadow: none;
+}
+.pg-modal .pg-confirm p { margin: 8px 0 0; color: var(--cf-ink-soft); font-size: .9rem; line-height: 1.45; }
+.pg-modal .pg-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; }
+.pg-modal .pg-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 20px;
+  border: 0; border-radius: 999px; font: 800 .88rem 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif; color: var(--cf-ink);
+  background: rgba(255, 255, 255, .72); box-shadow: 0 0 0 1px rgba(var(--cf-sh), .12) inset; cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.pg-modal .pg-btn:hover { background: #fff; transform: translateY(-1px); }
+.pg-modal .pg-btn.danger-fill { background: #d9424e; color: #fff; box-shadow: none; }
+.pg-modal .pg-btn.danger-fill:hover { background: #c0323d; }
+.pg-modal .pg-btn:focus-visible { outline: 2px solid #c0323d; outline-offset: 2px; }
+body.pg-modal-open { overflow: hidden; }

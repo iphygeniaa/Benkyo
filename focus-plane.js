@@ -250,7 +250,7 @@
   function cabinHtml(f) {
     var h = '<div class="fp-cabin-wrap"><div class="fp-cabin-legend"><span><i class="fp-seat-s"></i>Libre</span><span><i class="fp-seat-s is-window"></i>Hublot</span><span><i class="fp-seat-s is-taken"></i>Occupé</span><span><i class="fp-seat-s is-mine"></i>Ton siège</span></div>' +
       '<div class="fp-cabin-scroll"><div class="fp-hullwrap"><span class="fp-wing fp-wing-l" aria-hidden="true"></span><span class="fp-wing fp-wing-r" aria-hidden="true"></span><div class="fp-hull" role="group" aria-label="Plan de la cabine, ' + f.plane + '">' +
-      '<div class="fp-nose"><span class="fp-cockpit" aria-hidden="true"><i class="fa-solid fa-plane"></i></span><small>Avant · ' + f.plane + '</small></div>' +
+      '<div class="fp-nose"><span class="fp-jet-cockpit" aria-hidden="true"><i class="fa-solid fa-plane"></i></span><small>Avant · ' + f.plane + '</small></div>' +
       '<div class="fp-galley" aria-hidden="true"><span><i class="fa-solid fa-mug-saucer"></i>Cuisine</span><span><i class="fa-solid fa-restroom"></i>Toilettes</span></div>' +
       '<div class="fp-class" aria-hidden="true"><span>Classe économique</span></div>' +
       '<div class="fp-seatblock">' +
@@ -276,6 +276,7 @@
     var f = flightOf(state.flight), total = distanceKm(CDG, f);
     root.innerHTML = '<div class="ft-heading"><span class="ft-eyebrow"><i class="fa-solid fa-plane"></i> EN VOL · ' + f.airline.toUpperCase() + '</span>' +
       '<h2>Paris CDG → ' + f.name + '</h2><p>Reste concentré·e jusqu’à l’atterrissage.</p></div>' +
+      '<div class="fp-flight"><div class="fp-col fp-col-info">' +
       '<section class="fp-hero" id="fp-hero" aria-label="Suivi du vol">' +
         '<div class="fp-hero-top"><span class="fp-phase" id="fp-phase"><i class="fa-solid fa-plane" aria-hidden="true"></i><span>Croisière</span></span><span class="fp-hero-id">Vol ' + flightNo(f) + ' · ' + f.plane + ' · siège ' + state.seat + '</span></div>' +
         '<div class="fp-route"><div class="fp-end"><strong>CDG</strong><span>Paris</span><em>Décollage <b id="fp-dep">–</b></em></div>' +
@@ -294,11 +295,18 @@
         '<div class="fp-tile"><i class="fa-regular fa-hourglass-half" aria-hidden="true"></i><small>Temps écoulé</small><b id="fp-elapsed">–</b><span id="fp-of">–</span></div>' +
       '</div>' +
       '<div class="fp-controls"><button type="button" id="fp-pause" class="fp-pause"></button><button type="button" id="fp-abort" class="fp-abort"><i class="fa-solid fa-ban" aria-hidden="true"></i><span><b>Annuler le vol</b><small>Pas de tampon</small></span></button></div>' +
-      '<div id="fp-confirm" class="fp-confirm hidden" role="alertdialog" aria-label="Confirmer l’annulation du vol"><p><b>Annuler ce vol ?</b> Tu perds la progression et tu n’obtiens pas le tampon de la ville.</p><div class="fp-actions"><button type="button" id="fp-stay" class="fp-btn-ghost">Continuer le vol</button><button type="button" id="fp-yes" class="fp-btn-danger">Oui, annuler</button></div></div>' +
+      '<div id="fp-confirm" class="pg-modal hidden" aria-hidden="true"><div class="pg-sheet pg-confirm" role="alertdialog" aria-modal="true" aria-labelledby="fp-c-title" aria-describedby="fp-c-desc">' +
+        '<div class="pg-seal" lang="ja">注意</div>' +
+        '<h3 id="fp-c-title" class="pg-title">Annuler ce vol ?</h3>' +
+        '<p id="fp-c-desc">Tu es en plein vol <b id="fp-c-route"></b> (<span id="fp-c-pct">–</span> du trajet, <span id="fp-c-time">–</span> de focus). Si tu annules, aucun tampon ne sera attribué et le vol sera noté « Annulé » dans l’historique.</p>' +
+        '<div class="pg-actions"><button type="button" id="fp-stay" class="pg-btn">Continuer le vol</button><button type="button" id="fp-yes" class="pg-btn danger-fill">Oui, annuler le vol</button></div>' +
+        '</div></div>' +
       '<div class="fp-ann"><div class="fp-ann-head"><span><i class="fa-solid fa-bullhorn"></i> Annonce à bord</span><button type="button" id="fp-voice" class="fp-btn-ghost" aria-pressed="' + !state.mute + '"></button></div>' +
       '<p id="fp-ann-jp" lang="ja"></p><p id="fp-ann-fr"></p></div>' +
+      '</div><div class="fp-col fp-col-view">' +
       '<div class="fp-maptools"><button type="button" id="fp-follow" class="fp-btn-ghost"><i class="fa-solid fa-location-crosshairs"></i> Suivre l’avion</button><button type="button" id="fp-fit" class="fp-btn-ghost"><i class="fa-solid fa-route"></i> Tout le trajet</button></div>' +
       '<div id="fp-map" class="fp-map" aria-label="Carte du vol"></div>' +
+      '</div></div>' +
       '<div id="fp-extras" class="fp-extras"></div>';
     adoptCards(root.querySelector('#fp-extras'));
     function voiceLabel() { var v = root.querySelector('#fp-voice'); if (v) { v.innerHTML = state.mute ? '<i class="fa-solid fa-volume-xmark"></i> Voix coupée' : '<i class="fa-solid fa-volume-high"></i> Voix active'; v.setAttribute('aria-pressed', String(!state.mute)); } }
@@ -317,10 +325,40 @@
       }
       update();
     });
-    var conf = root.querySelector('#fp-confirm');
-    root.querySelector('#fp-abort').addEventListener('click', function () { conf.classList.remove('hidden'); root.querySelector('#fp-stay').focus(); });
-    root.querySelector('#fp-stay').addEventListener('click', function () { conf.classList.add('hidden'); root.querySelector('#fp-abort').focus(); });
-    root.querySelector('#fp-yes').addEventListener('click', function () { pushHist(false); state.departedAt = null; state.pausedAt = null; save(); render(); });
+    var conf = root.querySelector('#fp-confirm'), abortBtn = root.querySelector('#fp-abort');
+    function confirmKeys(e) {
+      if (e.key === 'Escape') { e.preventDefault(); closeConfirm(); return; }
+      if (e.key !== 'Tab') return;
+      var b = conf.querySelectorAll('button'), first = b[0], last = b[b.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    function openConfirm() {
+      var el = Math.max(0, elapsed(state)), tot = totalMs(state), frac = Math.max(0, Math.min(1, el / tot)), left = Math.max(0, Math.ceil((tot - el) / 1000));
+      function set(id, v) { var n = conf.querySelector('#' + id); if (n) n.textContent = v; }
+      set('fp-c-route', 'Paris CDG → ' + f.name);
+      set('fp-c-pct', Math.round(frac * 100) + ' %');
+      set('fp-c-time', Math.floor(el / 3600000) > 0 ? Math.floor(el / 3600000) + ' h ' + pad(Math.floor(el / 60000) % 60) : Math.floor(el / 60000) + ' min');
+      set('fp-c-left', Math.floor(left / 3600) + ' h ' + pad(Math.floor(left / 60) % 60));
+      (document.fullscreenElement || document.webkitFullscreenElement || document.body).appendChild(conf);
+      conf.classList.remove('hidden'); conf.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('fp-modal-open');
+      document.addEventListener('keydown', confirmKeys);
+      conf.querySelector('#fp-stay').focus();
+    }
+    function closeConfirm() {
+      conf.classList.add('hidden'); conf.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('fp-modal-open');
+      document.removeEventListener('keydown', confirmKeys);
+      root.appendChild(conf); abortBtn.focus();
+    }
+    abortBtn.addEventListener('click', openConfirm);
+    conf.querySelector('#fp-stay').addEventListener('click', closeConfirm);
+    conf.addEventListener('mousedown', function (e) { if (e.target === conf) closeConfirm(); });
+    conf.querySelector('#fp-yes').addEventListener('click', function () {
+      conf.remove(); document.removeEventListener('keydown', confirmKeys); document.body.classList.remove('fp-modal-open');
+      pushHist(false); state.departedAt = null; state.pausedAt = null; save(); render();
+    });
     root.querySelector('#fp-follow').addEventListener('click', function () {
       if (!map || !planeMarker) return; follow = true; map.setView(planeMarker.getLatLng(), Math.max(map.getZoom(), 4));
     });
@@ -352,6 +390,8 @@
     var el = Math.max(0, elapsed(state)), frac = Math.max(0, Math.min(1, el / total)), left = Math.max(0, Math.ceil((total - el) / 1000));
     function set(id, v) { var n = root.querySelector('#' + id); if (n) n.textContent = v; }
     var pr = profile(frac, paused), mach = pr.speed / (1225 - 163 * pr.alt / 11000);
+    window.BenkyoLive = window.BenkyoLive || {};
+    window.BenkyoLive.plane = { t: now, id: state.departedAt, p: frac, v: pr.speed, alt: pr.alt, stop: false, left: Math.max(0, total - el), phase: pr.phase, paused: paused };
     set('fp-left', Math.floor(left / 3600) + ':' + pad(Math.floor(left / 60) % 60) + ':' + pad(left % 60));
     set('fp-pct', Math.round(frac * 100) + ' %');
     set('fp-km', nfr(distanceKm(CDG, f) * frac) + ' km');
@@ -415,36 +455,81 @@
     root.querySelector('#fp-new').addEventListener('click', function () { state.departedAt = null; state.flight = null; state.seat = null; save(); render(); });
   }
 
-  // Animation de décollage (Paris) et d'atterrissage (Japon) : scène SVG/CSS d'environ 7 s, avec bouton « Passer ».
+  // Animation de décollage (Paris) et d'atterrissage (Japon) : scène SVG cinématique (caméra qui suit l'avion,
+  // décor en parallaxe, feux de piste, traversée des nuages), avec bouton « Passer ».
   function playScene(kind, done) {
     sceneTimers.forEach(window.clearTimeout); sceneTimers = [];
     stopTick(); stopBoardClock(); destroyMap(); restoreCards();
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { done(); return; }
     var f = flightOf(state.flight), up = kind === 'takeoff';
-    var sky = up ? ['#8ec0ee', '#fde3d2'] : ['#9cc3ef', '#ffd9a8'];
-    var back = up
-      ? '<g fill="#6c7a99"><rect x="60" y="205" width="170" height="45"/><rect x="250" y="170" width="16" height="80"/><rect x="242" y="160" width="32" height="16" rx="4"/><rect x="290" y="215" width="120" height="35"/></g>'
-      : '<polygon points="470,250 590,120 640,120 760,250" fill="#7a8fb8"/><polygon points="570,142 590,120 640,120 660,142 628,134 612,146 598,134" fill="#fff"/><g fill="#d9482b"><rect x="130" y="196" width="6" height="54"/><rect x="190" y="196" width="6" height="54"/><rect x="120" y="190" width="86" height="8" rx="3"/><rect x="128" y="204" width="70" height="5"/></g>';
+    var sky = up ? ['#0b1730', '#24406e', '#e9a35a'] : ['#1a2747', '#5a5f86', '#f4b25c'];
+    var i, far = '';
+    if (up) {
+      // Silhouette de Paris : immeubles + tour Eiffel, répétés.
+      for (i = 0; i < 4; i++) {
+        var o = i * 700;
+        far += '<g transform="translate(' + o + ',0)"><path d="M0 262V236h40v-12h30v20h26v-30h22v38h40v-16h34v-10h30v26h50v-18h36v28h44v-22h30v-8h26v30h40v-14h30v24h40v-30h26v20h40v-16h36v28h20v12z"/>' +
+          '<path d="M520 262l22-70 6-60 4-50 4 50 6 60 22 70h-14l-12-34h-12l-12 34z"/><circle cx="556" cy="82" r="2.4" class="fp-beacon"/></g>';
+      }
+    } else {
+      for (i = 0; i < 3; i++) {
+        var p = i * 900;
+        far += '<g transform="translate(' + p + ',0)"><path d="M60 262 300 120q20-12 40 0l240 142z" class="fp-fuji"/><path d="M268 140l32-20q20-12 40 0l32 20-22-6-14 12-16-10-14 12-14-12z" fill="#f4f1ea" opacity=".92"/>' +
+          '<path d="M560 262v-22h30v-36h24v58h36v-30h28v-14h22v44h40v-26h30v26h40v-40h18v-20h6v20h18v60z" opacity=".9"/></g>';
+      }
+    }
+    var ground = '<rect x="-200" y="262" width="12000" height="200" class="fp-g-grass"/>' +
+      '<rect x="-200" y="266" width="12000" height="34" class="fp-g-rwy"/>' +
+      '<line x1="-200" y1="283" x2="12000" y2="283" class="fp-g-center"/>' +
+      '<line x1="-200" y1="266" x2="12000" y2="266" class="fp-g-lights fp-g-lights--far"/>' +
+      '<line x1="-200" y1="301" x2="12000" y2="301" class="fp-g-lights"/>';
+    for (i = 0; i < 40; i++) ground += '<g transform="translate(' + (i * 380 + 120) + ',0)"><rect y="306" width="3" height="16" class="fp-g-sign"/><rect x="-14" y="300" width="30" height="8" rx="2" class="fp-g-sign"/></g>';
+    var cloud = function (x, y, s, o) { return '<g transform="translate(' + x + ',' + y + ') scale(' + s + ')" opacity="' + o + '"><ellipse cx="0" cy="0" rx="120" ry="34"/><ellipse cx="-50" cy="-18" rx="60" ry="34"/><ellipse cx="40" cy="-26" rx="70" ry="40"/></g>'; };
+    var clouds = cloud(200, 120, 1.4, .95) + cloud(620, 230, 1.8, .9) + cloud(1050, 140, 1.5, .95) + cloud(1450, 260, 2, .9) + cloud(1850, 160, 1.6, .95);
+    var plane = '<g class="fp-jet"><g transform="scale(1.25)"><g class="fp-jet-body">' +
+      '<g class="fp-gear"><path d="M0-18v14M70-18v14" class="fp-gear-strut"/><circle cx="-4" cy="-4" r="4.2" class="fp-wheel"/><circle cx="5" cy="-4" r="4.2" class="fp-wheel"/><circle cx="70" cy="-4" r="3.4" class="fp-wheel"/></g>' +
+      '<path d="M-40-22 6-22-34-6h-14z" class="fp-jet-wing-far"/>' +
+      '<path d="M-92-36-116-74h12l38 38z" class="fp-fin"/><path d="M-118-30-134-26-126-24-100-28z" class="fp-jet-wing-far"/>' +
+      '<path d="M-124-34q4-4 18-4H64q22 0 32 10 3 3 0 6-12 8-34 8H-70q-26 0-54-20z" fill="url(#fpHull)"/>' +
+      '<path d="M-110-26H72q14 0 22-4" class="fp-livery"/>' +
+      '<line x1="-82" y1="-32" x2="54" y2="-32" class="fp-windows"/><path d="M76-33h10q4 1 6 4h-15z" class="fp-jet-cockpit"/>' +
+      '<path d="M-26-22 22-22-30 4h-12z" class="fp-jet-wing"/>' +
+      '<rect x="-20" y="-20" width="30" height="11" rx="5.5" class="fp-engine"/><ellipse cx="-22" cy="-14.5" rx="6" ry="4" class="fp-exhaust"/>' +
+      '<circle cx="-30" cy="4" r="1.6" class="fp-strobe"/><circle cx="-116" cy="-74" r="1.6" class="fp-strobe fp-strobe--b"/>' +
+      '</g><g class="fp-smoke"><circle cx="0" cy="-3" r="6"/><circle cx="-14" cy="-6" r="9"/><circle cx="-30" cy="-8" r="12"/></g></g></g>';
     var lines = up
-      ? [[0, 'Mesdames et messieurs, bienvenue à bord. Nous sommes en tête de piste à Paris Charles-de-Gaulle.'], [3300, 'Décollage ! Accrochez vos ceintures.'], [5800, 'Cap sur le Japon : ' + f.name + ' dans ' + dur(f.minutes) + ' de vol.']]
-      : [[0, 'Nous commençons notre descente vers ' + f.name + '.'], [3800, 'Atterrissage…'], [6300, 'Bienvenue au Japon !  日本へようこそ']];
-    root.innerHTML = '<div class="fp-scene fp-scene--' + kind + '"><svg viewBox="0 0 800 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="' + (up ? 'Décollage de Paris' : 'Atterrissage au Japon') + '">' +
-      '<defs><linearGradient id="fpSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + sky[0] + '"/><stop offset="1" stop-color="' + sky[1] + '"/></linearGradient></defs>' +
-      '<rect width="800" height="360" fill="url(#fpSky)"/><circle cx="650" cy="90" r="34" fill="#fff6d6" opacity=".9"/>' +
-      '<g class="fp-cloud fp-cloud-a" fill="#fff" opacity=".85"><ellipse cx="120" cy="70" rx="48" ry="14"/><ellipse cx="150" cy="60" rx="32" ry="14"/></g>' +
-      '<g class="fp-cloud fp-cloud-b" fill="#fff" opacity=".7"><ellipse cx="480" cy="40" rx="56" ry="15"/><ellipse cx="510" cy="30" rx="34" ry="13"/></g>' + back +
-      '<rect y="250" width="800" height="110" fill="#3b4256"/><rect y="250" width="800" height="5" fill="#6c7a99"/><line class="fp-dash" x1="0" y1="300" x2="800" y2="300" stroke="#fff" stroke-width="5" stroke-dasharray="40 30"/>' +
-      '<g class="fp-aircraft"><path d="M0 0h92q24 0 32 9-8 9-32 9H2q-8 0-10-9z" fill="#fff" stroke="#9aa5bd"/><path d="M6 1-8-30h16l24 31z" fill="#1d4ed8"/><path d="M52 10 30 34h17l34-24z" fill="#cdd5e6" stroke="#9aa5bd" stroke-width=".6"/>' +
-      '<g fill="#8fb4de"><circle cx="40" cy="6" r="2.2"/><circle cx="52" cy="6" r="2.2"/><circle cx="64" cy="6" r="2.2"/><circle cx="76" cy="6" r="2.2"/><path d="M96 3h10q6 1 9 5h-19z"/></g>' +
-      '<g class="fp-gear" fill="#2b3142"><rect x="60" y="17" width="3" height="9"/><circle cx="61.5" cy="28" r="3.4"/></g></g></svg>' +
-      '<p class="fp-scene-text" id="fp-scene-text" aria-live="polite"></p><button type="button" class="fp-btn-ghost fp-skip" id="fp-skip">Passer</button></div>';
-    function finish() { sceneTimers.forEach(window.clearTimeout); sceneTimers = []; done(); }
-    lines.forEach(function (l) { sceneTimers.push(window.setTimeout(function () { var t = root.querySelector('#fp-scene-text'); if (t) t.textContent = l[1]; }, l[0])); });
-    sceneTimers.push(window.setTimeout(finish, up ? 7200 : 8400));
+      ? [[0, 'En tête de piste', 'Paris Charles-de-Gaulle · piste 27R. Personnel navigant, aux portes.'], [2600, 'Mise en puissance', 'Accrochez vos ceintures, nous prenons notre envol.'], [3900, 'Rotation', 'L’avion quitte la piste et entame sa montée.'], [6300, 'Cap à l’est', f.name + ' dans ' + dur(f.minutes) + ' de vol.']]
+      : [[0, 'Approche finale', 'Descente à travers la couche nuageuse vers ' + f.name + '.'], [3200, 'Piste en vue', 'Train sorti, volets en position atterrissage.'], [5200, 'Toucher des roues', 'Inversion de poussée, freinage.'], [7200, 'Bienvenue au Japon', '日本へようこそ · heure locale ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Tokyo' }) + '.']];
+    root.innerHTML = '<div class="fp-scene fp-scene--' + kind + '"><svg viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + (up ? 'Décollage de Paris' : 'Atterrissage au Japon') + '">' +
+      '<defs><linearGradient id="fpSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + sky[0] + '"/><stop offset=".62" stop-color="' + sky[1] + '"/><stop offset="1" stop-color="' + sky[2] + '"/></linearGradient>' +
+      '<radialGradient id="fpSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3d1"/><stop offset=".25" stop-color="#ffd38a" stop-opacity=".8"/><stop offset="1" stop-color="#f2b84b" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="fpHull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#eef2f8"/><stop offset="1" stop-color="#aeb9cc"/></linearGradient>' +
+      '<radialGradient id="fpVig" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>' +
+      '<filter id="fpBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter><filter id="fpGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>' +
+      '<rect width="800" height="360" fill="url(#fpSky)"/><g class="fp-stars">' + Array.apply(null, Array(26)).map(function (_, k) { return '<circle cx="' + ((k * 137) % 800) + '" cy="' + ((k * 53) % 150) + '" r="' + (k % 3 ? .7 : 1.1) + '"/>'; }).join('') + '</g>' +
+      '<circle cx="' + (up ? 600 : 230) + '" cy="236" r="140" fill="url(#fpSun)" class="fp-sun"/>' +
+      '<g class="fp-world"><g class="fp-far">' + far + '</g><g class="fp-ground">' + ground + '</g></g>' +
+      '<g class="fp-haze"><rect y="200" width="800" height="70" fill="' + sky[2] + '" opacity=".18" filter="url(#fpBlur)"/></g>' +
+      '<g transform="translate(330,270)">' + plane + '</g>' +
+      '<g class="fp-clouds" filter="url(#fpBlur)">' + clouds + '</g>' +
+      '<rect width="800" height="360" fill="url(#fpVig)" pointer-events="none"/><rect width="800" height="360" class="fp-flash" pointer-events="none"/></svg>' +
+      '<div class="fp-hud"><span>' + (up ? 'CDG' : f.code) + '</span><i></i><span>' + (up ? 'DÉPART' : 'ARRIVÉE') + '</span></div>' +
+      '<div class="fp-caption" aria-live="polite"><small id="fp-scene-k"></small><p class="fp-scene-text" id="fp-scene-text"></p></div>' +
+      '<div class="fp-progress"><span style="animation-duration:' + (up ? 8 : 9) + 's"></span></div>' +
+      '<button type="button" class="fp-skip" id="fp-skip">Passer <i class="fa-solid fa-forward" aria-hidden="true"></i></button></div>';
+    var finished = false;
+    function finish() { if (finished) return; finished = true; sceneTimers.forEach(window.clearTimeout); sceneTimers = []; done(); }
+    var cap = root.querySelector('.fp-caption');
+    lines.forEach(function (l) { sceneTimers.push(window.setTimeout(function () {
+      if (!cap) return; cap.classList.remove('is-in'); void cap.offsetWidth;
+      root.querySelector('#fp-scene-k').textContent = l[1]; root.querySelector('#fp-scene-text').textContent = l[2]; cap.classList.add('is-in');
+    }, l[0])); });
+    sceneTimers.push(window.setTimeout(finish, up ? 8100 : 9300));
     root.querySelector('#fp-skip').addEventListener('click', finish);
   }
 
   function render() {
+    var stale = document.body.querySelector(':scope > #fp-confirm'); if (stale) stale.remove(); document.body.classList.remove('fp-modal-open');
     stopTick(); stopBoardClock(); destroyMap(); restoreCards();
     var s = stage();
     if (s === 'flight') renderFlight(); else if (s === 'arrived') renderArrived(); else renderPlan();

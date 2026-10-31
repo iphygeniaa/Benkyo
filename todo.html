@@ -414,7 +414,7 @@
         `).join('');
       }
 
-      const dateKey = now.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(now);
       const todayTodos = state.todos[dateKey] || [];
       const todoContainer = document.getElementById('dash-todos');
       if(!todayTodos.length) {
@@ -563,11 +563,11 @@
 
     function deleteTimetableItemDirect(id, event) {
       event.stopPropagation();
-      if(confirm("Supprimer ce créneau ?")) {
+      showConfirmModal('Supprimer ce créneau ?', 'Ce créneau sera définitivement supprimé.', function () {
         state.timetable = state.timetable.filter(i => i.id !== id);
         saveState();
         renderTimetable();
-      }
+      });
     }
 
     function copyTimetableItem(id, event) {
@@ -636,7 +636,7 @@
 
     function pasteTodo() {
       if (!copiedTodo) return;
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       if (!state.todos[dateKey]) state.todos[dateKey] = [];
       state.todos[dateKey].push({ ...copiedTodo, done: false });
       saveState();
@@ -681,7 +681,7 @@
     }
 
     function renderTodos() {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       const isToday = currentTodoDate.toDateString() === new Date().toDateString();
       const longDate = currentTodoDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       document.getElementById('todo-date-title').innerText = isToday ? "Aujourd'hui" : currentTodoDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -735,7 +735,7 @@
       const duration = parseInt(document.getElementById('todo-duration').value) || 30;
       const time = document.getElementById('todo-time').value;
       const urgency = parseInt(document.getElementById('todo-urgency').value) || 2;
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
 
       if (!state.todos[dateKey]) state.todos[dateKey] = [];
       state.todos[dateKey].push({ text: input.value, desc, duration, time, urgency, done: false });
@@ -809,13 +809,27 @@
       }
     }
 
+    // Une autre page/onglet a pu modifier les données : on réaffiche.
+    // Et si la page est restée ouverte depuis la veille, on revient à aujourd'hui.
+    let _todoPageDay = new Date().toDateString();
+    function _syncTodoView() {
+      const nowDay = new Date().toDateString();
+      if (nowDay !== _todoPageDay) {
+        if (currentTodoDate.toDateString() === _todoPageDay) currentTodoDate = new Date();
+        _todoPageDay = nowDay;
+      }
+      try { renderTodos(); } catch (e) {}
+    }
+    window.addEventListener('benkyo:refreshed', _syncTodoView);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') _syncTodoView(); });
+
     function changeTodoDate(delta) {
       currentTodoDate.setDate(currentTodoDate.getDate() + delta);
       renderTodos();
     }
 
     function sortTodos(criterion) {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       let items = state.todos[dateKey] || [];
       if (!items.length) return;
       if (criterion === 'alpha') items.sort((a, b) => a.text.localeCompare(b.text));
@@ -834,7 +848,7 @@
     }
 
     function renderGeneratedChronologicalSchedule() {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       const items = [...(state.todos[dateKey] || [])];
       const container = document.getElementById('todo-schedule-container');
 
@@ -863,7 +877,7 @@
     }
 
     function addGeneratedScheduleToTimetable() {
-      const dateKey = currentTodoDate.toISOString().split('T')[0];
+      const dateKey = BenkyoStorage.dateKey(currentTodoDate);
       const items = state.todos[dateKey] || [];
       if(!items.length) { showToast("Aucune tâche à importer pour cette journée.", 'warning'); return; }
 
@@ -1037,7 +1051,7 @@
       const title = prompt("Nom du nouveau paquet de flashcards :");
       if (title) { state.decks.push({ id: Date.now(), title, cards: [] }); saveState(); renderDecks(); }
     }
-    function deleteDeck(idx) { if(confirm("Supprimer ce paquet ?")) { state.decks.splice(idx, 1); saveState(); renderDecks(); } }
+    function deleteDeck(idx) { showConfirmModal('Supprimer ce paquet ?', 'Ce paquet sera définitivement supprimé.', function () { state.decks.splice(idx, 1); saveState(); renderDecks(); }); }
 
     let currentEditingDeckIdx = null;
     function openCardModal(deckIdx) {

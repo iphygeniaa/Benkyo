@@ -239,7 +239,7 @@
     function pad(n) { return String(n).padStart(2, '0'); }
     function localKey(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
     // Même clé que la page To-do (elle utilise la date ISO) pour afficher les mêmes tâches
-    function todoKey(d) { return d.toISOString().split('T')[0]; }
+    function todoKey(d) { return BenkyoStorage.dateKey(d); }
     function icon(id) { return '<svg class="icon"><use href="#i-' + id + '"/></svg>'; }
     var toastTimer;
     function toast(msg) {

@@ -134,18 +134,65 @@
   var GRAD_L = { red: 'fd-redL', green: 'fd-greenL', blue: 'fd-blueL' };
 
   var SHAPES = {
-    pumpkin: function () {
-      var K = '#3b2412';
+    // Citrouille kawaii : pastel pêche, contour prune doux, joues roses, petits yeux brillants.
+    // Variantes : 'plain' · 'bow' (nœud rose) · 'hat' (chapeau de sorcière lavande) · 'sleepy' (yeux fermés).
+    pumpkin: function (v) {
+      var K = '#6b3f4f', W = '2';
+      var face = v === 'sleepy'
+        ? '<path d="M21 38Q24 40.500 27 38M37 38Q40 40.500 43 38" fill="none" stroke="' + K + '" stroke-width="2.200"/>'
+        : '<ellipse cx="24" cy="38" rx="2.600" ry="3.200" fill="' + K + '"/><ellipse cx="40" cy="38" rx="2.600" ry="3.200" fill="' + K + '"/>' +
+          '<circle cx="25" cy="36.800" r="1" fill="#fff"/><circle cx="41" cy="36.800" r="1" fill="#fff"/>';
+      var top = '';
+      if (v === 'hat') {
+        top = '<path d="M14 22Q32 15 50 22Q44 25 32 24.500Q20 25 14 22Z" fill="#b9a3e8" stroke="' + K + '" stroke-width="' + W + '"/>' +
+          '<path d="M21 22C24 14 28 6 38 2C36 8 40 12 43 21Q32 24 21 22Z" fill="#c9b6f2" stroke="' + K + '" stroke-width="' + W + '"/>' +
+          '<path d="M22.500 19Q32 21.500 42 18.500" fill="none" stroke="#ff9ec4" stroke-width="3"/>' +
+          '<path d="M34 9l1 2 2 .3-1.500 1.400.4 2-1.900-1-1.900 1 .4-2L31 11.300l2-.3z" fill="#ffe08a" stroke="none"/>';
+      } else {
+        top = '<path d="M30 20C29.500 15 30.500 12 33 10" fill="none" stroke="' + K + '" stroke-width="5"/><path d="M30 20C29.500 15 30.500 12 33 10" fill="none" stroke="#8fcf7a" stroke-width="2.600"/>' +
+          '<path d="M33 14C37 9 44 9 47 12C43 16 37 17 33 14Z" fill="#a8dd8f" stroke="' + K + '" stroke-width="1.800"/>' +
+          '<path d="M27 15C23 13 21 9 24 7" fill="none" stroke="#8fcf7a" stroke-width="1.600"/>';
+      }
+      var bow = v === 'bow'
+        ? '<path d="M32 21L23 16Q20 21 23 26Z M32 21L41 16Q44 21 41 26Z" fill="#ffb3cf" stroke="' + K + '" stroke-width="1.800"/><circle cx="32" cy="21" r="2.600" fill="#ff8fb8" stroke="' + K + '" stroke-width="1.600"/>'
+        : '';
       return '<svg viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M29 20C28 12 31 8 37 6L40.500 11C37 12 36 15 36 20Z" fill="#6cc04a" stroke="' + K + '" stroke-width="2.400"/>' +
-        '<path d="M39 10C45 6 52 9 50 15" fill="none" stroke="' + K + '" stroke-width="4.600"/><path d="M39 10C45 6 52 9 50 15" fill="none" stroke="#6cc04a" stroke-width="2"/>' +
-        '<path d="M32 18C40 13 54 15 59 27C63 37 59 51 49 56C42 60 36 58 32 55C28 58 22 60 15 56C5 51 1 37 5 27C10 15 24 13 32 18Z" fill="#f7931e" stroke="' + K + '" stroke-width="2.600"/>' +
-        '<path d="M24 20C17 27 16 47 24 57M40 20C47 27 48 47 40 57" fill="none" stroke="' + K + '" stroke-width="2.200" stroke-opacity=".75"/>' +
-        '<path d="M10 30Q12 25 16.500 23" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2.600"/>' +
-        '<ellipse cx="17" cy="45" rx="4.200" ry="2.800" fill="#ff7fa6" fill-opacity=".75" stroke="none"/><ellipse cx="47" cy="45" rx="4.200" ry="2.800" fill="#ff7fa6" fill-opacity=".75" stroke="none"/>' +
-        '<path d="M22 41L28.500 41L25.200 34Z" fill="' + K + '" stroke="' + K + '" stroke-width="2"/>' +
-        '<path d="M41.500 41L35 41L38.300 34Z" fill="' + K + '" stroke="' + K + '" stroke-width="2"/>' +
-        '<path d="M25 46Q32 55 39 46Q32 49 25 46Z" fill="#ffe27a" stroke="' + K + '" stroke-width="2"/></svg>';
+        '<path d="M32 20C42 15 57 19 60 33C62 45 55 56 44 58C39 59 35 57.500 32 56C29 57.500 25 59 20 58C9 56 2 45 4 33C7 19 22 15 32 20Z" fill="#ffb27a" stroke="' + K + '" stroke-width="' + W + '"/>' +
+        '<path d="M24 21C17 28 17 49 24 57.500M40 21C47 28 47 49 40 57.500" fill="none" stroke="#f08f5c" stroke-width="2.200"/>' +
+        '<path d="M32 21C30 32 30 46 32 56" fill="none" stroke="#f08f5c" stroke-width="1.600" stroke-opacity=".7"/>' +
+        '<path d="M11 31Q13 26 18 24" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2.600"/><circle cx="10" cy="36" r="1.300" fill="#fff" fill-opacity=".8"/>' +
+        top + bow + face +
+        '<ellipse cx="18" cy="44" rx="4" ry="2.500" fill="#ff8fb0" fill-opacity=".7"/><ellipse cx="46" cy="44" rx="4" ry="2.500" fill="#ff8fb0" fill-opacity=".7"/>' +
+        '<path d="M29 43Q30.500 45.500 32 43Q33.500 45.500 35 43" fill="none" stroke="' + K + '" stroke-width="1.800"/></svg>';
+    },
+    // Fantôme kawaii : blanc nacré, ombre lavande, petits bras, joues roses.
+    // Variantes : 'plain' · 'bow' (nœud rose sur la tête) · 'pumpkin' (tient une mini citrouille) · 'wink' (clin d'œil + langue).
+    ghost: function (v) {
+      var K = '#6b4f6f';
+      var eyes = v === 'wink'
+        ? '<ellipse cx="25" cy="29" rx="2.600" ry="3.200" fill="' + K + '"/><circle cx="26" cy="27.800" r="1" fill="#fff"/><path d="M36.500 29.500Q39.500 26.500 42.500 29.500" fill="none" stroke="' + K + '" stroke-width="2.200"/>'
+        : '<ellipse cx="25" cy="29" rx="2.600" ry="3.200" fill="' + K + '"/><ellipse cx="39" cy="29" rx="2.600" ry="3.200" fill="' + K + '"/><circle cx="26" cy="27.800" r="1" fill="#fff"/><circle cx="40" cy="27.800" r="1" fill="#fff"/>';
+      var mouth = v === 'wink'
+        ? '<path d="M28.500 35Q32 38.500 35.500 35Z" fill="' + K + '" stroke="' + K + '" stroke-width="1.400"/><path d="M30.500 36.500Q32 39.500 33.500 36.500" fill="#ff8fb0" stroke="none"/>'
+        : '<path d="M29.500 35Q31 37 32 35Q33 37 34.500 35" fill="none" stroke="' + K + '" stroke-width="1.800"/>';
+      var extra = '';
+      if (v === 'bow') extra = '<path d="M40 9L33 4Q30 9 34 13Z M40 9L48 6Q49 12 44 14Z" fill="#ffb3cf" stroke="' + K + '" stroke-width="1.700"/><circle cx="39.500" cy="9.500" r="2.300" fill="#ff8fb8" stroke="' + K + '" stroke-width="1.500"/>';
+      var arms = '<path d="M11 36C7 36 5 39 6 41C9 41 11 40 12.500 38" fill="#fbf8ff" stroke="' + K + '" stroke-width="2"/>' +
+        '<path d="M53 36C57 36 59 39 58 41C55 41 53 40 51.500 38" fill="#fbf8ff" stroke="' + K + '" stroke-width="2"/>';
+      if (v === 'pumpkin') {
+        arms = '<path d="M14 39C18 43 22 45 26 45" fill="none" stroke="' + K + '" stroke-width="2"/><path d="M50 39C46 43 42 45 38 45" fill="none" stroke="' + K + '" stroke-width="2"/>' +
+          '<path d="M32 41C37 38.500 43 41 43 47C43 52 38 54 32 52.500C26 54 21 52 21 47C21 41 27 38.500 32 41Z" fill="#ffb27a" stroke="' + K + '" stroke-width="1.800"/>' +
+          '<path d="M27 42C25 45 25 50 27 53M37 42C39 45 39 50 37 53" fill="none" stroke="#f08f5c" stroke-width="1.400"/>' +
+          '<path d="M32 41C32 38.500 33 37.500 34.500 37" fill="none" stroke="#8fcf7a" stroke-width="2"/>' +
+          '<circle cx="29" cy="47" r="1" fill="' + K + '"/><circle cx="35" cy="47" r="1" fill="' + K + '"/>';
+      }
+      return '<svg viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M32 6C45 6 53 16 53 29V49Q53 56 48 55Q45 52 42 55Q38 59 35 55Q32 52 29 55Q26 59 22 55Q19 52 16 55Q11 56 11 49V29C11 16 19 6 32 6Z" fill="#fbf8ff" stroke="' + K + '" stroke-width="2"/>' +
+        '<path d="M47 16C50 21 51 27 51 33V48Q51 52 48 52.500" fill="none" stroke="#dcd0f4" stroke-width="3"/>' +
+        '<path d="M18 14Q21 10 25 9" fill="none" stroke="#fff" stroke-width="2.600"/>' +
+        eyes + mouth +
+        '<ellipse cx="19" cy="34" rx="3.800" ry="2.400" fill="#ffa8c5" fill-opacity=".75"/><ellipse cx="45" cy="34" rx="3.800" ry="2.400" fill="#ffa8c5" fill-opacity=".75"/>' +
+        arms + extra + '</svg>';
     },
     bat: function () {
       var K = '#2a1a40', wing = function () {
@@ -158,18 +205,6 @@
         '<circle cx="46.500" cy="17" r="2.300" fill="#fff"/><circle cx="53.500" cy="17" r="2.300" fill="#fff"/><circle cx="46.800" cy="17.300" r="1.100" fill="' + K + '"/><circle cx="53.800" cy="17.300" r="1.100" fill="' + K + '"/>' +
         '<path d="M47.500 22Q50 24.500 52.500 22" fill="none" stroke="' + K + '" stroke-width="1.200"/>' +
         '<ellipse cx="43.800" cy="21" rx="2" ry="1.300" fill="#ff8fb0" fill-opacity=".8" stroke="none"/><ellipse cx="56.200" cy="21" rx="2" ry="1.300" fill="#ff8fb0" fill-opacity=".8" stroke="none"/></svg>';
-    },
-    ghost: function () {
-      var K = '#3b2b2b';
-      return '<svg viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round" stroke="' + K + '" stroke-width="2.600">' +
-        '<path d="M13 40C5 38 2 30 5 23C9 25 12 28 14 33Z" fill="#fff"/>' +
-        '<path d="M51 40C58 42 61 48 59 53C54 51 52 48 50 44Z" fill="#fff"/>' +
-        '<path d="M32 6C46 6 55 17 55 31C55 40 54 47 56 54Q57 59 52 57.500Q48 54.500 45 57.500Q41 61.500 37 57.500Q33 54.500 29 57.500Q25 61.500 21 57.500Q17 55 13 58Q8 59 9.500 52C11 47 9 40 9 31C9 17 18 6 32 6Z" fill="#fff"/>' +
-        '<path d="M44 14C49 18 51 23 51 29" fill="none" stroke="#d9d3ee" stroke-width="2.600"/>' +
-        '<ellipse cx="17.500" cy="37" rx="5" ry="3.200" fill="#ff8fb0" fill-opacity=".7" stroke="none"/><ellipse cx="46.500" cy="37" rx="5" ry="3.200" fill="#ff8fb0" fill-opacity=".7" stroke="none"/>' +
-        '<ellipse cx="24" cy="31" rx="2.600" ry="3.400" fill="' + K + '" stroke="none"/><ellipse cx="40" cy="31" rx="2.600" ry="3.400" fill="' + K + '" stroke="none"/>' +
-        '<circle cx="24.900" cy="29.800" r="1" fill="#fff" stroke="none"/><circle cx="40.900" cy="29.800" r="1" fill="#fff" stroke="none"/>' +
-        '<path d="M28.500 37Q32 41 35.500 37" fill="none" stroke-width="2.200"/></svg>';
     },
     snow: function () {
       var arm = '<path d="M20 20V3M20 8.500l-4.200-4M20 8.500l4.200-4M20 13.500l-5.500-5M20 13.500l5.500-5"/><path d="M20 3l-1.800-1.800M20 3l1.800-1.800" />';
@@ -189,34 +224,58 @@
         '<path d="M20 0C21.500 11 27 18.500 40 20C27 21.500 21.500 29 20 40C18.500 29 13 21.500 0 20C13 18.500 18.500 11 20 0Z" fill="' + g + '"/>' +
         '<g transform="translate(20 20) rotate(45) scale(.5) translate(-20 -20)"><path d="M20 0C21.500 11 27 18.500 40 20C27 21.500 21.500 29 20 40C18.500 29 13 21.500 0 20C13 18.500 18.500 11 20 0Z" fill="#fff" fill-opacity=".8"/></g></svg>';
     },
+    // Noël kawaii : pastel, contour doux, petits visages et joues roses.
     bauble: function (c) {
-      var g = GRAD[c] || 'fd-red';
-      var dots = '';
-      for (var i = 0; i < 7; i++) { var t = i / 6, x = 6 + t * 28, y = 33 + Math.sin(t * Math.PI) * 4.500; dots += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="1.100" fill="#fff" fill-opacity=".7"/>'; }
-      return '<svg viewBox="0 0 40 52"><circle cx="20" cy="3.500" r="2.500" fill="none" stroke="#e9b949" stroke-width="1.400"/>' +
-        '<path d="M14.500 13L16.500 7H23.500L25.500 13Z" fill="url(#fd-gold)" stroke="#98680f" stroke-width=".6" stroke-linejoin="round"/>' +
-        '<rect x="15" y="11.500" width="10" height="3" rx="1.200" fill="url(#fd-gold)"/>' +
-        '<circle cx="20" cy="32" r="17.500" fill="url(#' + g + ')"/>' +
-        '<path d="M3 30Q20 40 37 30" stroke="#fff" stroke-opacity=".38" stroke-width="3" fill="none"/>' + dots +
-        '<ellipse cx="13" cy="24" rx="3.800" ry="6.500" fill="#fff" fill-opacity=".42" transform="rotate(24 13 24)"/><circle cx="27.500" cy="42" r="1.800" fill="#fff" fill-opacity=".3"/></svg>';
+      var K = '#5b3f55', col = { red: '#ffb3c1', green: '#b5e6c8', gold: '#ffe3a1', blue: '#bcd8ff' }[c] || '#ffb3c1';
+      var face = '<ellipse cx="15" cy="33" rx="1.900" ry="2.300" fill="' + K + '"/><ellipse cx="25" cy="33" rx="1.900" ry="2.300" fill="' + K + '"/>' +
+        '<circle cx="15.700" cy="32.200" r=".7" fill="#fff"/><circle cx="25.700" cy="32.200" r=".7" fill="#fff"/>' +
+        '<path d="M18.500 37Q20 38.600 21.500 37" fill="none" stroke="' + K + '" stroke-width="1.400"/>' +
+        '<ellipse cx="11.500" cy="37" rx="2.600" ry="1.600" fill="#ff8fb0" fill-opacity=".6"/><ellipse cx="28.500" cy="37" rx="2.600" ry="1.600" fill="#ff8fb0" fill-opacity=".6"/>';
+      return '<svg viewBox="0 0 40 52" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M20 1.500V8" stroke="' + K + '" stroke-width="1.400"/>' +
+        '<path d="M20 5L14 2Q12 5 14 8Z M20 5L26 2Q28 5 26 8Z" fill="#ff9ec4" stroke="' + K + '" stroke-width="1.300"/>' +
+        '<rect x="15" y="9" width="10" height="5" rx="1.600" fill="#ffe08a" stroke="' + K + '" stroke-width="1.500"/>' +
+        '<circle cx="20" cy="31" r="16.500" fill="' + col + '" stroke="' + K + '" stroke-width="1.800"/>' +
+        '<path d="M4.500 25Q20 20 35.500 25" fill="none" stroke="#fff" stroke-width="2.200" stroke-dasharray="1 4"/>' +
+        '<path d="M9 22Q11 18.500 15 17" fill="none" stroke="#fff" stroke-width="2.200"/>' + face + '</svg>';
     },
     tree: function () {
-      var lights = [[20, 18, '#ffe27a'], [14, 33, '#ff6b7a'], [27, 30, '#8fd0ff'], [10, 44, '#ffe27a'], [20, 41, '#ff6b7a'], [30, 44, '#8fd0ff']], l = '';
-      lights.forEach(function (p) { l += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="' + p[2] + '" fill-opacity=".35"/><circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.600" fill="' + p[2] + '"/>'; });
-      return '<svg viewBox="0 0 40 52"><rect x="16.500" y="46" width="7" height="6" rx="1" fill="#8a5a2e"/>' +
-        '<path d="M20 22L37 46Q20 51 3 46Z" fill="url(#fd-tree)"/><path d="M20 12L33 33Q20 37 7 33Z" fill="url(#fd-tree)"/><path d="M20 4L30 21Q20 24 10 21Z" fill="url(#fd-tree)"/>' +
-        '<path d="M11 19Q20 23 29 19M8.500 31Q20 36 31.500 31M5.500 43Q20 49 34.500 43" stroke="#ffe27a" stroke-opacity=".85" stroke-width="1.200" fill="none" stroke-linecap="round"/>' + l +
-        '<path d="M20 -1C20.700 2 22 3 25 3.500C22 4 20.700 5 20 8C19.300 5 18 4 15 3.500C18 3 19.300 2 20 -1Z" fill="url(#fd-star)"/></svg>';
+      var K = '#3f4a3c', dots = [[14, 30, '#ffb3c1'], [26, 33, '#bcd8ff'], [11, 43, '#ffe08a'], [29, 44, '#ffb3c1'], [20, 22, '#ffe08a']], d = '';
+      dots.forEach(function (p) { d += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.900" fill="' + p[2] + '" stroke="' + K + '" stroke-width="1"/>'; });
+      return '<svg viewBox="0 0 40 52" stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="16" y="45" width="8" height="6" rx="1.500" fill="#d9a77c" stroke="' + K + '" stroke-width="1.500"/>' +
+        '<path d="M20 6C26 14 30 18 32 22Q29 23 27 22.500C31 28 34 32 36 36Q33 37 30 36.500C33 40 36 43 37 46Q20 49 3 46C4 43 7 40 10 36.500Q7 37 4 36C6 32 9 28 13 22.500Q11 23 8 22C10 18 14 14 20 6Z" fill="#a8e0b8" stroke="' + K + '" stroke-width="1.800"/>' +
+        '<path d="M12 22.500Q20 26 28 22.500M9 36.500Q20 40 31 36.500" fill="none" stroke="#7fc79a" stroke-width="1.500"/>' +
+        '<ellipse cx="16.500" cy="30.500" rx="1.700" ry="2.100" fill="' + K + '"/><ellipse cx="23.500" cy="30.500" rx="1.700" ry="2.100" fill="' + K + '"/>' +
+        '<circle cx="17.100" cy="29.800" r=".6" fill="#fff"/><circle cx="24.100" cy="29.800" r=".6" fill="#fff"/>' +
+        '<path d="M18.700 33.600Q20 35 21.300 33.600" fill="none" stroke="' + K + '" stroke-width="1.200"/>' +
+        '<ellipse cx="13.500" cy="33.500" rx="2" ry="1.300" fill="#ff8fb0" fill-opacity=".65"/><ellipse cx="26.500" cy="33.500" rx="2" ry="1.300" fill="#ff8fb0" fill-opacity=".65"/>' +
+        d.replace('<circle cx="14" cy="30"', '<circle cx="9" cy="41.500"').replace('<circle cx="26" cy="33"', '<circle cx="31" cy="41"') +
+        '<path d="M20 .5l1.800 3.600 4 .5-2.900 2.800.7 4L20 9.500l-3.600 1.900.7-4-2.900-2.800 4-.5z" fill="#ffe08a" stroke="' + K + '" stroke-width="1.300"/></svg>';
     },
     gift: function (c) {
-      var g = GRAD_L[c] || 'fd-redL';
-      return '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="38" rx="15" ry="2" fill="#000" fill-opacity=".18"/>' +
-        '<rect x="5" y="17" width="30" height="20" rx="2" fill="url(#' + g + ')"/>' +
-        '<rect x="3" y="11.500" width="34" height="8" rx="2" fill="url(#' + g + ')"/><rect x="3" y="11.500" width="34" height="3.500" rx="1.500" fill="#fff" fill-opacity=".22"/>' +
-        '<rect x="17" y="11.500" width="6" height="25.500" fill="url(#fd-gold)"/>' +
-        '<path d="M20 11.500C13 1 5 4 9 9C11.500 12 17 11.500 20 11.500Z" fill="url(#fd-gold)" stroke="#98680f" stroke-width=".7"/>' +
-        '<path d="M20 11.500C27 1 35 4 31 9C28.500 12 23 11.500 20 11.500Z" fill="url(#fd-gold)" stroke="#98680f" stroke-width=".7"/>' +
-        '<circle cx="20" cy="11" r="2.600" fill="url(#fd-goldB)" stroke="#98680f" stroke-width=".6"/></svg>';
+      var K = '#5b3f55', box = { red: '#ffb3c1', green: '#b5e6c8', blue: '#c9c0f5' }[c] || '#ffb3c1', rib = c === 'green' ? '#ff9ec4' : '#fff4c2';
+      return '<svg viewBox="0 0 40 40" stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="6" y="17" width="28" height="20" rx="3" fill="' + box + '" stroke="' + K + '" stroke-width="1.700"/>' +
+        '<rect x="4" y="11.500" width="32" height="7" rx="2.500" fill="' + box + '" stroke="' + K + '" stroke-width="1.700"/>' +
+        '<path d="M20 11.500V37" stroke="' + rib + '" stroke-width="4"/><path d="M17.800 11.500V37M22.200 11.500V37" stroke="' + K + '" stroke-width="1" stroke-opacity=".5"/>' +
+        '<path d="M20 11.500C15 4 8 5 10 9.500C11.500 12 17 11.500 20 11.500Z M20 11.500C25 4 32 5 30 9.500C28.500 12 23 11.500 20 11.500Z" fill="' + rib + '" stroke="' + K + '" stroke-width="1.500"/>' +
+        '<ellipse cx="12.500" cy="26" rx="1.600" ry="2" fill="' + K + '"/><ellipse cx="27.500" cy="26" rx="1.600" ry="2" fill="' + K + '"/>' +
+        '<path d="M12.200 30.500Q13.500 31.800 14.800 30.500" fill="none" stroke="' + K + '" stroke-width="1.100"/>' +
+        '<ellipse cx="9.500" cy="29.500" rx="1.800" ry="1.100" fill="#ff8fb0" fill-opacity=".65"/><ellipse cx="30.500" cy="29.500" rx="1.800" ry="1.100" fill="#ff8fb0" fill-opacity=".65"/></svg>';
+    },
+    snowman: function () {
+      var K = '#4f5470';
+      return '<svg viewBox="0 0 40 52" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="20" cy="37" r="13" fill="#fdfcff" stroke="' + K + '" stroke-width="1.700"/>' +
+        '<circle cx="20" cy="18" r="10" fill="#fdfcff" stroke="' + K + '" stroke-width="1.700"/>' +
+        '<path d="M10 14Q20 2 30 14Z" fill="#ffb3c1" stroke="' + K + '" stroke-width="1.500"/><circle cx="20" cy="5.500" r="2.600" fill="#fff" stroke="' + K + '" stroke-width="1.300"/>' +
+        '<path d="M9 14Q20 17 31 14" fill="none" stroke="' + K + '" stroke-width="1.500"/>' +
+        '<ellipse cx="16.500" cy="19" rx="1.600" ry="2" fill="' + K + '"/><ellipse cx="23.500" cy="19" rx="1.600" ry="2" fill="' + K + '"/>' +
+        '<path d="M19 22.500L23 23.300L19 24Z" fill="#ffb27a" stroke="#d98a55" stroke-width=".8"/>' +
+        '<ellipse cx="13.500" cy="22.500" rx="2" ry="1.300" fill="#ff8fb0" fill-opacity=".65"/><ellipse cx="26.500" cy="22.500" rx="2" ry="1.300" fill="#ff8fb0" fill-opacity=".65"/>' +
+        '<path d="M11 27.500Q20 31.500 29 27.500L28 31Q20 34 12 31Z" fill="#b5e6c8" stroke="' + K + '" stroke-width="1.400"/><path d="M25 31L27 38L23 37Z" fill="#b5e6c8" stroke="' + K + '" stroke-width="1.300"/>' +
+        '<circle cx="20" cy="37" r="1.300" fill="' + K + '"/><circle cx="20" cy="42" r="1.300" fill="' + K + '"/></svg>';
     },
     ume: function (c) {
       c = c || '#ffd1de';
@@ -257,19 +316,20 @@
   //   mode : fall (tombe) · rise (monte) · drift (traverse l'écran) · twinkle (scintille) · burst (feu d'artifice)
   var DECOR = {
     'halloween': [
-      { shape: 'bat', mode: 'drift', n: 5, size: [58, 96], op: .8, dur: [14, 26] },
-      { shape: 'ghost', mode: 'rise', n: 4, size: [38, 62], op: .5, dur: [20, 34] },
-      { shape: 'pumpkin', mode: 'rise', n: 5, size: [36, 64], op: .75, dur: [24, 40] },
+      { shape: 'ghost', arg: ['plain', 'bow', 'pumpkin', 'wink'], mode: 'rise', n: 5, size: [40, 66], op: .8, dur: [20, 34] },
+      { shape: 'pumpkin', arg: ['plain', 'bow', 'hat', 'sleepy'], mode: 'rise', n: 5, size: [40, 66], op: .85, dur: [24, 40] },
       { shape: 'star', arg: 'orange', mode: 'twinkle', n: 6, size: [10, 20], op: .8, dur: [3, 6] }
     ],
     'veille-noel': [
       { shape: 'snow', mode: 'fall', n: 12, size: [14, 34], op: .85, dur: [12, 24] },
       { shape: 'star', arg: '#ffe9a8', mode: 'twinkle', n: 10, size: [10, 24], op: .95, dur: [3, 7] },
-      { shape: 'tree', mode: 'rise', n: 2, size: [44, 64], op: .7, dur: [30, 44] }
+      { shape: 'tree', mode: 'rise', n: 3, size: [44, 64], op: .85, dur: [30, 44] },
+      { shape: 'snowman', mode: 'rise', n: 2, size: [44, 62], op: .9, dur: [28, 42] }
     ],
     'noel': [
       { shape: 'snow', mode: 'fall', n: 10, size: [14, 32], op: .85, dur: [12, 24] },
-      { shape: 'bauble', arg: ['red', 'green', 'gold'], mode: 'fall', n: 5, size: [30, 48], op: .85, dur: [18, 32] },
+      { shape: 'snowman', mode: 'rise', n: 2, size: [44, 62], op: .9, dur: [28, 42] },
+      { shape: 'bauble', arg: ['red', 'green', 'gold', 'blue'], mode: 'fall', n: 5, size: [30, 48], op: .85, dur: [18, 32] },
       { shape: 'gift', arg: ['red', 'green', 'blue'], mode: 'rise', n: 4, size: [34, 54], op: .8, dur: [26, 40] },
       { shape: 'star', arg: '#ffd86b', mode: 'twinkle', n: 6, size: [10, 20], op: .9, dur: [3, 6] }
     ],

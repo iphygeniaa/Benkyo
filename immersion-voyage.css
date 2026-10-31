@@ -1,0 +1,73 @@
+/* Immersion voyage : fenêtre, ambiance, événements (préfixe bi-) */
+.bi-win{display:grid;gap:10px;margin:0 0 14px;padding:12px 14px;border-radius:22px;background:rgba(255,255,255,.78);border:1px solid rgba(15,23,42,.1);box-shadow:0 14px 30px -22px rgba(14,26,47,.6);font-family:'Inter',sans-serif;color:#14233f}
+.bi-win.hidden{display:none!important}
+.bi-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.bi-title{font:800 .95rem 'Plus Jakarta Sans','Inter',sans-serif}
+.bi-title i{color:#2563eb;margin-right:4px}
+.bi-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.bi-snd,.bi-fold{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:12px;border:1px solid rgba(37,99,235,.28);background:rgba(37,99,235,.07);color:#1d4ed8;font:700 .8rem 'Inter',sans-serif;cursor:pointer}
+.bi-snd[aria-pressed="true"]{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.bi-snd:hover,.bi-fold:hover{filter:brightness(.96)}
+.bi-volw input{width:92px;accent-color:#2563eb}
+.bi-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.bi-stage{position:relative;border-radius:20px;overflow:hidden;background:#0b1330;line-height:0}
+.bi-cv{display:block;width:100%;height:240px}
+.bi-frame{position:absolute;inset:0;border-radius:20px;pointer-events:none;box-shadow:inset 0 0 0 6px #d8dbe3,inset 0 0 0 9px #9aa1b2,inset 0 10px 28px rgba(0,0,0,.35)}
+.bi-plane .bi-stage,.bi-plane .bi-frame{border-radius:60px / 90px}
+.bi-win.is-fold .bi-stage{display:none}
+.bi-toast{position:absolute;left:14px;right:14px;bottom:14px;display:grid;gap:3px;padding:11px 14px;border-radius:16px;background:rgba(14,26,47,.86);color:#fff;line-height:1.4;font-size:.86rem;backdrop-filter:blur(6px);animation:bi-up .3s ease-out}
+.bi-toast b{color:#f2b84b;font-size:.95rem}
+.bi-toast.hidden{display:none}
+.bi-ch{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.bi-ch button{padding:7px 12px;border-radius:12px;border:0;background:#f2b84b;color:#14233f;font:800 .82rem 'Inter',sans-serif;cursor:pointer}
+.bi-ch button:hover{background:#ffd37a}
+.bi-win :focus-visible{outline:3px solid rgba(37,99,235,.55);outline-offset:2px}
+@keyframes bi-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:520px){.bi-cv{height:200px}.bi-volw input{width:70px}}
+@media (prefers-reduced-motion:reduce){.bi-toast{animation:none}}
+
+/* Version train : on reprend la palette du Focus train (verre blanc, encre sombre, vert d'eau) au lieu du bleu vif.
+   Pas de rose ici : la fenêtre reste sobre pour que le paysage soit la seule couleur. L'avion garde son bleu nuit. */
+.bi-train{background:rgba(255,255,255,.74);border:1px solid var(--ft-line,rgba(15,23,42,.10));color:var(--ft-ink,#10131c);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:0 14px 30px -24px rgba(16,19,28,.45)}
+.bi-train .bi-title{color:var(--ft-ink,#10131c)}
+.bi-train .bi-title i{color:var(--ft-green,#0f766e)}
+.bi-train .bi-snd,.bi-train .bi-fold{border-color:rgba(15,118,110,.30);background:rgba(15,118,110,.08);color:var(--ft-green,#0f766e)}
+.bi-train .bi-snd[aria-pressed="true"]{background:var(--ft-green,#0f766e);color:#fff;border-color:var(--ft-green,#0f766e)}
+.bi-train .bi-volw input{accent-color:var(--ft-green,#0f766e)}
+.bi-train .bi-stage{background:#1b2750}
+.bi-train .bi-frame{box-shadow:inset 0 0 0 6px #e7e9ee,inset 0 0 0 9px #b4bac6,inset 0 10px 28px rgba(16,19,28,.28)}
+.bi-train .bi-toast{background:rgba(16,19,28,.84)}
+.bi-train .bi-toast b{color:#fde68a}
+.bi-train :focus-visible{outline:3px solid rgba(15,118,110,.55)}
+
+/* Plein écran : fenêtre en grand + bandeau d'infos ; le reste de la session reste accessible en défilant */
+.bi-fsb{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:12px;border:1px solid rgba(37,99,235,.28);background:rgba(37,99,235,.07);color:#1d4ed8;font:700 .8rem 'Inter',sans-serif;cursor:pointer}
+.bi-fsb:hover{filter:brightness(.96)}
+.bi-train .bi-fsb{border-color:rgba(15,118,110,.30);background:rgba(15,118,110,.08);color:var(--ft-green,#0f766e)}
+.bi-hud{display:none}
+.bi-fs{box-sizing:border-box;overflow:auto;-webkit-overflow-scrolling:touch;padding:clamp(10px,2vw,24px)!important;border-radius:0!important;border:0!important;background:radial-gradient(ellipse at 96% 0%,rgba(232,142,178,.16),transparent 42%),radial-gradient(ellipse at 0% 100%,rgba(148,226,213,.18),transparent 44%),#f3f5fa!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.bi-fs-fake{position:fixed!important;inset:0;z-index:9000;width:100vw;height:100vh;height:100dvh;max-width:none!important;margin:0!important}
+html.bi-fs-lock,html.bi-fs-lock body{overflow:hidden}
+.bi-fs .bi-win{margin:0 0 16px}
+.bi-fs .bi-plane .bi-stage,.bi-fs .bi-plane .bi-frame,.bi-fs .bi-stage,.bi-fs .bi-frame{border-radius:28px}
+.bi-fs .bi-win.is-fold .bi-stage{display:block}
+.bi-fs .bi-fold{display:none}
+.bi-fs .bi-hud{position:absolute;left:18px;right:18px;top:18px;z-index:2;display:flex;align-items:center;gap:22px;padding:12px 20px;border-radius:20px;background:rgba(14,22,40,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;line-height:1.2;font-family:'Inter',sans-serif}
+.bi-hud small{display:block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.bi-hud b{display:block;font:800 clamp(1.5rem,3.4vw,2.3rem)/1.1 'Plus Jakarta Sans','Inter',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.bi-hud-prog{flex:1;min-width:0}
+.bi-hud-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
+.bi-hud-bar span{display:block;height:100%;width:0;border-radius:99px;background:#fff}
+.bi-train .bi-hud-bar span{background:#5eead4}
+.bi-plane .bi-hud-bar span{background:#f2b84b}
+.bi-hud-line{display:flex;justify-content:space-between;gap:12px;margin-top:7px;font-size:.8rem;font-weight:600}
+.bi-hud-info{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.9}
+.bi-hud-speed{text-align:right}
+.bi-hud-speed b{font-size:clamp(1.2rem,2.6vw,1.7rem)}
+.bi-hud-pause{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border:1px solid rgba(255,255,255,.35);border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font:700 .82rem 'Inter',sans-serif;cursor:pointer}
+.bi-hud-pause:hover{background:rgba(255,255,255,.26)}
+.bi-fs .bi-toast{bottom:18px}
+@media (max-width:640px){.bi-fs .bi-hud{left:10px;right:10px;top:10px;flex-wrap:wrap;gap:10px 16px;padding:10px 14px}.bi-hud-prog{flex-basis:100%;order:3}.bi-hud-speed{margin-left:auto}}
+/* Choix du ciel (heure réelle, matin, crépuscule, nuit) */
+.bi-sel{padding:7px 10px;border-radius:12px;border:1px solid rgba(37,99,235,.28);background:rgba(37,99,235,.07);color:#1d4ed8;font:700 .8rem 'Inter',sans-serif;cursor:pointer}
+.bi-train .bi-sel{border-color:rgba(15,118,110,.30);background:rgba(15,118,110,.08);color:var(--ft-green,#0f766e)}

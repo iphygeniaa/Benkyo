@@ -198,6 +198,13 @@
     if (el && el.textContent !== text) el.textContent = text;
   }
 
+  var TODOS_KEY = 'benkyo_focus_train_todos_v1';
+  // Session terminée : plus besoin de garder la liste d'objectifs, on repart d'une liste vide au prochain voyage.
+  function clearTodos() {
+    try { localStorage.removeItem(TODOS_KEY); } catch (error) { /* ignoré */ }
+    try { if (typeof window.renderFocusTrainTodos === 'function') window.renderFocusTrainTodos(); } catch (error) { /* ignoré */ }
+  }
+
   function readJourney() {
     try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (error) { return null; }
   }
@@ -444,10 +451,23 @@
         var e = easeSegment(u, r);
         var dist = cum[k] + (cum[k + 1] - cum[k]) * e.s;
         var kmh = (st[k].kmNext / (segMs / 3600000)) * e.v;
-        return { fraction: dist / route.total, speed: kmh, stopped: false, station: -1, onBreak: false };
+        return { fraction: dist / route.total, speed: kmh, stopped: false, station: -1, onBreak: false, seg: k, segS: e.s };
       }
     }
     return { fraction: cum[range.endIndex] / route.total, speed: 0, stopped: true, station: range.endIndex, onBreak: false };
+  }
+
+  // Gare la plus proche du train, pour la dessiner dans la fenêtre : d = distance en km (positive devant, négative derrière, 0 à quai).
+  function stationNear(route, motion) {
+    var st = route.stations, k, km, dp, dn, idx, d;
+    if (motion.stopped && motion.station >= 0) { idx = motion.station; d = 0; }
+    else if (typeof motion.seg === 'number') {
+      k = motion.seg; km = st[k].kmNext || 0; dp = motion.segS * km; dn = (1 - motion.segS) * km;
+      if (dp <= dn) { idx = k; d = -dp; } else { idx = k + 1; d = dn; }
+    } else return null;
+    var s = st[idx]; if (!s) return null;
+    var city = CITIES[s.id];
+    return { d: d, name: s.name, jp: city && city.jp ? city.jp : '', end: idx === st.length - 1, start: idx === 0 };
   }
 
   function distanceFractionAt(route, elapsed) {
@@ -506,6 +526,7 @@
     els.boarding.classList.toggle('hidden', stage !== 'boarding');
     els.travel.classList.toggle('hidden', stage !== 'travel');
     els.arrived.classList.toggle('hidden', stage !== 'arrived');
+    if (stage !== 'travel') { var chkBox = byId('ft-check'); if (chkBox) { chkBox.classList.add('hidden'); chkBox.classList.remove('is-done'); } checkShownLeg = null; }
     renderHistory(stage);
   }
 
@@ -791,6 +812,7 @@
     else if (cls === 'green') clsPill = ' · 🍃 Green Car';
     els.factSeat.textContent = 'Voiture ' + pad2(legs[0].coach) + ' · ' + legs[0].seat + ' (' + seatSide(legs[0].seat) + ')' + clsPill;
     els.leaveConfirm.classList.add('hidden');
+    document.body.classList.remove('pg-modal-open');
     els.leave.classList.remove('hidden');
     els.segment.classList.toggle('hidden', !multi);
     els.itinerary.classList.toggle('hidden', !multi);
@@ -1022,6 +1044,7 @@
     renderDelay(journey);
     updateSegment(journey, elapsed);
     try { announceProgress(journey, elapsed); } catch (error) { /* les annonces sont facultatives */ }
+    try { ticketCheck(journey, elapsed); } catch (error) { /* le contrôle est facultatif */ }
     if (map) {
       // Le mouvement du train n'est calculé qu'une fois par tick, puis partagé par tous les affichages.
       var motion = motionAt(map.route, elapsed);
@@ -1039,6 +1062,8 @@
       lastSpeedShown = currentSpeed;
       pausedNow = motion.onBreak;
       stoppedNow = (motion.stopped && !motion.onBreak) || !!journey.pausedAt;
+      window.BenkyoLive = window.BenkyoLive || {};
+      window.BenkyoLive.train = { t: Date.now(), id: journey.departedAt, p: progress, d: motion.fraction, v: currentSpeed, stop: stoppedNow, left: duration - elapsed, next: els.factNext ? els.factNext.textContent : '', paused: !!journey.pausedAt, sta: stationNear(map.route, motion) };
       positionTrain();
     }
   }
@@ -1559,6 +1584,91 @@
     if (dirty) { var fresh = readJourney(); if (fresh) { fresh.ann = a; writeJourney(fresh); } }
   }
 
+  // ——— Contrôle des billets (検札) ———
+  // Un contrôle par train (si le trajet en train dure au moins 15 min), à ~55 % du trajet. Le contrôleur est annoncé
+  // dans le bandeau « Annonce à bord » (japonais + français + voix), puis une carte montre le vrai billet de la session
+  // (trajet, train, voiture, place) ; « Montrer mon billet » le valide. L'état est enregistré dans le voyage (journey.check),
+  // donc il survit au rechargement de la page et apparaît dans le récapitulatif d'arrivée.
+  var CHECK_MIN = 15, CHECK_AT = 0.55, CHECK_WINDOW = 4 * 60000, CHECK_DONE_SHOW = 7000;
+  var checkEls = null;
+  var checkShownLeg = null;
+
+  function checkEl() {
+    if (checkEls) return checkEls;
+    var box = byId('ft-check');
+    if (!box) return null;
+    checkEls = { box: box, text: byId('ft-check-text'), show: byId('ft-check-show'), route: byId('ft-check-route'), train: byId('ft-check-train'), seat: byId('ft-check-seat') };
+    if (checkEls.show) checkEls.show.addEventListener('click', validateCheck);
+    return checkEls;
+  }
+
+  function renderCheck(journey, leg, state) {
+    var c = checkEl();
+    if (!c) return;
+    if (state == null) {
+      checkShownLeg = null;
+      if (!c.box.classList.contains('hidden')) { c.box.classList.add('hidden'); c.box.classList.remove('is-done'); }
+      return;
+    }
+    var l = legsOf(journey)[leg];
+    if (!l || !CITIES[l.from] || !CITIES[l.to]) return;
+    checkShownLeg = leg;
+    setText(c.route, CITIES[l.from].name + ' → ' + CITIES[l.to].name);
+    setText(c.train, l.train + (l.trainType ? ' · ' + l.trainType : ''));
+    setText(c.seat, 'Voiture ' + pad2(l.coach) + ' · ' + l.seat + ' (' + seatSide(l.seat) + ')');
+    var done = state === 'done';
+    c.box.classList.toggle('is-done', done);
+    setText(c.text, done ? 'ありがとうございます。Billet validé : bon voyage !' : 'Le contrôleur passe dans ta voiture : prépare ton billet.');
+    c.box.classList.remove('hidden');
+  }
+
+  function validateCheck() {
+    var journey = readJourney();
+    if (!journey || checkShownLeg == null) return;
+    var leg = checkShownLeg;
+    journey.check = journey.check || {};
+    journey.checkT = journey.checkT || {};
+    journey.check[leg] = 'done';
+    journey.checkT[leg] = elapsedOf(journey);
+    writeJourney(journey);
+    renderCheck(journey, leg, 'done');
+  }
+
+  // Appelée à chaque tick.
+  function ticketCheck(journey, elapsed) {
+    var chk = journey.check = journey.check || {};
+    var doneAt = journey.checkT = journey.checkT || {};
+    var active = null, state = null, fireLeg = null, dirty = false;
+    segmentsOf(journey).forEach(function (seg) {
+      if (seg.kind !== 'ride') return;
+      var length = seg.end - seg.start;
+      if (length < CHECK_MIN * 60000) return;
+      var at = seg.start + length * CHECK_AT, k = seg.leg;
+      if (elapsed < at) return;
+      if (!chk[k]) {
+        // Page rouverte longtemps après : le contrôleur est déjà passé, on ne rejoue rien.
+        if (elapsed - at > CHECK_WINDOW) { chk[k] = 'away'; dirty = true; return; }
+        chk[k] = 'shown'; dirty = true; fireLeg = k;
+      }
+      if (chk[k] === 'shown') {
+        if (elapsed - at > CHECK_WINDOW) { chk[k] = 'away'; dirty = true; } else { active = k; state = 'shown'; }
+      } else if (chk[k] === 'done' && elapsed < seg.end && elapsed - (doneAt[k] || 0) < CHECK_DONE_SHOW) {
+        active = k; state = 'done';
+      }
+    });
+    if (dirty) {
+      var fresh = readJourney();
+      if (fresh) { fresh.check = chk; fresh.checkT = doneAt; writeJourney(fresh); }
+    }
+    if (fireLeg != null) {
+      announce({
+        fr: 'Mesdames et messieurs, le contrôle des billets va commencer. Merci de préparer votre billet et de le présenter au contrôleur.',
+        ja: 'まもなく、車内改札にまいります。乗車券をご用意ください。'
+      });
+    }
+    renderCheck(journey, active, state);
+  }
+
   function announceEnd(journey) {
     var a = journey.ann = journey.ann || {};
     if (a.end) return;
@@ -1572,6 +1682,7 @@
 
   // ——— Arrivée ———
   function chime() {
+    if (window.BenkyoStorage && BenkyoStorage.playZenBell) { BenkyoStorage.playZenBell(); return; }
     try {
       var Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;
@@ -1641,16 +1752,24 @@
     if (delayOf(journey) >= 60000) {
       addRecap(els.arrivedRecap, 'Retard', '+' + formatDuration(delayMinutes(delayOf(journey))) + ' (' + (delayMinutes(delayOf(journey)) > 1 ? 'arrêts' : 'arrêt') + ' en route)');
     }
-    try {
-      var rawTodos = localStorage.getItem('benkyo_focus_train_todos_v1');
-      if (rawTodos) {
-        var todosList = JSON.parse(rawTodos);
-        if (todosList && todosList.length) {
-          var doneTodos = todosList.filter(function (t) { return t.done; }).length;
-          addRecap(els.arrivedRecap, 'Objectifs', doneTodos + ' / ' + todosList.length + ' accomplis (' + Math.round((doneTodos / todosList.length) * 100) + ' %)');
-        }
-      }
-    } catch (e) {}
+    var chkMap = journey.check || {}, chkKeys = Object.keys(chkMap);
+    if (chkKeys.length) {
+      var chkDone = chkKeys.filter(function (k) { return chkMap[k] === 'done'; }).length;
+      addRecap(els.arrivedRecap, 'Contrôle des billets',
+        chkDone === chkKeys.length ? (chkKeys.length > 1 ? chkKeys.length + ' billets validés' : 'Billet validé ✔')
+          : chkDone === 0 ? 'Contrôleur passé (billet non présenté)'
+            : chkDone + ' / ' + chkKeys.length + ' billets présentés');
+    }
+    // Objectifs : on mémorise le bilan dans le voyage (la liste est vidée à l'arrivée, voir plus bas).
+    if (!journey.goals) {
+      try {
+        var todosList = JSON.parse(localStorage.getItem(TODOS_KEY) || '[]');
+        if (todosList && todosList.length) journey.goals = { done: todosList.filter(function (t) { return t.done; }).length, total: todosList.length };
+      } catch (e) {}
+    }
+    if (journey.goals) {
+      addRecap(els.arrivedRecap, 'Objectifs', journey.goals.done + ' / ' + journey.goals.total + ' accomplis (' + Math.round((journey.goals.done / journey.goals.total) * 100) + ' %)');
+    }
     if (!journey.logged) {
       pushHistory({
         from: legs[0].from, to: finalCityId(journey), train: legs.map(function (leg) { return leg.train; }).join(' + '),
@@ -1659,6 +1778,7 @@
       });
       journey.logged = true;
       writeJourney(journey);
+      clearTodos();
       if (live) { chime(); try { announceEnd(journey); } catch (error) { /* ignoré */ } }
     }
     showCityStamp(journey, to, live);
@@ -1810,6 +1930,7 @@
     var porter = byId('ft-board-porter');
     if (porter) porter.setAttribute('class', 'ft-porter');
     setStage('boarding');
+    if (window.BenkyoStorage && BenkyoStorage.playHasshaMelody) BenkyoStorage.playHasshaMelody();
     if (reducedMotion()) {
       els.boardText.textContent = 'Embarquement à ' + from.name + '.';
       finishBoarding();
@@ -1919,16 +2040,30 @@
     els.mapNote.className = 'ft-map-note hidden';
     els.mapNote.setAttribute('role', 'status');
     els.map.parentNode.appendChild(els.mapNote);
+    // Confirmation « Descendre du train » : même fenêtre que les autres suppressions du site (pg-confirm).
+    var leaveHome = els.leaveConfirm.parentNode;
+    function closeLeave(focusBack) {
+      els.leaveConfirm.classList.add('hidden');
+      els.leaveConfirm.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('pg-modal-open');
+      document.removeEventListener('keydown', leaveKeys);
+      if (els.leaveConfirm.parentNode !== leaveHome) leaveHome.appendChild(els.leaveConfirm);
+      els.leave.classList.remove('hidden');
+      if (focusBack) els.leave.focus();
+    }
+    function leaveKeys(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeLeave(true); } }
     els.leave.addEventListener('click', function () {
+      // Rattachée au plein écran (ou au body) pour s'afficher par-dessus tout, même en mode plein écran.
+      (document.fullscreenElement || document.webkitFullscreenElement || document.body).appendChild(els.leaveConfirm);
       els.leaveConfirm.classList.remove('hidden');
-      els.leave.classList.add('hidden');
+      els.leaveConfirm.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('pg-modal-open');
+      document.addEventListener('keydown', leaveKeys);
       els.leaveStay.focus();
     });
-    els.leaveStay.addEventListener('click', function () {
-      els.leaveConfirm.classList.add('hidden');
-      els.leave.classList.remove('hidden');
-      els.leave.focus();
-    });
+    els.leaveStay.addEventListener('click', function () { closeLeave(true); });
+    els.leaveConfirm.addEventListener('mousedown', function (e) { if (e.target === els.leaveConfirm) closeLeave(true); });
+    els.leaveYes.addEventListener('click', function () { closeLeave(false); }, true);
     els.pause.addEventListener('click', togglePause);
     els.leaveYes.addEventListener('click', leaveTrain);
     els.arrivedNew.addEventListener('click', resetJourney);

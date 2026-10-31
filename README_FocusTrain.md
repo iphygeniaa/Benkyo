@@ -86,3 +86,40 @@ Après un voyage terminé, tu es dans la gare d’arrivée : en cliquant sur « 
 ## Correctif (3.6)
 
 - Pendant l'embarquement, le trajet et l'arrivée, le plan de voyage (tableau des départs, choix de billet, siège, correspondances) est bien masqué : seul l'écran du trajet reste affiché. La cause était que le script de voyage s'accrochait au premier bloc `.ft-shell` de la page, celui du Focus avion ; le bloc du Focus train a maintenant l'id `ft-shell`.
+
+## Immersion (3.8)
+
+Sous les annonces, une **fenêtre de train** : paysage japonais qui défile (ville, rizières, montagnes, mer), ciel selon l'heure réelle, poteaux et rails. Quand le train s'arrête ou que tu fais une pause, le paysage s'arrête. **Ambiance sonore** synthétisée (roulement, claquement des rails selon la vitesse, tunnels) : bouton « Activer l'ambiance » et volume, désactivés par défaut. **Événements** : tunnels, chariot de bentō (au choix), mont Fuji à la fenêtre, contrôle des billets. Voir `immersion-voyage.js`.
+
+### Retouches (3.8)
+
+- **Fenêtre du train** : les accents bleus deviennent le vert d'eau du Focus train (verre blanc, encre sombre, pas de rose), et le ciel de jour est un bleu-gris plus doux. L'avion garde son bleu nuit.
+- **Ambiance sonore du train** : grondement grave qui « respire », souffle d'air feutré et petit « ta-tam » sourd au passage des joints de rail (plus de tic-tic aigus). La boucle de bruit est raccordée en fondu (plus de claquement toutes les 2 s) et le rythme ne saute plus entre deux rafraîchissements.
+- **Contrôle des billets (検札)** intégré à la session : un contrôle par train de 15 min ou plus, à environ 55 % du trajet. Annonce à bord (japonais, français, voix), puis une carte montre le vrai billet (trajet, train, voiture, place) ; « Montrer mon billet » le valide avec un tampon 確認済. L'état est enregistré dans le voyage (`check`), survit au rechargement et apparaît dans le récapitulatif d'arrivée. L'ancien événement de la fenêtre a été retiré.
+- **To-do** : à l'arrivée, le bilan « Objectifs x / y » est gardé dans le récapitulatif, puis la liste est vidée pour le prochain voyage (un voyage interrompu la conserve).
+
+### Ambiance du train : plus d’effet de boucle (3.8)
+
+Les deux couches de bruit utilisent des boucles de longueurs différentes (11 s et 17 s, raccord en fondu) et ne se répètent donc jamais ensemble. Le grondement dérive au hasard au lieu d'osciller régulièrement, les joints de rail arrivent par groupes de 1, 2 ou 4 battements à intervalles et hauteurs variables (parfois absents quand la voie est « lisse »), et un souffle d'air passe de temps en temps (toutes les 25 à 75 s environ).
+
+
+## Refonte des illustrations (3.9)
+
+- **Scène de quai (embarquement)** redessinée : ciel dégradé avec halo de soleil doux, Fuji ombré, pagode à cinq étages, skyline et tour, auvent de gare avec poutres et luminaires, Shinkansen plus fin (nez aérodynamique, vitres reflétantes, soufflets entre voitures, bogies, pantographe), quai avec bande podotactile, ligne blanche et reflets. Mêmes ids et classes qu'avant : `focus-train-voyage.js` n'a pas changé.
+- **Personnages** : porteur et voyageuse aux proportions réalistes (visage de trois quarts, casquette, gants, manteau, sac). **Les jambes et les bras se balancent** pendant la marche (`.ft-leg`, `.ft-arm`, keyframes `ftSwingA/B` dans `focus-train.css`) ; la voyageuse s'arrête devant la porte puis monte à bord.
+- **Fenêtre du train** (`immersion-voyage.js`, `trainScene`) : paysage en couches avec parallaxe — crêtes en brume, nuages, soleil à halo, puis quatre paysages qui se succèdent : ville (immeubles aux fenêtres allumées la nuit), rizières, forêt de cèdres, mer avec voilier. Maisons à toit de tuiles, torii, cerisiers, clôture, poteaux et fils caténaires, ballast. Le Fuji de l'événement est redessiné.
+
+
+## Écran du trajet réorganisé (3.10)
+
+L'écran « En route » était une longue colonne (compte à rebours, pause, infos, gares, ambiance, objectifs…). Il est maintenant rangé en trois niveaux, sans aucune fonction retirée :
+
+1. **En haut** : trajet, annonce à bord (japonais + traduction française), contrôle des billets et fenêtre du train.
+2. **Carte | tableau de bord** : au-dessus de la carte, la barre « Mon trajet / Tout le Japon / Suivre le train » ; à droite, le temps restant en grand avec la vitesse en direct, la progression, la pause, le retard et la correspondance en cours, puis quatre tuiles (départ, arrivée prévue, ta place, prochain passage) et le bouton « Descendre du train ». Sur téléphone, le tableau de bord passe avant la carte.
+3. **Onglets sous la carte** (un seul panneau à la fois, onglet mémorisé dans `benkyo_focus_train_dock_v1`) : **Gares & itinéraire** (étapes des correspondances + liste des gares), **Ambiance** (Radio Lofi, MP3, lecture) et **Objectifs** (to-do du voyage). Les onglets affichent le compteur d'objectifs et un indicateur quand une musique joue.
+
+La vitesse n'est plus répétée dans les tuiles (elle reste dans la pastille du temps restant). Tous les identifiants de `focus-train-voyage.js` et `immersion-voyage.js` sont inchangés ; seuls `pomodoro.html`, `focus-train.css` et le nouveau `focus-train-layout.js` (onglets) ont été modifiés.
+
+## Fenêtre du train (illustration à plat)
+
+Le paysage « Par la fenêtre » (`immersion-voyage.js`, fonction `trainScene`) est dessiné en aplats, dans un style illustré : collines douces, rizières en patchwork, maisons à toit d'ardoise, immeubles, conifères, cerisiers, torii, mer et voiliers, mont Fuji, poteaux et fils qui défilent, buissons au premier plan, grain léger. Le paysage change par zones (ville, rizières, forêt, bord de mer) ; le ciel suit l'heure réelle (jour, crépuscule, nuit avec lune, étoiles et fenêtres allumées). Tunnels, arrêt en gare et plein écran sont conservés ; toutes les tailles suivent la hauteur de la fenêtre. L'animation d'embarquement n'a pas changé.
